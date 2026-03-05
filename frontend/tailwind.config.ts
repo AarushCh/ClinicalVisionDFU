@@ -7,7 +7,17 @@ const config: Config = {
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            keyframes: {
+                scan: {
+                    '0%': { transform: 'translateY(-100%)' },
+                    '100%': { transform: 'translateY(100%)' },
+                },
+                shimmer: {
+                    '100%': { transform: 'translateX(100%)' },
+                }
+            }
+        },
     },
     plugins: [],
 };
