@@ -55,8 +55,9 @@ def process_prediction(image_bytes, age, bmi, diabetes_years):
 
     # 4. Generate heatmap against the cropped image
     # GradCAM requires gradients to compute feature maps, so we cannot use no_grad here.
-    with torch.enable_grad():
-        heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_cropped, input_tensor)
+    with torch.inference_mode(mode=False):
+        with torch.enable_grad():
+            heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_cropped, input_tensor)
 
     bmi_factor = min(float(bmi) / 40.0, 1.0)
     diabetes_factor = min(float(diabetes_years) / 30.0, 1.0)

@@ -22,24 +22,25 @@ class GradCAM:
 
     def generate(self, input_tensor):
         self.model.eval() # Ensure model is in eval mode
-        input_tensor.requires_grad_(True)
-        output = self.model(input_tensor)
-        
-        # Index 0 is the Ulcer/Disease class. 
-        ulcer_confidence = F.softmax(output, dim=1)[0, 0].item() 
-        
-        self.model.zero_grad()
-        
-        # THE FIX: ALWAYS force the AI to look for the Ulcer (Class 0).
-        # We backward pass on the raw logit, not softmax.
-        target = output[0, 0]
-        target.backward()
+        with torch.inference_mode(mode=False), torch.enable_grad():
+            input_tensor.requires_grad_(True)
+            output = self.model(input_tensor)
+            
+            # Index 0 is the Ulcer/Disease class. 
+            ulcer_confidence = F.softmax(output, dim=1)[0, 0].item() 
+            
+            self.model.zero_grad()
+            
+            # THE FIX: ALWAYS force the AI to look for the Ulcer (Class 0).
+            # We backward pass on the raw logit, not softmax.
+            target = output[0, 0]
+            target.backward()
 
-        # Global average pooling on gradients
-        gradients = self.gradients.detach().cpu().numpy()[0] # Shape: (C, H, W)
-        activations = self.activations.detach().cpu().numpy()[0] # Shape: (C, H, W)
-        
-        weights = np.mean(gradients, axis=(1, 2)) # Shape: (C,)
+            # Global average pooling on gradients
+            gradients = self.gradients.detach().cpu().numpy()[0] # Shape: (C, H, W)
+            activations = self.activations.detach().cpu().numpy()[0] # Shape: (C, H, W)
+            
+            weights = np.mean(gradients, axis=(1, 2)) # Shape: (C,)
         
         # Weighted sum of activations
         cam = np.zeros(activations.shape[1:], dtype=np.float32)
