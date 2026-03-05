@@ -22,6 +22,7 @@ class GradCAM:
 
     def generate(self, input_tensor):
         self.model.eval() # Ensure model is in eval mode
+        input_tensor.requires_grad_(True)
         output = self.model(input_tensor)
         
         # Index 0 is the Ulcer/Disease class. 
