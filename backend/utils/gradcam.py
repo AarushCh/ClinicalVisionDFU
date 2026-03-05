@@ -31,7 +31,7 @@ class GradCAM:
         cam = cv2.resize(cam, (224, 224))
         cam = (cam - cam.min()) / (cam.max() - cam.min() + 1e-8)
         
-        confidence = output.softmax(dim=1)[0, 1].item()
+        confidence = output.softmax(dim=1)[0, 0].item()
         return cam, confidence
 
 def generate_gradcam_heatmap(model, img_pil, input_tensor):
