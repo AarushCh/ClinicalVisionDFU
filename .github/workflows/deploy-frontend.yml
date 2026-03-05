@@ -42,7 +42,7 @@ jobs:
         working-directory: frontend
         env:
           # ADD YOUR RENDER BACKEND URL HERE FOR THE LIVE BUILD
-          NEXT_PUBLIC_API_URL: https://clinicalvision-api.onrender.com
+          NEXT_PUBLIC_API_URL: https://auc6-clinicalvision-api.hf.space
           
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

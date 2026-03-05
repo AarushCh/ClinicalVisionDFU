@@ -12,9 +12,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/health")
+@app.get("/")
 def health_check():
-    return {"status": "running"}
+    return {
+        "system": "ClinicalVision AI Backend",
+        "status": "Online",
+        "engine": "Neural Diagnostic Fusion v1.0",
+        "docs": "Append /docs to this URL to view the interactive API"
+    }
 
 @app.post("/predict")
 async def predict_risk(
