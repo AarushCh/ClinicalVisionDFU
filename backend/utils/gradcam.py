@@ -74,30 +74,39 @@ def generate_gradcam_heatmap(model, img_pil, input_tensor):
     # Resize heatmap to match ORIGINAL image dimensions
     heatmap = cv2.resize(heatmap_raw, (orig_w, orig_h))
     
-    # 1. Standard Normalization
+    # 1. Base Normalization to [0, 1]
     if np.max(heatmap) != np.min(heatmap):
         heatmap = (heatmap - np.min(heatmap)) / (np.max(heatmap) - np.min(heatmap))
     else:
         heatmap = np.zeros_like(heatmap)
         
-    # 2. Smooth the interpolated 12x12 grid activation map gently
-    heatmap = cv2.GaussianBlur(heatmap, (15, 15), 0)
+    # 2. Smooth Interpolation to remove 12x12 grid blockiness
+    kernel_size = max(25, min(orig_w, orig_h) // 10)
+    if kernel_size % 2 == 0: kernel_size += 1
+    heatmap = cv2.GaussianBlur(heatmap, (kernel_size, kernel_size), 0)
     
-    # 3. Soft noise floor to remove pure background without harsh edges
-    heatmap = np.maximum(heatmap - 0.1, 0)
+    # 3. Boost mid-tier activations (Square root scaling expands the mid-range)
+    # This prevents the heatmap from collapsing into a tiny intense dot
+    heatmap = heatmap ** 0.5 
     
-    # Re-normalize after noise floor
+    # Re-normalize just to be safe
     if np.max(heatmap) > 0:
         heatmap = heatmap / np.max(heatmap)
     
+    # 4. Color Mapping
     heatmap_colored = np.uint8(255 * heatmap)
     heatmap_colored = cv2.applyColorMap(heatmap_colored, cv2.COLORMAP_JET)
     
-    # 5. Dynamic Opacity
-    max_opacity = 0.8 if img_confidence > 0.6 else 0.55
-    alpha = heatmap[..., np.newaxis] * max_opacity
+    # 5. Dynamic Alpha Blending
+    # Make the heatmap highly transparent where the AI isn't looking (heatmap ~ 0)
+    # Make it semi-opaque where the AI is looking (heatmap ~ 1)
+    base_alpha = 0.55 if img_confidence > 0.6 else 0.4
     
-    # Safe Alpha Blending
+    # The alpha channel is scaled directly by the numerical intensity of the heatmap itself
+    # So healthy skin remains fully visible, diseased skin gets colored.
+    alpha = (heatmap[..., np.newaxis] * base_alpha)
+    
+    # Safe Alpha Blending Formula
     overlayed = (img_bgr * (1 - alpha) + heatmap_colored * alpha).astype(np.uint8)
     
     _, buffer = cv2.imencode('.jpg', overlayed)
