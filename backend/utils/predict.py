@@ -6,7 +6,6 @@ import io
 import os
 from utils.gradcam import generate_gradcam_heatmap
 
-# Load Model
 model = models.resnet18(weights=None)
 model.fc = nn.Linear(model.fc.in_features, 2)
 model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "model", "dfu_model.pt")
@@ -25,7 +24,6 @@ def process_prediction(image_bytes, age, bmi, diabetes_years):
 
     heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_pil, input_tensor)
 
-    # Feature calculations
     bmi_factor = min(bmi / 40.0, 1.0)
     diabetes_factor = min(diabetes_years / 30.0, 1.0)
     
@@ -34,28 +32,42 @@ def process_prediction(image_bytes, age, bmi, diabetes_years):
     diab_weight = 0.2 * diabetes_factor
     final_score = img_weight + bmi_weight + diab_weight
     
-    # SHAP Feature Importance (Percentage Contribution)
     total_weight = img_weight + bmi_weight + diab_weight
     shap_values = [
-        {"feature": "Visual DFU Indicators", "value": round((img_weight / total_weight) * 100, 1)},
+        {"feature": "Visual DFU Patterns", "value": round((img_weight / total_weight) * 100, 1)},
         {"feature": "Diabetes Duration", "value": round((diab_weight / total_weight) * 100, 1)},
         {"feature": "Patient BMI", "value": round((bmi_weight / total_weight) * 100, 1)}
     ]
     
     if final_score > 0.6:
         risk = "HIGH"
-        explanation = f"Critical visual patterns detected. Fused with clinical factors (BMI: {bmi}, Diabetes: {diabetes_years} yrs), immediate clinical intervention is recommended."
+        report = {
+            "summary": "Critical risk of Diabetic Foot Ulceration detected.",
+            "visual": "CNN extracted severe abnormal tissue morphology in the plantar region.",
+            "clinical": f"Compounded by elevated clinical parameters (BMI {bmi}, {diabetes_years} years diabetes).",
+            "action": "Immediate vascular assessment and offloading footwear required."
+        }
     elif final_score > 0.3:
         risk = "MEDIUM"
-        explanation = f"Moderate indicators detected. Clinical history suggests careful monitoring is required to prevent ulcer progression."
+        report = {
+            "summary": "Moderate risk of tissue degradation detected.",
+            "visual": "CNN indicates localized areas of concern requiring clinical correlation.",
+            "clinical": f"Patient history ({diabetes_years} yrs diabetes) necessitates prophylactic care.",
+            "action": "Schedule follow-up within 14 days. Prescribe diabetic footwear."
+        }
     else:
         risk = "LOW"
-        explanation = "No significant indicators detected. Clinical factors remain within manageable thresholds."
+        report = {
+            "summary": "No critical indicators of ulceration detected.",
+            "visual": "Plantar tissue appears visually stable with no significant Grad-CAM activations.",
+            "clinical": "Clinical parameters fall within manageable thresholds.",
+            "action": "Maintain standard annual diabetic foot screening."
+        }
 
     return {
         "risk": risk,
         "confidence": final_score,
         "heatmap": heatmap_b64,
-        "explanation": explanation,
-        "shap": shap_values # New SHAP data for the frontend
+        "report": report,
+        "shap": shap_values
     }

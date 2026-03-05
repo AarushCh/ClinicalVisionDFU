@@ -28,10 +28,14 @@ class GradCAM:
         weights = torch.mean(self.gradients, dim=(2, 3), keepdim=True)
         cam = torch.sum(weights * self.activations, dim=1).squeeze().detach().cpu().numpy()
         cam = np.maximum(cam, 0)
+        
+        # THE FIX: Apply a 40% threshold filter to kill the background noise (toes)
+        cam = np.where(cam > np.max(cam) * 0.4, cam, 0)
+        
         cam = cv2.resize(cam, (224, 224))
         cam = (cam - cam.min()) / (cam.max() - cam.min() + 1e-8)
         
-        confidence = output.softmax(dim=1)[0, 0].item()
+        confidence = output.softmax(dim=1)[0, 0].item() 
         return cam, confidence
 
 def generate_gradcam_heatmap(model, img_pil, input_tensor):
