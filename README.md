@@ -9,8 +9,6 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 
-<img src="https://via.placeholder.com/1000x400/030712/22d3ee?text=ClinicalVision+AI+Dashboard" alt="ClinicalVision AI Preview" width="100%" style="border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
-
 *An intelligent, explainable AI diagnostic system designed to provide instant, high-accuracy triage for Diabetic Foot Ulcerations using deep learning spatial analysis and patient clinical history.*
 
 </div>
