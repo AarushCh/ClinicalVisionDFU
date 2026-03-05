@@ -36,9 +36,16 @@ jobs:
           git fetch space
           git reset space/main
           
-          # 5. Add all files in backend/ and commit
+          # 5. Handle Large Files (LFS)
+          git lfs install
+          git lfs track "*.pt"
+          
+          # Add all files in backend/ and commit
+          git add .gitattributes
           git add .
           git commit -m "Automated sync from GitHub Actions" || echo "No changes to commit"
           
           # 6. Push to Hugging Face space
+          # Force push LFS objects first
+          git lfs push --all space main
           git push space HEAD:main
