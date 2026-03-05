@@ -6,6 +6,11 @@ import io
 import os
 from utils.gradcam import generate_gradcam_heatmap
 
+# Memory optimizations for Render (512MB limit)
+torch.set_num_threads(1)  # Limit CPU threads to reduce RAM usage
+torch._C._jit_set_profiling_mode(False) 
+torch._C._jit_set_profiling_executor(False)
+
 # Updated to ResNet50 to match the new training script
 model = models.resnet50(weights=None)
 model.fc = nn.Linear(model.fc.in_features, 2)
@@ -47,7 +52,9 @@ def process_prediction(image_bytes, age, bmi, diabetes_years):
     input_tensor = transform(img_cropped).unsqueeze(0)
 
     # 4. Generate heatmap against the cropped image
-    heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_cropped, input_tensor)
+    # Use no_grad to prevent PyTorch from storing gradients/cache in memory during inference
+    with torch.no_grad():
+        heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_cropped, input_tensor)
 
     bmi_factor = min(float(bmi) / 40.0, 1.0)
     diabetes_factor = min(float(diabetes_years) / 30.0, 1.0)
