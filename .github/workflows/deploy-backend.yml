@@ -32,9 +32,8 @@ jobs:
           git remote add space https://huggingface.co/spaces/auc6/ClinicalVision-API
           git remote set-url space https://auc6:$HF_TOKEN@huggingface.co/spaces/auc6/ClinicalVision-API
           
-          # 4. Pull current HuggingFace repo state
-          git fetch space
-          git reset space/main
+          # 4. We don't need to pull HF state because GitHub is the source of truth.
+          # We will force push our state to HF.
           
           # 5. Handle Large Files (LFS)
           git lfs install
@@ -48,4 +47,4 @@ jobs:
           # 6. Push to Hugging Face space
           # Force push LFS objects first
           git lfs push --all space main
-          git push space HEAD:main
+          git push -f space HEAD:main
