@@ -13,18 +13,41 @@ model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "model", "
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 model.eval()
 
-# Updated resolution to 384x384
+# Updated resolution to 384x384 while PRESERVING aspect ratio
 transform = transforms.Compose([
-    transforms.Resize((384, 384)),
+    transforms.Resize(384), # Resizes the shortest edge to 384, keeping aspect ratio
+    transforms.CenterCrop(384), # Crops the center 384x384 square
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
 def process_prediction(image_bytes, age, bmi, diabetes_years):
     img_pil = Image.open(io.BytesIO(image_bytes)).convert('RGB')
-    input_tensor = transform(img_pil).unsqueeze(0)
+    
+    # CRITICAL FIX: The preview image MUST exactly match what the AI sees (a center-cropped square).
+    # If we overlay the 384x384 heatmap on the original rectangular image, it stretches and misaligns!
+    
+    # 1. Resize shortest edge to 384
+    w, h = img_pil.size
+    aspect = w / h
+    if w < h:
+        new_w, new_h = 384, int(384 / aspect)
+    else:
+        new_w, new_h = int(384 * aspect), 384
+    img_pil = img_pil.resize((new_w, new_h), Image.Resampling.LANCZOS)
+    
+    # 2. Center crop to 384x384
+    left = (new_w - 384) / 2
+    top = (new_h - 384) / 2
+    right = (new_w + 384) / 2
+    bottom = (new_h + 384) / 2
+    img_cropped = img_pil.crop((left, top, right, bottom))
 
-    heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_pil, input_tensor)
+    # 3. Pass the perfectly square cropped image through the standard transforms
+    input_tensor = transform(img_cropped).unsqueeze(0)
+
+    # 4. Generate heatmap against the cropped image
+    heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_cropped, input_tensor)
 
     bmi_factor = min(float(bmi) / 40.0, 1.0)
     diabetes_factor = min(float(diabetes_years) / 30.0, 1.0)

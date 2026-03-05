@@ -24,7 +24,8 @@ export default function UploadForm({ setResult, setLoading, loading }: any) {
         data.append("diabetes_years", formData.diabetes_years);
 
         try {
-            const res = await axios.post("http://127.0.0.1:10000/predict", data);
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:10000";
+            const res = await axios.post(`${API_URL}/predict`, data);
             setResult(res.data);
         } catch (error) {
             alert("Backend connection failed.");
