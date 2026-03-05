@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Analysis Results</title>
+</head>
+
+<body>
+    <div class="container result-card">
+        <h1>Analysis Results</h1>
+        <div class="status-badge <%= data.risk %>">
+            <%= data.risk %> RISK
+        </div>
+
+        <div class="viz-section">
+            <div class="image-box">
+                <h3>Grad-CAM Explainability Map</h3>
+                <img src="data:image/jpeg;base64,<%= data.heatmap %>" alt="Heatmap">
+                <p class="caption">Red areas indicate regions of high AI attention.</p>
+            </div>
+
+            <div class="stats-box">
+                <h3>Clinical Summary</h3>
+                <p><strong>Confidence:</strong>
+                    <%= (data.confidence * 100).toFixed(1) %>%
+                </p>
+                <p><strong>Justification:</strong>
+                    <%= data.explanation %>
+                </p>
+
+            </div>
+        </div>
+        <a href="/upload" class="btn">New Analysis</a>
+    </div>
+</body>
+
+</html>
