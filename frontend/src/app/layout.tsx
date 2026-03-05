@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "ClinicalVision DFU",
+    title: "Clinical Vision DFU",
     description: "Explainable AI Clinical Support System",
 };
 

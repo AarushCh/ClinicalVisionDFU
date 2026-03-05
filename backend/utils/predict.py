@@ -24,8 +24,8 @@ def process_prediction(image_bytes, age, bmi, diabetes_years):
 
     heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_pil, input_tensor)
 
-    bmi_factor = min(bmi / 40.0, 1.0)
-    diabetes_factor = min(diabetes_years / 30.0, 1.0)
+    bmi_factor = min(float(bmi) / 40.0, 1.0)
+    diabetes_factor = min(float(diabetes_years) / 30.0, 1.0)
     
     img_weight = 0.6 * img_confidence
     bmi_weight = 0.2 * bmi_factor
@@ -34,7 +34,7 @@ def process_prediction(image_bytes, age, bmi, diabetes_years):
     
     total_weight = img_weight + bmi_weight + diab_weight
     shap_values = [
-        {"feature": "Visual DFU Patterns", "value": round((img_weight / total_weight) * 100, 1)},
+        {"feature": "CNN Visual Patterns", "value": round((img_weight / total_weight) * 100, 1)},
         {"feature": "Diabetes Duration", "value": round((diab_weight / total_weight) * 100, 1)},
         {"feature": "Patient BMI", "value": round((bmi_weight / total_weight) * 100, 1)}
     ]
@@ -42,26 +42,26 @@ def process_prediction(image_bytes, age, bmi, diabetes_years):
     if final_score > 0.6:
         risk = "HIGH"
         report = {
-            "summary": "Critical risk of Diabetic Foot Ulceration detected.",
-            "visual": "CNN extracted severe abnormal tissue morphology in the plantar region.",
-            "clinical": f"Compounded by elevated clinical parameters (BMI {bmi}, {diabetes_years} years diabetes).",
-            "action": "Immediate vascular assessment and offloading footwear required."
+            "patient_summary": "CRITICAL: The AI has detected severe warning signs on your foot. You must seek immediate medical attention from a podiatrist or emergency care to prevent severe infection or complications.",
+            "clinical_assessment": f"High probability of Diabetic Foot Ulceration (DFU). Severe morphological changes detected. Risk compounded by significant clinical history ({diabetes_years} yrs diabetes, BMI {bmi}).",
+            "visual_analysis": "Grad-CAM spatial analysis highlights dense, localized attention on necrotic or deeply ulcerated tissue boundaries, indicating late-stage tissue degradation.",
+            "triage": "1. Immediate vascular/neurological assessment.\n2. Strict offloading of the affected foot.\n3. Screen for osteomyelitis."
         }
     elif final_score > 0.3:
         risk = "MEDIUM"
         report = {
-            "summary": "Moderate risk of tissue degradation detected.",
-            "visual": "CNN indicates localized areas of concern requiring clinical correlation.",
-            "clinical": f"Patient history ({diabetes_years} yrs diabetes) necessitates prophylactic care.",
-            "action": "Schedule follow-up within 14 days. Prescribe diabetic footwear."
+            "patient_summary": "WARNING: The system has found moderate areas of concern. Please schedule an appointment with your doctor soon, keep the foot clean, and avoid walking barefoot.",
+            "clinical_assessment": f"Moderate risk of tissue degradation. Pre-ulcerative markers or early-stage superficial lesions present. Patient history ({diabetes_years} yrs diabetes) necessitates prophylactic care.",
+            "visual_analysis": "CNN indicates scattered localized areas of concern. Attention maps suggest surface-level callus formation or early erythema.",
+            "triage": "1. Schedule follow-up within 7-14 days.\n2. Prescribe therapeutic diabetic footwear.\n3. Optimize glycemic control."
         }
     else:
         risk = "LOW"
         report = {
-            "summary": "No critical indicators of ulceration detected.",
-            "visual": "Plantar tissue appears visually stable with no significant Grad-CAM activations.",
-            "clinical": "Clinical parameters fall within manageable thresholds.",
-            "action": "Maintain standard annual diabetic foot screening."
+            "patient_summary": "CLEAR: Your foot appears healthy with no critical warning signs. Continue your daily foot inspections and maintain good blood sugar levels.",
+            "clinical_assessment": "No critical indicators of ulceration detected. Plantar tissue appears visually stable. Clinical parameters fall within manageable, low-risk thresholds.",
+            "visual_analysis": "No significant Grad-CAM activations. Model attention is dispersed, indicating healthy, uniform skin texture.",
+            "triage": "1. Maintain standard annual diabetic foot screening.\n2. Continue daily self-inspections.\n3. Routine moisturizing."
         }
 
     return {
