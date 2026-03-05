@@ -15,7 +15,7 @@ def train_model():
     
     # 3. Medical Data Augmentation (The secret to 95%+ accuracy)
     train_transforms = transforms.Compose([
-        transforms.Resize((224, 224)),
+        transforms.RandomResizedCrop((384, 384), scale=(0.7, 1.0)), # NEW: Forces AI to look at close-ups of texture
         transforms.RandomHorizontalFlip(),
         transforms.RandomVerticalFlip(),
         transforms.RandomRotation(30), # Simulates different camera angles
@@ -25,7 +25,7 @@ def train_model():
     ])
 
     val_transforms = transforms.Compose([
-        transforms.Resize((224, 224)),
+        transforms.Resize((384, 384)), # Must match training resolution
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
@@ -43,18 +43,19 @@ def train_model():
     train_dataset.dataset.transform = train_transforms
     val_dataset.dataset.transform = val_transforms
 
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True) # Reduced batch size for 384x384 memory footprint
+    val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
 
-    # 5. Initialize Pre-trained ResNet18
-    model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
+    # 5. Initialize Pre-trained ResNet50 (Deeper architecture for finer features)
+    model = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, 2) # 2 Classes (Normal / Abnormal)
     model = model.to(device)
 
     # 6. Optimizer & Learning Rate Scheduler
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    # Using AdamW with smaller LR and explicit weight decay for fine-tuning deep networks
+    optimizer = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
 
     # 7. Training Loop
