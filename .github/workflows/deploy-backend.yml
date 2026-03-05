@@ -1,0 +1,44 @@
+name: Deploy Backend to Hugging Face
+
+on:
+  push:
+    branches: ["main", "master"]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # 1. Move to the directory with the backend code
+          cd backend/
+          
+          # 2. Configure git to use HF_TOKEN
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          
+          # 3. Add Hugging Face remote
+          git init
+          git remote add space https://huggingface.co/spaces/auc6/ClinicalVision-API
+          git remote set-url space https://auc6:$HF_TOKEN@huggingface.co/spaces/auc6/ClinicalVision-API
+          
+          # 4. Pull current HuggingFace repo state
+          git fetch space
+          git reset space/main
+          
+          # 5. Add all files in backend/ and commit
+          git add .
+          git commit -m "Automated sync from GitHub Actions" || echo "No changes to commit"
+          
+          # 6. Push to Hugging Face space
+          git push space HEAD:main
