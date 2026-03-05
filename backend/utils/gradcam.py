@@ -74,25 +74,19 @@ def generate_gradcam_heatmap(model, img_pil, input_tensor):
     # Resize heatmap to match ORIGINAL image dimensions
     heatmap = cv2.resize(heatmap_raw, (orig_w, orig_h))
     
-    # 1. Base Normalization
+    # 1. Standard Normalization
     if np.max(heatmap) != np.min(heatmap):
         heatmap = (heatmap - np.min(heatmap)) / (np.max(heatmap) - np.min(heatmap))
     else:
         heatmap = np.zeros_like(heatmap)
         
-    # 2. Peak Amplification
-    heatmap = heatmap ** 1.5 # Softer peak amplification
+    # 2. Smooth the interpolated 12x12 grid activation map gently
+    heatmap = cv2.GaussianBlur(heatmap, (15, 15), 0)
     
-    # 3. Smooth out blockiness scaled to original image size
-    kernel_size = max(15, min(orig_w, orig_h) // 20)
-    if kernel_size % 2 == 0: kernel_size += 1
-    heatmap = cv2.GaussianBlur(heatmap, (kernel_size, kernel_size), 0)
+    # 3. Soft noise floor to remove pure background without harsh edges
+    heatmap = np.maximum(heatmap - 0.1, 0)
     
-    # 4. Strict Noise Floor to erase the healthy background
-    noise_floor = 0.2 # lowered slightly to catch edge boundaries
-    heatmap = np.clip(heatmap - noise_floor, 0, 1)
-    
-    # Re-normalize
+    # Re-normalize after noise floor
     if np.max(heatmap) > 0:
         heatmap = heatmap / np.max(heatmap)
     
