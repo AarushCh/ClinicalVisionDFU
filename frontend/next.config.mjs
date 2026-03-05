@@ -5,6 +5,6 @@ const nextConfig = {
         unoptimized: true, // Required for static exports if you add images later
     },
     // If your repo is named "ClinicalVisionDFU" and not a custom domain:
-    // basePath: "/ClinicalVisionDFU", 
+    basePath: "/ClinicalVisionDFU",
 };
 export default nextConfig;
