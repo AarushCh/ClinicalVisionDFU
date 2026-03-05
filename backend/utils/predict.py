@@ -16,6 +16,8 @@ model = models.resnet50(weights=None)
 model.fc = nn.Linear(model.fc.in_features, 2)
 model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "model", "dfu_model.pt")
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+for param in model.parameters():
+    param.requires_grad = True
 model.eval()
 
 # Updated resolution to 384x384 while PRESERVING aspect ratio
