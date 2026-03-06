@@ -34,40 +34,41 @@ def process_prediction(image_bytes, age, bmi, diabetes_years):
     # CRITICAL FIX: The preview image MUST exactly match what the AI sees (a center-cropped square).
     # If we overlay the 384x384 heatmap on the original rectangular image, it stretches and misaligns!
     
-    # 1. Resize shortest edge to 384
-    w, h = img_pil.size
-    aspect = w / h
-    if w < h:
-        new_w, new_h = 384, int(384 / aspect)
-    else:
-        new_w, new_h = int(384 * aspect), 384
-    img_pil = img_pil.resize((new_w, new_h), Image.Resampling.LANCZOS)
+    # 1. Resize image exactly to 384x384 (Stretch, NOT crop).
+    # The AI was trained on stretched 384x384 images in train.py (`transforms.Resize((384, 384))`).
+    # If we crop the image here, the AI only sees a zoomed-in piece of the foot and gets confused!
+    img_resized = img_pil.resize((384, 384), Image.Resampling.LANCZOS)
     
-    # 2. Center crop to 384x384
-    left = (new_w - 384) / 2
-    top = (new_h - 384) / 2
-    right = (new_w + 384) / 2
-    bottom = (new_h + 384) / 2
-    img_cropped = img_pil.crop((left, top, right, bottom))
+    # Pass the stretched image to our tensor transform (which does not crop anymore)
+    input_tensor = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])(img_resized).unsqueeze(0)
 
-    # 3. Pass the perfectly square cropped image through the standard transforms
-    input_tensor = transform(img_cropped).unsqueeze(0)
-
-    # 4. Generate heatmap against the cropped image
-    # GradCAM requires gradients to compute feature maps, so we cannot use no_grad here.
+    # 4. Generate heatmap against the stretched image
+    # Note: gradcam.py automatically resizes the heatmap back to the original aspect ratio
     with torch.inference_mode(mode=False):
         with torch.enable_grad():
-            heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_cropped, input_tensor)
+            heatmap_b64, img_confidence = generate_gradcam_heatmap(model, img_resized, input_tensor)
 
     bmi_factor = min(float(bmi) / 40.0, 1.0)
     diabetes_factor = min(float(diabetes_years) / 30.0, 1.0)
     
-    img_weight = 0.6 * img_confidence
-    bmi_weight = 0.2 * bmi_factor
-    diab_weight = 0.2 * diabetes_factor
+    # Weighting Adjustments
+    # If the image is perfectly healthy (img_confidence ~ 0), we DO NOT
+    # want the final score to cross the >0.3 MEDIUM barrier just because of BMI/Age.
+    img_weight = 0.7 * img_confidence
+    bmi_weight = 0.15 * bmi_factor
+    diab_weight = 0.15 * diabetes_factor
+    
+    # Dampen the clinical scoring if the image is extremely healthy
+    if img_confidence < 0.2:
+        bmi_weight *= (img_confidence / 0.2)
+        diab_weight *= (img_confidence / 0.2)
+        
     final_score = img_weight + bmi_weight + diab_weight
     
-    total_weight = img_weight + bmi_weight + diab_weight
+    total_weight = img_weight + bmi_weight + diab_weight if (img_weight + bmi_weight + diab_weight) > 0 else 1.0
     shap_values = [
         {"feature": "CNN Visual Patterns", "value": round((img_weight / total_weight) * 100, 1)},
         {"feature": "Diabetes Duration", "value": round((diab_weight / total_weight) * 100, 1)},

@@ -11,7 +11,7 @@ def train_model():
     print(f"Training on device: {device}")
 
     # 2. Your exact dataset path from filelist.txt
-    data_dir = r"E:\CV Project Files\Github Clone\ClinicalVisionDFU\USE CASE - 02\DFU\Patches"
+    data_dir = r"Z:\College\Semester - VI\AI Day Hackathon\Datasets\USE CASE - 02\DFU\Patches"
     
     # 3. Medical Data Augmentation (The secret to 95%+ accuracy)
     train_transforms = transforms.Compose([
