@@ -20,7 +20,7 @@ const PrintableReport = forwardRef(({ result, reportId }: any, ref: any) => {
                 lineHeight: '1.6'
             }}
         >
-            {/* HEADER: Letterhead */}
+            {/* HEADER*/}
             <div style={{ borderBottom: '2px solid black', paddingBottom: '10px', marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
                     <h1 style={{ fontSize: '28px', fontWeight: 'bold', margin: '0 0 5px 0' }}>ClinicalVision Diagnostic Laboratory</h1>
@@ -99,7 +99,6 @@ const PrintableReport = forwardRef(({ result, reportId }: any, ref: any) => {
             </div>
 
             {/* RECOMMENDED TRIAGE */}
-            {/* THE FIX: Added pageBreakBefore: 'always' to force this onto Page 2 */}
             <div style={{ marginBottom: '40px', pageBreakBefore: 'always', pageBreakInside: 'avoid' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: 'bold', borderBottom: '1px solid black', marginBottom: '15px' }}>
                     III. Recommended Triage & Action Plan

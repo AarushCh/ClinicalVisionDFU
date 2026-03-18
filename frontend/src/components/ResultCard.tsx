@@ -6,7 +6,6 @@ import PrintableReport from "./PrintableReport";
 export default function ResultCard({ result, loading }: any) {
     const reportRef = useRef(null);
 
-    // Lock the ID so it doesn't spin
     const reportId = useMemo(() => (Math.random() * 100000).toFixed(0), [result]);
 
     const handlePrint = useReactToPrint({

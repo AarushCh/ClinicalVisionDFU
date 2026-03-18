@@ -1,10 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: "export", // Enables static HTML export for GitHub Pages
+    output: "export",
     images: {
-        unoptimized: true, // Required for static exports if you add images later
+        unoptimized: true,
     },
-    // If your repo is named "ClinicalVisionDFU" and not a custom domain:
     basePath: "/ClinicalVisionDFU",
 };
 export default nextConfig;

@@ -7,7 +7,6 @@ export default function Home() {
     const [result, setResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
-    // Track mouse position for the glow effect
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const currentPos = useRef({ x: 0, y: 0 });
     const targetPos = useRef({ x: 0, y: 0 });

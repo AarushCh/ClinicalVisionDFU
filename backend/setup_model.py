@@ -4,7 +4,6 @@ from torchvision import models
 import os
 
 def create_baseline_model():
-    # 1. Ensure the model directory exists
     os.makedirs("model", exist_ok=True)
     
     print("Downloading pre-trained ResNet18...")
@@ -13,7 +12,6 @@ def create_baseline_model():
     print("Modifying final layer for 2 classes (No Ulcer / Ulcer)...")
     model.fc = nn.Linear(model.fc.in_features, 2)
     
-    # 2. Save the initialized model weights
     model_path = "model/dfu_model.pt"
     torch.save(model.state_dict(), model_path)
     print(f"Success! Model weights saved to {model_path}.")
