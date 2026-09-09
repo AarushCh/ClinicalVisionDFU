@@ -16,6 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 MODULES = [
+    ("envfile", ".env parsing and precedence"),
     ("dataset", "splits, transforms, group-aware splitting"),
     ("model_def", "architecture registry, checkpoint round-trip"),
     ("clinical", "log-odds fusion, Shapley, IWGDF"),

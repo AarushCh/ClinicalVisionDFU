@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bento element lab Sections - many shapes - interactive demos - AR / EN</title>
+    <meta name="description" content="A responsive Bento UI pattern lab featuring many card shapes, glass and neon surfaces, controls, forms, data rows, and interactive AR / EN demos. Built with HTML, CSS, and JavaScript by Mohammad Abu Sakour." />
+    <meta name="author" content="Mohammad Abu Sakour" />
+    <meta name="keywords" content="bento grid, CSS grid, UI components, UI patterns, glassmorphism, neon UI, interactive demos, responsive design, design system, dashboard UI, cards, forms, controls, Arabic English, Mohammad Abu Sakour" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#07080f" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="geo.region" content="JO" />
+    <meta name="geo.placename" content="Amman" />
+    <meta property="og:site_name" content="Bento element lab" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Bento element lab Sections - many shapes - interactive demos - AR / EN" />
+    <meta property="og:description" content="A responsive Bento UI pattern lab featuring many card shapes, glass and neon surfaces, controls, forms, data rows, and interactive AR / EN demos. Built with HTML, CSS, and JavaScript by Mohammad Abu Sakour." />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ar_JO" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bento element lab Sections - many shapes - interactive demos - AR / EN" />
+    <meta name="twitter:description" content="A responsive Bento UI pattern lab featuring many card shapes, glass and neon surfaces, controls, forms, data rows, and interactive AR / EN demos." />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Bento element lab Sections - many shapes - interactive demos - AR / EN",
+        "description": "A responsive Bento UI pattern lab featuring many card shapes, glass and neon surfaces, controls, forms, data rows, and interactive AR / EN demos. Built with HTML, CSS, and JavaScript by Mohammad Abu Sakour.",
+        "inLanguage": ["en", "ar"],
+        "isPartOf": { "@type": "WebSite", "name": "Bento element lab Sections - many shapes - interactive demos - AR / EN" },
+        "author": {
+          "@type": "Person",
+          "name": "Mohammad Abu Sakour",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Amman",
+            "addressCountry": "JO"
+          }
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2.1.0/dist/iconify-icon.min.js" defer></script>
+  </head>
+  <body class="lab" data-page-title-key="labPage.shapes">
+    <a class="skip" href="#main">Skip to content</a>
+
+    <div class="lab-layout">
+      <aside class="lab-side">
+        <p class="lab-side__kicker" data-i18n="hub.kicker">Lab suite</p>
+        <nav class="lab-pages-nav" aria-label="All labs">
+          <a href="./index.html" data-i18n="hub.nav.home">Home</a>
+          <a href="./lab-shapes.html" data-i18n="hub.nav.shapes" class="is-active" aria-current="page">Shapes</a>
+          <a href="./lab-surfaces.html" data-i18n="hub.nav.surfaces">Surfaces</a>
+          <a href="./lab-data.html" data-i18n="hub.nav.data">Data</a>
+          <a href="./lab-layout.html" data-i18n="hub.nav.layout">Layout</a>
+          <a href="./lab-controls.html" data-i18n="hub.nav.controls">Controls</a>
+          <a href="./lab-forms-cards.html" data-i18n="hub.nav.forms">Forms & cards</a>
+          <a href="./lab-hot.html" data-i18n="hub.nav.hot">Hot UI</a>
+        </nav>
+        <p class="lab-side__kicker lab-side__kicker--sub" data-i18n="lab.nav.kicker">On this page</p>
+        <nav class="lab-nav" aria-label="Jump to section">
+          <a href="#rect" data-i18n="nav.rect">Rects</a>
+          <a href="#radius" data-i18n="nav.radius">Radius</a>
+          <a href="#chamfer" data-i18n="nav.chamfer">Cut</a>
+          <a href="#gradient" data-i18n="nav.gradient">Gradients</a>
+        </nav>
+      </aside>
+
+      <header class="lab-head">
+        <div class="lab-head__text">
+          <h1 class="lab-head__title" data-i18n="lab.title">Bento element lab</h1>
+          <p class="lab-head__sub" data-i18n="lab.sub">
+            Sections Â· multiple shapes per category Â· copy any block
+          </p>
+        </div>
+        <button class="lab-lang" id="js-lang" type="button" aria-label="Toggle language">
+          AR / EN
+        </button>
+      </header>
+
+      <main class="lab-main" id="main">
+<section class="sec sec--rect" id="rect">
+        <header class="sec__head">
+          <h2 class="sec__h">
+            <span class="sec__n">01</span>
+            <span data-i18n="sec.rect">Rectangles & aspect</span>
+          </h2>
+          <p class="sec__lead" data-i18n="sec.rect.lead">
+            Grid ratios first Â· motion accents below â€” same lab tokens everywhere.
+          </p>
+        </header>
+
+        <div class="sec-block">
+          <h3 class="sec-block__h" data-i18n="sec.rect.group.ratio">Aspect ratios</h3>
+          <div class="var var--tiles">
+            <div class="el el--asp el--asp-11 el--lift"><span>1:1</span></div>
+            <div class="el el--asp el--asp-43 el--lift"><span>4:3</span></div>
+            <div class="el el--asp el--asp-169 el--lift"><span>16:9</span></div>
+            <div class="el el--asp el--asp-21 el--lift"><span>2:1</span></div>
+            <div class="el el--asp el--asp-tall el--lift"><span>Tall</span></div>
+            <div class="el el--asp el--asp-wide el--lift"><span>Ultra wide</span></div>
+          </div>
+        </div>
+
+        <div class="sec-block sec-block--fx">
+          <h3 class="sec-block__h" data-i18n="sec.rect.group.fx">Hover & glow</h3>
+          <div class="var var--tiles var--tiles--fx">
+            <div class="el el--asp el--asp-11 el--lift el--pulse-border"><span>Thumb</span></div>
+            <div class="el el--asp el--asp-169 el--lift el--shine"><span>Shine</span></div>
+            <div class="el el--asp el--asp-43 el--lift el--ring-hover"><span>Ring</span></div>
+          </div>
+        </div>
+      </section>
+
+<section class="sec" id="radius">
+        <h2 class="sec__h">
+          <span class="sec__n">02</span>
+          <span data-i18n="sec.radius">Corner radius</span>
+        </h2>
+        <div class="var var--tiles">
+          <div class="el el--base el--r0 el--lift"><span>0</span></div>
+          <div class="el el--base el--r8 el--lift"><span>8px</span></div>
+          <div class="el el--base el--r16 el--lift"><span>16px</span></div>
+          <div class="el el--base el--r24 el--lift"><span>24px</span></div>
+          <div class="el el--base el--r32 el--lift"><span>32px</span></div>
+          <div class="el el--base el--pill el--lift"><span>Pill</span></div>
+          <div class="el el--base el--r16 el--lift el--magnetic"><span>Magnetic</span></div>
+        </div>
+      </section>
+
+<section class="sec" id="chamfer">
+        <h2 class="sec__h">
+          <span class="sec__n">07</span>
+          <span data-i18n="sec.chamfer">Chamfered frames</span>
+        </h2>
+        <div class="var var--tiles">
+          <div class="el el--chamfer el--cham-a"><span>Cut A</span></div>
+          <div class="el el--chamfer el--cham-b"><span>Cut B</span></div>
+          <div class="el el--chamfer el--cham-c"><span>Cut C</span></div>
+          <div class="el el--chamfer el--cham-d"><span>Arrow panel</span></div>
+          <div class="el el--chamfer el--cham-e"><span>Bevel 4</span></div>
+          <div class="el el--chamfer el--cham-f"><span>Trap top</span></div>
+          <div class="el el--chamfer el--cham-g"><span>Skew slab</span></div>
+          <div class="el el--chamfer el--cham-h"><span>Chevron</span></div>
+          <div class="el el--chamfer el--cham-i"><span>Tab top</span></div>
+          <div class="el el--chamfer el--cham-j"><span>Corner bite</span></div>
+        </div>
+      </section>
+
+<section class="sec" id="gradient">
+        <h2 class="sec__h">
+          <span class="sec__n">08</span>
+          <span data-i18n="sec.gradient">Gradient shells</span>
+        </h2>
+        <div class="var var--tiles">
+          <div class="el el--grad el--grad-border"><span>Border glow</span></div>
+          <div class="el el--grad el--grad-mesh"><span>Mesh fill</span></div>
+          <div class="el el--grad el--grad-sweep"><span>Sweep</span></div>
+          <div class="el el--grad el--grad-conic"><span>Conic</span></div>
+          <div class="el el--grad el--grad-stripes"><span>Stripes</span></div>
+          <div class="el el--grad el--grad-noise"><span>Noise cap</span></div>
+          <div class="el el--grad el--grad-radial-soft"><span>Radial veil</span></div>
+          <div class="el el--grad el--grad-split"><span>Slash split</span></div>
+          <div class="el el--grad el--grad-sunset"><span>Sunset haze</span></div>
+          <div class="el el--grad el--grad-depth"><span>Depth field</span></div>
+          <div class="el el--grad el--grad-shimmer"><span>Shimmer band</span></div>
+          <div class="el el--grad el--grad-ribbon"><span>Ribbon</span></div>
+        </div>
+      </section>
+      </main>
+    </div>
+
+    <script src="./main.js"></script>
+  </body>
+</html>
+
+

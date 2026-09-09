@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bento element lab Sections - many shapes - interactive demos - AR / EN</title>
+    <meta name="description" content="A responsive Bento UI pattern lab featuring many card shapes, glass and neon surfaces, controls, forms, data rows, and interactive AR / EN demos. Built with HTML, CSS, and JavaScript by Mohammad Abu Sakour." />
+    <meta name="author" content="Mohammad Abu Sakour" />
+    <meta name="keywords" content="bento grid, CSS grid, UI components, UI patterns, glassmorphism, neon UI, interactive demos, responsive design, design system, dashboard UI, cards, forms, controls, Arabic English, Mohammad Abu Sakour" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#07080f" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="geo.region" content="JO" />
+    <meta name="geo.placename" content="Amman" />
+    <meta property="og:site_name" content="Bento element lab" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Bento element lab Sections - many shapes - interactive demos - AR / EN" />
+    <meta property="og:description" content="A responsive Bento UI pattern lab featuring many card shapes, glass and neon surfaces, controls, forms, data rows, and interactive AR / EN demos. Built with HTML, CSS, and JavaScript by Mohammad Abu Sakour." />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ar_JO" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bento element lab Sections - many shapes - interactive demos - AR / EN" />
+    <meta name="twitter:description" content="A responsive Bento UI pattern lab featuring many card shapes, glass and neon surfaces, controls, forms, data rows, and interactive AR / EN demos." />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Bento element lab Sections - many shapes - interactive demos - AR / EN",
+        "description": "A responsive Bento UI pattern lab featuring many card shapes, glass and neon surfaces, controls, forms, data rows, and interactive AR / EN demos. Built with HTML, CSS, and JavaScript by Mohammad Abu Sakour.",
+        "inLanguage": ["en", "ar"],
+        "isPartOf": { "@type": "WebSite", "name": "Bento element lab Sections - many shapes - interactive demos - AR / EN" },
+        "author": {
+          "@type": "Person",
+          "name": "Mohammad Abu Sakour",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Amman",
+            "addressCountry": "JO"
+          }
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2.1.0/dist/iconify-icon.min.js" defer></script>
+  </head>
+  <body class="lab" data-page-title-key="labPage.hot">
+    <a class="skip" href="#main">Skip to content</a>
+
+    <div class="lab-layout">
+      <aside class="lab-side">
+        <p class="lab-side__kicker" data-i18n="hub.kicker">Lab suite</p>
+        <nav class="lab-pages-nav" aria-label="All labs">
+          <a href="./index.html" data-i18n="hub.nav.home">Home</a>
+          <a href="./lab-shapes.html" data-i18n="hub.nav.shapes">Shapes</a>
+          <a href="./lab-surfaces.html" data-i18n="hub.nav.surfaces">Surfaces</a>
+          <a href="./lab-data.html" data-i18n="hub.nav.data">Data</a>
+          <a href="./lab-layout.html" data-i18n="hub.nav.layout">Layout</a>
+          <a href="./lab-controls.html" data-i18n="hub.nav.controls">Controls</a>
+          <a href="./lab-forms-cards.html" data-i18n="hub.nav.forms">Forms & cards</a>
+          <a href="./lab-hot.html" data-i18n="hub.nav.hot" class="is-active" aria-current="page">Hot UI</a>
+        </nav>
+        <p class="lab-side__kicker lab-side__kicker--sub" data-i18n="lab.nav.kicker">On this page</p>
+        <nav class="lab-nav" aria-label="Jump to section">
+          <a href="#hot-ui" data-i18n="nav.hot">Hot UI</a>
+        </nav>
+      </aside>
+
+      <header class="lab-head">
+        <div class="lab-head__text">
+          <h1 class="lab-head__title" data-i18n="lab.title">Bento element lab</h1>
+          <p class="lab-head__sub" data-i18n="lab.sub">
+            Sections Â· multiple shapes per category Â· copy any block
+          </p>
+        </div>
+        <button class="lab-lang" id="js-lang" type="button" aria-label="Toggle language">
+          AR / EN
+        </button>
+      </header>
+
+      <main class="lab-main" id="main">
+<section class="sec sec--hot" id="hot-ui">
+        <h2 class="sec__h">
+          <span class="sec__n">17</span>
+          <span data-i18n="sec.hot">Hot UI lab</span>
+        </h2>
+        <p class="sec__hint" data-i18n="hot.intro">Spotlight patterns Â· shells Â· AI surfaces â€” interactive demos.</p>
+
+        <div class="kit-sub">
+          <h3 class="kit-sub__h" data-i18n="hot.cat.motion">Motion &amp; backgrounds</h3>
+          <div class="hot-cluster">
+            <div class="hot-cursor-field" data-hot-cursor-zone aria-label="Cursor glow & trails">
+              <div class="hot-cursor-glow" aria-hidden="true"></div>
+              <canvas class="hot-trails-canvas" width="340" height="200"></canvas>
+              <span class="hot-cursor-hint" data-i18n="hot.hint.move">Move pointer â€” glow &amp; trails</span>
+            </div>
+            <div class="hot-parallax" id="js-hot-parallax" aria-label="Parallax depth">
+              <div class="hot-parallax__bg"></div>
+              <div class="hot-parallax__mid"></div>
+              <div class="hot-parallax__fg"><span data-i18n="hot.depth">Depth</span></div>
+            </div>
+          </div>
+          <div class="hot-cluster hot-cluster--4">
+            <canvas class="hot-particles-canvas" width="260" height="140" aria-hidden="true"></canvas>
+            <div class="hot-bg-tile hot-bg-tile--aurora"><span>Aurora</span></div>
+            <div class="hot-bg-tile hot-bg-tile--liquid"><span>Liquid</span></div>
+            <div class="hot-bg-tile hot-bg-tile--noise"><span>Noise film</span></div>
+            <div class="hot-bg-tile hot-bg-tile--mesh"><span>Mesh live</span></div>
+          </div>
+        </div>
+
+        <div class="kit-sub">
+          <h3 class="kit-sub__h" data-i18n="hot.cat.chrome">Navigation chrome</h3>
+          <div class="hot-dock" role="toolbar" aria-label="Floating dock">
+            <button type="button" class="hot-dock__btn is-active" aria-label="Finder"><iconify-icon icon="lucide:layout-grid" width="20" height="20"></iconify-icon></button>
+            <button type="button" class="hot-dock__btn" aria-label="Safari"><iconify-icon icon="lucide:compass" width="20" height="20"></iconify-icon></button>
+            <button type="button" class="hot-dock__btn" aria-label="Terminal"><iconify-icon icon="lucide:terminal" width="20" height="20"></iconify-icon></button>
+            <button type="button" class="hot-dock__btn" aria-label="Spark"><iconify-icon icon="lucide:sparkles" width="20" height="20"></iconify-icon></button>
+          </div>
+          <nav class="hot-macnav" aria-label="macOS style strip">
+            <span class="hot-macnav__pill is-active">Overview</span>
+            <span class="hot-macnav__pill">Inspect</span>
+            <span class="hot-macnav__pill">Share</span>
+          </nav>
+          <nav class="hot-crumb" aria-label="Breadcrumbs" data-hot-crumb>
+            <span class="hot-crumb__i">Lab</span>
+            <span class="hot-crumb__sep">/</span>
+            <span class="hot-crumb__i">Hot UI</span>
+            <span class="hot-crumb__sep">/</span>
+            <span class="hot-crumb__i hot-crumb__i--current">Chrome</span>
+          </nav>
+          <div class="hot-steps" aria-label="Step progress">
+            <div class="hot-steps__track"><span class="hot-steps__fill" style="width:50%"></span></div>
+            <ol class="hot-steps__list">
+              <li class="is-done">1</li>
+              <li class="is-active">2</li>
+              <li>3</li>
+              <li>4</li>
+            </ol>
+          </div>
+          <div class="hot-timeline">
+            <div class="hot-timeline__item"><span class="hot-timeline__dot"></span><div><strong data-i18n="hot.tl.a">Ship</strong><small>14:02</small></div></div>
+            <div class="hot-timeline__item"><span class="hot-timeline__dot"></span><div><strong data-i18n="hot.tl.b">Verify</strong><small>14:08</small></div></div>
+            <div class="hot-timeline__item"><span class="hot-timeline__dot"></span><div><strong data-i18n="hot.tl.c">Live</strong><small>14:15</small></div></div>
+          </div>
+        </div>
+
+        <div class="kit-sub">
+          <h3 class="kit-sub__h" data-i18n="hot.cat.shell">Shells &amp; overlays</h3>
+          <div class="hot-cmdbar" role="search">
+            <iconify-icon icon="lucide:sparkles" width="18" height="18" aria-hidden="true"></iconify-icon>
+            <input type="search" class="hot-cmdbar__input" data-i18n-placeholder="hot.cmd.placeholder" placeholder="Ask AI or run commandâ€¦" maxlength="120" autocomplete="off" />
+            <kbd class="hot-cmdbar__kbd">âŒ˜K</kbd>
+          </div>
+          <div class="hot-shell-actions">
+            <button type="button" class="btn btn--ghost btn--sm" id="js-hot-search-open" data-i18n="hot.search.open">Search overlay</button>
+            <button type="button" class="btn btn--ghost btn--sm" id="js-hot-modal-open" data-i18n="hot.modal.open">Glass modal</button>
+            <span class="hot-tip" data-tooltip="Premium tooltip token" data-i18n="hot.tip.anchor">Hover tooltip</span>
+          </div>
+          <div class="hot-glass-split">
+            <aside class="hot-glass-side">
+              <span data-i18n="hot.side.title">Glass sidebar</span>
+              <ul>
+                <li>Dashboard</li>
+                <li>Inbox</li>
+                <li>Settings</li>
+              </ul>
+            </aside>
+            <div class="hot-fab-host">
+              <button type="button" class="hot-fab" aria-label="Compose"><iconify-icon icon="lucide:plus" width="22" height="22"></iconify-icon></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-sub">
+          <h3 class="kit-sub__h" data-i18n="hot.cat.dev">Dev &amp; data surfaces</h3>
+          <div class="hot-dev-grid">
+            <div class="hot-terminal">
+              <div class="hot-terminal__bar"><span class="hot-terminal__dot"></span><span class="hot-terminal__dot"></span><span class="hot-terminal__dot"></span><span data-i18n="hot.term.title">bash â€” zsh</span></div>
+              <pre class="hot-terminal__body"><span data-i18n="hot.term.line1">$ bun run lab</span>
+<span class="hot-terminal__ok">âœ”</span> ready on <span class="hot-terminal__accent">:5173</span>
+<span data-i18n="hot.term.prompt">$</span> _</pre>
+            </div>
+            <div class="hot-editor">
+              <div class="hot-editor__gutter">1<br />2<br />3<br />4</div>
+              <pre class="hot-editor__code"><span class="tok-k">const</span> <span class="tok-v">ui</span> = <span class="tok-s">"glass"</span>;
+<span class="tok-k">export</span> <span class="tok-k">default</span> <span class="tok-f">surface</span>();</pre>
+            </div>
+          </div>
+          <div class="hot-dash">
+            <div class="hot-kpi"><span class="hot-kpi__v">98.2%</span><span class="hot-kpi__l" data-i18n="hot.kpi.uptime">Uptime</span><span class="hot-kpi__pulse"></span></div>
+            <div class="hot-kpi"><span class="hot-kpi__v">1.2k</span><span class="hot-kpi__l">rps</span></div>
+            <div class="hot-kpi"><span class="hot-kpi__v">42ms</span><span class="hot-kpi__l">p95</span></div>
+            <div class="hot-kpi"><span class="hot-kpi__v hot-kpi__v--warn">3</span><span class="hot-kpi__l" data-i18n="hot.kpi.alerts">Alerts</span></div>
+          </div>
+          <div class="hot-chart">
+            <span class="hot-chart__bar" style="--p:72%"><i></i></span>
+            <span class="hot-chart__bar" style="--p:54%"><i></i></span>
+            <span class="hot-chart__bar" style="--p:88%"><i></i></span>
+            <span class="hot-chart__bar" style="--p:41%"><i></i></span>
+          </div>
+          <div class="hot-split">
+            <div class="hot-split__pane"><span data-i18n="hot.split.a">Canvas A</span></div>
+            <div class="hot-split__handle" aria-hidden="true"></div>
+            <div class="hot-split__pane"><span data-i18n="hot.split.b">Inspector</span></div>
+          </div>
+          <article class="hot-story">
+            <div class="hot-story__media"></div>
+            <div class="hot-story__body">
+              <h4 class="hot-story__t" data-i18n="hot.story.title">Story card</h4>
+              <p class="hot-story__p" data-i18n="hot.story.sub">Gradient overlay Â· editorial density.</p>
+            </div>
+          </article>
+          <div class="hot-reveal">
+            <div class="hot-reveal__inner">
+              <span data-i18n="hot.reveal.title">Hover reveal layout</span>
+              <p data-i18n="hot.reveal.body">Meta slides up on hover â€” dashboard teaser.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-sub">
+          <h3 class="kit-sub__h" data-i18n="hot.cat.ai">AI Â· feedback Â· realtime</h3>
+          <div class="hot-ai-chat">
+            <div class="hot-ai-chat__msg hot-ai-chat__msg--ai"><span data-i18n="hot.chat.ai">How can I optimize this bundle?</span></div>
+            <div class="hot-ai-chat__msg hot-ai-chat__msg--user"><span data-i18n="hot.chat.user">Enable splitChunks &amp; lazy routes.</span></div>
+            <div class="hot-ai-chat__typing" aria-live="polite"><span></span><span></span><span></span></div>
+          </div>
+          <p class="hot-typewriter" id="js-hot-typewriter" data-i18n="hot.type.seed">Typing animation placeholder.</p>
+          <p class="hot-stream" id="js-hot-stream"><span class="hot-stream__inner"></span></p>
+          <div class="hot-ai-row">
+            <div class="hot-skel"><span class="hot-skel__line"></span><span class="hot-skel__line hot-skel__line--short"></span></div>
+            <div class="hot-load-gradient"><span data-i18n="hot.load.grad">Gradient loader</span></div>
+          </div>
+          <div class="hot-voice">
+            <button type="button" class="hot-voice__mic" aria-label="Voice"><iconify-icon icon="lucide:mic" width="22" height="22"></iconify-icon></button>
+            <div class="hot-voice__bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="hot-feed" aria-label="Activity feed">
+            <div class="hot-feed__item"><span class="hot-feed__dot"></span><span data-i18n="hot.feed.1">Deploy Â· west-2 warm</span><time>2m</time></div>
+            <div class="hot-feed__item"><span class="hot-feed__dot hot-feed__dot--violet"></span><span data-i18n="hot.feed.2">Feature flag Â· cohort B</span><time>8m</time></div>
+            <div class="hot-feed__item"><span class="hot-feed__dot hot-feed__dot--amber"></span><span data-i18n="hot.feed.3">Rate limit 82%</span><time>12m</time></div>
+          </div>
+          <div class="hot-ai-actions">
+            <button type="button" class="btn btn--primary btn--sm" id="js-hot-toast" data-i18n="hot.toast.btn">Push toast</button>
+            <button type="button" class="btn btn--ghost btn--sm" id="js-hot-stream-run" data-i18n="hot.stream.btn">Stream text</button>
+          </div>
+        </div>
+
+        <div class="hot-toast-stack" id="js-hot-toast-stack" aria-live="polite"></div>
+
+        <div class="hot-overlay" id="hot-search-overlay" hidden>
+          <div class="hot-overlay__backdrop" id="js-hot-search-close"></div>
+          <div class="hot-overlay__panel" role="dialog" aria-modal="true" aria-labelledby="hot-search-title">
+            <h3 id="hot-search-title" class="hot-overlay__title" data-i18n="hot.search.title">Search</h3>
+            <input type="search" class="hot-overlay__input" id="js-hot-search-input" maxlength="80" autocomplete="off" placeholder="" data-i18n-placeholder="hot.search.inputph" />
+            <ul class="hot-overlay__results" id="js-hot-search-results"></ul>
+          </div>
+        </div>
+
+        <div class="hot-modal-root" id="hot-modal-root" hidden>
+          <div class="hot-modal-root__backdrop" id="js-hot-modal-close"></div>
+          <div class="hot-modal glass-modal" role="dialog" aria-modal="true" aria-labelledby="hot-modal-title">
+            <h3 id="hot-modal-title" data-i18n="hot.modal.title">Glass modal</h3>
+            <p data-i18n="hot.modal.body">Blur shell Â· focus trap friendly Â· ESC closes.</p>
+            <button type="button" class="btn btn--primary btn--sm" id="js-hot-modal-ok" data-i18n="hot.modal.ok">OK</button>
+          </div>
+        </div>
+      </section>
+      </main>
+    </div>
+
+    <script src="./main.js"></script>
+  </body>
+</html>
+
+

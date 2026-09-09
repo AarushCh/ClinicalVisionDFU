@@ -40,9 +40,9 @@ An end-to-end clinical decision-support prototype:
 4. **Stratification.** IWGDF 2023 risk categories drive the screening interval.
 5. **Report.** An A4 clinical PDF whose prose is generated from the measured
    numbers, so the text cannot contradict the figure beside it.
-6. **Assistant.** An optional LLM (Grok or Nemotron) answers questions about the
-   result, grounded strictly in the report JSON and proxied through the backend
-   so the API key never reaches a browser.
+6. **Assistant.** An optional LLM (Groq, Grok or Nemotron) answers questions
+   about the result, grounded strictly in the report JSON and proxied through
+   the backend so the API key never reaches a browser.
 
 The dashboard ships with **light and dark themes**, a **demo access gate**, and
 **five one-click example cases** so anyone can try it without an image of their
@@ -156,11 +156,16 @@ value that would silently move the result.
 that one result.
 
 ```bash
-export LLM_PROVIDER=grok        # or: nemotron
-export LLM_API_KEY=<your key>   # free: console.x.ai  /  build.nvidia.com
+# in .env (repo root or backend/) — loaded automatically by backend/envfile.py
+LLM_PROVIDER=groq        # groq | grok | nemotron
+LLM_API_KEY=gsk_...      # free: console.groq.com/keys
 ```
 
-Both providers are OpenAI-compatible, so one client covers both — point
+> **groq ≠ grok.** `groq.com` is fast inference of open models (keys start
+> `gsk_`); `x.ai`'s model is Grok (keys start `xai-`). The provider is inferred
+> from the key prefix, so a mismatched `LLM_PROVIDER` still works.
+
+All three are OpenAI-compatible, so one client covers them — point
 `LLM_BASE_URL` anywhere else that speaks the same protocol. See
 `backend/.env.example`. Without a key the app runs normally and the assistant
 panel shows setup instructions instead. **The key is read server-side only**: the

@@ -4,12 +4,14 @@ The frontend is a static export with no server of its own, so it cannot hold an
 API key. Every call is proxied through this backend instead: the key lives in an
 environment variable on the server and is never sent to a browser.
 
-Grok (x.ai) and NVIDIA's Nemotron endpoints are both OpenAI-compatible, so a
-single chat-completions client covers both. Pick one with LLM_PROVIDER, or point
-LLM_BASE_URL anywhere else that speaks the same protocol.
+Groq (groq.com), Grok (x.ai) and NVIDIA's Nemotron endpoints are all
+OpenAI-compatible, so a single chat-completions client covers all three. Pick one
+with LLM_PROVIDER, or point LLM_BASE_URL anywhere else that speaks the same
+protocol. The provider is also inferred from the key prefix, so a key pasted
+under the wrong LLM_PROVIDER still works.
 
-    export LLM_PROVIDER=grok         # or: nemotron
-    export LLM_API_KEY=xai-...       # or nvapi-...
+    export LLM_PROVIDER=groq         # or: grok, nemotron
+    export LLM_API_KEY=gsk_...       # or xai-..., nvapi-...
     # optional: LLM_MODEL, LLM_BASE_URL, LLM_TIMEOUT
 
 The assistant is deliberately constrained. It is given the prediction as JSON and
@@ -22,7 +24,22 @@ import os
 
 import httpx
 
+import envfile
+
+# Populate os.environ from .env before any config is resolved. Without this a
+# key sitting in .env is invisible unless the shell already exported it.
+envfile.load()
+
+# Note the two similarly-named services: "groq" is groq.com (fast inference of
+# open models, keys start gsk_), "grok" is x.ai's own model (keys start xai-).
+# Mixing them up produces a 400 "Incorrect API key", so both are presets here.
 PROVIDERS = {
+    "groq": {
+        "base_url": "https://api.groq.com/openai/v1",
+        "model": "openai/gpt-oss-120b",
+        "key_env": "GROQ_API_KEY",
+        "docs": "https://console.groq.com/keys",
+    },
     "grok": {
         "base_url": "https://api.x.ai/v1",
         "model": "grok-3-mini",
@@ -90,6 +107,14 @@ def config():
     key = (os.environ.get("LLM_API_KEY")
            or os.environ.get(preset["key_env"])
            or "").strip()
+
+    # A key's prefix identifies its provider unambiguously. If it does not match
+    # the configured preset, trust the key: the alternative is a confusing 400
+    # from the wrong vendor. groq/grok in particular are trivial to transpose.
+    by_prefix = {"gsk_": "groq", "xai-": "grok", "nvapi-": "nemotron"}
+    actual = next((v for p, v in by_prefix.items() if key.startswith(p)), None)
+    if actual and actual != name and not os.environ.get("LLM_BASE_URL"):
+        name, preset = actual, PROVIDERS[actual]
     return {
         "provider": name,
         "base_url": os.environ.get("LLM_BASE_URL", preset["base_url"]).rstrip("/"),
@@ -138,6 +163,24 @@ def build_messages(question, result, history=None):
     return msgs
 
 
+async def list_models():
+    """Chat-capable model ids this key can use. Empty list if unavailable."""
+    cfg = config()
+    if not cfg["configured"]:
+        return []
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            r = await client.get(f"{cfg['base_url']}/models",
+                                 headers={"Authorization": f"Bearer {cfg['_key']}"})
+        if r.status_code != 200:
+            return []
+        skip = ("whisper", "prompt-guard", "orpheus", "safeguard", "tts", "embed")
+        return sorted(m["id"] for m in r.json().get("data", [])
+                      if not any(x in m["id"].lower() for x in skip))
+    except httpx.HTTPError:
+        return []
+
+
 async def ask(question, result=None, history=None, temperature=0.2, max_tokens=600):
     """Send one grounded question. Raises RuntimeError with a readable message."""
     cfg = config()
@@ -171,6 +214,13 @@ async def ask(question, result=None, history=None, temperature=0.2, max_tokens=6
         raise RuntimeError(f"{cfg['provider']} rejected the API key (401)")
     if r.status_code == 429:
         raise RuntimeError(f"{cfg['provider']} rate limit reached (429); try again shortly")
+    if r.status_code == 404 and "model" in r.text.lower():
+        # Model catalogues change and differ per account tier, so name what this
+        # key can actually use instead of leaving the caller to guess.
+        raise RuntimeError(
+            f"Model {cfg['model']!r} is not available on this {cfg['provider']} key. "
+            f"Available: {', '.join(await list_models()) or 'unknown'}. "
+            f"Set LLM_MODEL to one of them.")
     if r.status_code >= 400:
         raise RuntimeError(f"{cfg['provider']} returned {r.status_code}: {r.text[:300]}")
 
@@ -244,6 +294,23 @@ def _self_check():
     s = status()
     assert "_key" not in s and "configured" in s
     assert s["provider"] in PROVIDERS
+
+    # key prefix overrides a mismatched LLM_PROVIDER (the groq/grok trap)
+    saved = {k: os.environ.get(k) for k in ("LLM_API_KEY", "LLM_BASE_URL")}
+    try:
+        os.environ.pop("LLM_BASE_URL", None)
+        os.environ["LLM_API_KEY"] = "gsk_" + "x" * 40
+        assert config()["provider"] == "groq", "gsk_ key not routed to groq"
+        os.environ["LLM_API_KEY"] = "xai-" + "x" * 40
+        assert config()["provider"] == "grok", "xai- key not routed to grok"
+        os.environ["LLM_API_KEY"] = "nvapi-" + "x" * 40
+        assert config()["provider"] == "nemotron"
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
 
     # missing key fails with an actionable message, not a stack trace
     import asyncio

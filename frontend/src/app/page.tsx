@@ -6,13 +6,33 @@ import SampleGallery from "@/components/SampleGallery";
 import Assistant from "@/components/Assistant";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthGate, { useSession } from "@/components/AuthGate";
+import HistoryPanel from "@/components/HistoryPanel";
 import { Preset } from "@/lib/config";
+import { addHistory, makeThumb, toEntry, HistoryEntry } from "@/lib/history";
 
 export default function Home() {
     const [result, setResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [pending, setPending] = useState<{ preset: Preset; file: File } | null>(null);
+    const [historyVersion, setHistoryVersion] = useState(0);
     const { session, ready, signIn, signOut } = useSession();
+
+    // Persist every completed analysis. Deliberately fire-and-forget: history is
+    // a convenience, and a storage failure must never break the result the user
+    // is looking at.
+    const handleResult = useCallback(async (r: any) => {
+        setResult(r);
+        if (!r) return;
+        try {
+            const thumb = await makeThumb(
+                r._previewUrl || `data:image/png;base64,${r.overlay || r.heatmap}`
+            );
+            await addHistory(toEntry(r, r._fileName || "scan", thumb));
+            setHistoryVersion((v) => v + 1);
+        } catch {
+            // ignore: the report on screen is unaffected
+        }
+    }, []);
 
     const [mouse, setMouse] = useState({ x: 0, y: 0 });
     const current = useRef({ x: 0, y: 0 });
@@ -138,7 +158,7 @@ export default function Home() {
                 <div className="grid grid-cols-1 xl:grid-cols-[minmax(340px,400px)_minmax(0,1fr)] gap-6 items-start">
                     <div className="space-y-6 xl:sticky xl:top-24">
                         <UploadForm
-                            setResult={setResult}
+                            setResult={handleResult}
                             setLoading={setLoading}
                             loading={loading}
                             pending={pending}
@@ -150,6 +170,7 @@ export default function Home() {
                     <div className="space-y-6 min-w-0">
                         <ResultCard result={result} loading={loading} session={session} />
                         <Assistant result={result} />
+                        <HistoryPanel version={historyVersion} />
                     </div>
                 </div>
 

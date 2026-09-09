@@ -13,6 +13,11 @@ Changes over the original:
 import logging
 import os
 
+import envfile
+
+# Must run before importing anything that reads configuration at import time.
+envfile.load()
+
 from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse

@@ -140,3 +140,94 @@ body {
         color: #000 !important;
     }
 }
+
+/* ---------------------------------------------------------------------------
+   Bento / neon layer — visual language adapted from extra_frontend's
+   "Bento Element Lab": gradient chrome, glass tiles, metric rings.
+   Only the tokens and primitives this app needs; the reference sheet is 116 KB
+   of components (profile cards, tabs, navs) that have no place here.
+   --------------------------------------------------------------------------- */
+:root {
+    --violet: 124 58 237;
+    --pink: 219 39 119;
+    --cyan: 8 145 178;
+}
+
+.dark {
+    --violet: 167 139 250;
+    --pink: 244 114 182;
+    --cyan: 34 211 238;
+}
+
+/* Gradient hairline border. A pseudo-element carries the gradient so the tile
+   keeps its own background; `mask` punches out the interior, leaving 1px. */
+.neon {
+    position: relative;
+    isolation: isolate;
+}
+
+.neon::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg,
+            rgb(var(--cyan) / 0.7),
+            rgb(var(--violet) / 0.55) 45%,
+            rgb(var(--pink) / 0.45));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.neon-soft::before {
+    opacity: 0.45;
+}
+
+/* Risk-tinted glow behind the headline tile. */
+.glow-danger { box-shadow: 0 0 60px -12px rgb(var(--danger) / 0.45); }
+.glow-warn   { box-shadow: 0 0 60px -12px rgb(var(--warn) / 0.40); }
+.glow-good   { box-shadow: 0 0 60px -12px rgb(var(--good) / 0.40); }
+
+.text-gradient {
+    background: linear-gradient(115deg,
+            rgb(var(--fg)), rgb(var(--cyan)) 55%, rgb(var(--violet)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Faint grid, as in the reference's tile interiors. Sits under content. */
+.bento-grid-bg {
+    background-image:
+        linear-gradient(rgb(var(--grid) / 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(var(--grid) / 0.045) 1px, transparent 1px);
+    background-size: 22px 22px;
+}
+
+/* Numbered section label: "01  Metrics" */
+.sec-num {
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--cyan));
+    font-weight: 900;
+    letter-spacing: 0.05em;
+}
+
+/* Metric ring rotation origin, so stroke-dashoffset starts at 12 o'clock. */
+.ring-track,
+.ring-value {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+.ring-value {
+    transition: stroke-dashoffset 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ring-value { transition: none; }
+}
