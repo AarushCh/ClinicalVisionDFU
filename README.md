@@ -40,6 +40,14 @@ An end-to-end clinical decision-support prototype:
 4. **Stratification.** IWGDF 2023 risk categories drive the screening interval.
 5. **Report.** An A4 clinical PDF whose prose is generated from the measured
    numbers, so the text cannot contradict the figure beside it.
+6. **Assistant.** An optional LLM (Grok or Nemotron) answers questions about the
+   result, grounded strictly in the report JSON and proxied through the backend
+   so the API key never reaches a browser.
+
+The dashboard ships with **light and dark themes**, a **demo access gate**, and
+**five one-click example cases** so anyone can try it without an image of their
+own — including one deliberately out-of-scope case that demonstrates the model's
+main failure mode.
 
 ## The honest headline
 
@@ -140,6 +148,28 @@ value that would silently move the result.
 
 `GET /health` reports the loaded checkpoint; `GET /model` returns its metadata;
 `GET /docs` is the interactive OpenAPI console.
+
+### Assistant (optional)
+
+`GET /assistant` reports whether a key is configured (never returns the key).
+`POST /assistant/ask` takes `{question, result, history}` and answers grounded in
+that one result.
+
+```bash
+export LLM_PROVIDER=grok        # or: nemotron
+export LLM_API_KEY=<your key>   # free: console.x.ai  /  build.nvidia.com
+```
+
+Both providers are OpenAI-compatible, so one client covers both — point
+`LLM_BASE_URL` anywhere else that speaks the same protocol. See
+`backend/.env.example`. Without a key the app runs normally and the assistant
+panel shows setup instructions instead. **The key is read server-side only**: the
+frontend is a static export, so anything embedded in it is published to every
+visitor.
+
+> The sign-in screen is a **demo gate, not authentication** — no password is
+> checked and nothing is protected, because a static site has no session server.
+> It is labelled as such on screen.
 
 ## CI/CD
 

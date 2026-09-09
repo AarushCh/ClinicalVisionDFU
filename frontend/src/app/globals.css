@@ -1,3 +1,142 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Semantic design tokens. Components reference these through Tailwind classes
+   (bg-surface, text-fg, border-line, ...), so switching theme is one palette
+   swap here rather than a `dark:` variant on every element.
+   Values are space-separated RGB channels so Tailwind's <alpha-value> works:
+   bg-surface/60 resolves to rgb(var(--surface) / 0.6). */
+:root {
+    --bg: 248 250 252;
+    --bg-accent: 236 244 250;
+    --surface: 255 255 255;
+    --surface-2: 241 245 249;
+    --fg: 15 23 42;
+    --fg-muted: 71 85 105;
+    --fg-subtle: 100 116 139;
+    --line: 203 213 225;
+    --line-strong: 148 163 184;
+    --brand: 8 145 178;
+    --brand-fg: 255 255 255;
+    --danger: 220 38 38;
+    --warn: 180 83 9;
+    --good: 4 120 87;
+    --shadow: 15 23 42;
+    --shadow-strength: 0.08;
+    --grid: 15 23 42;
+}
+
+.dark {
+    --bg: 3 7 18;
+    --bg-accent: 8 15 32;
+    --surface: 255 255 255;      /* used at low alpha over the dark ground */
+    --surface-2: 2 6 16;
+    --fg: 226 232 240;
+    --fg-muted: 148 163 184;
+    --fg-subtle: 100 116 139;
+    --line: 255 255 255;         /* also alpha-composited */
+    --line-strong: 148 163 184;
+    --brand: 34 211 238;
+    --brand-fg: 3 7 18;
+    --danger: 248 113 113;
+    --warn: 251 191 36;
+    --good: 52 211 153;
+    --shadow: 0 0 0;
+    --shadow-strength: 0.36;
+    --grid: 255 255 255;
+}
+
+html {
+    color-scheme: light;
+}
+
+.dark html,
+html.dark {
+    color-scheme: dark;
+}
+
+body {
+    background-color: rgb(var(--bg));
+    color: rgb(var(--fg));
+    /* Theme changes should feel deliberate, not jarring. */
+    transition: background-color 220ms ease, color 220ms ease;
+}
+
+/* Card surface. In dark mode the surface token is white at very low alpha over
+   a near-black ground (glassmorphism); in light mode it is an opaque white card
+   that needs a real border and shadow to read as raised. */
+.panel {
+    background-color: rgb(var(--surface) / 0.03);
+    border: 1px solid rgb(var(--line) / 0.10);
+    box-shadow: 0 8px 32px 0 rgb(var(--shadow) / var(--shadow-strength));
+    backdrop-filter: blur(24px);
+}
+
+:root:not(.dark) .panel {
+    background-color: rgb(var(--surface));
+    border-color: rgb(var(--line) / 0.9);
+    backdrop-filter: none;
+}
+
+.panel-inset {
+    background-color: rgb(var(--surface-2) / 0.55);
+    border: 1px solid rgb(var(--line) / 0.08);
+}
+
+:root:not(.dark) .panel-inset {
+    background-color: rgb(var(--surface-2));
+    border-color: rgb(var(--line) / 0.8);
+}
+
+/* Field styling shared by every input, so light mode does not inherit the
+   dark-only bg-black/40 the original markup hard-coded. */
+.field {
+    width: 100%;
+    border-radius: 0.75rem;
+    padding: 0.85rem 1rem;
+    font-weight: 500;
+    color: rgb(var(--fg));
+    background-color: rgb(var(--surface-2) / 0.6);
+    border: 1px solid rgb(var(--line) / 0.14);
+    outline: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+:root:not(.dark) .field {
+    background-color: rgb(var(--surface-2));
+    border-color: rgb(var(--line));
+}
+
+.field::placeholder {
+    color: rgb(var(--fg-subtle) / 0.75);
+}
+
+.field:focus {
+    border-color: rgb(var(--brand) / 0.6);
+    box-shadow: 0 0 0 3px rgb(var(--brand) / 0.18);
+}
+
+/* Ambient background blobs are a dark-mode effect; at full strength on white
+   they wash the page out. */
+:root:not(.dark) .ambient {
+    opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Print: the A4 report must not inherit the dashboard's dark ground. */
+@media print {
+    body {
+        background: #fff !important;
+        color: #000 !important;
+    }
+}

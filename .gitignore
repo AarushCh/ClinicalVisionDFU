@@ -15,3 +15,7 @@ frontend/tsconfig.tsbuildinfo
 backend/model/*.pt
 !backend/model/dfu_resnet18_grouped.pt
 !backend/model/dfu_model.pt
+
+# Real secrets never get committed; .env.example documents the shape.
+.env
+backend/.env

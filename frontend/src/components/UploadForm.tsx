@@ -1,8 +1,7 @@
 "use client";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:10000";
+import { API_URL, Preset } from "@/lib/config";
 
 type Numeric = { age: string; bmi: string; diabetes_years: string; hba1c: string };
 type Flags = {
@@ -27,17 +26,28 @@ const COMORBIDITIES: { key: keyof Flags; label: string; hint: string }[] = [
     { key: "smoker", label: "Active smoker", hint: "Impairs perfusion and wound healing" },
 ];
 
-export default function UploadForm({ setResult, setLoading, loading }: any) {
+const EMPTY_NUMS: Numeric = { age: "", bmi: "", diabetes_years: "", hba1c: "" };
+const EMPTY_FLAGS: Flags = {
+    neuropathy: false, pad: false, prior_ulcer: false, smoker: false, deformity: false,
+};
+
+export default function UploadForm({
+    setResult, setLoading, loading, pending, clearPending,
+}: {
+    setResult: (r: any) => void;
+    setLoading: (b: boolean) => void;
+    loading: boolean;
+    pending?: { preset: Preset; file: File } | null;
+    clearPending?: () => void;
+}) {
     const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [dragging, setDragging] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const [nums, setNums] = useState<Numeric>({ age: "", bmi: "", diabetes_years: "", hba1c: "" });
-    const [flags, setFlags] = useState<Flags>({
-        neuropathy: false, pad: false, prior_ulcer: false, smoker: false, deformity: false,
-    });
-    const inputRef = useRef<HTMLInputElement>(null);
+    const [nums, setNums] = useState<Numeric>(EMPTY_NUMS);
+    const [flags, setFlags] = useState<Flags>(EMPTY_FLAGS);
+    const [presetNote, setPresetNote] = useState<string | null>(null);
 
     // Object URLs leak if they are never revoked; one preview at a time.
     useEffect(() => {
@@ -47,11 +57,33 @@ export default function UploadForm({ setResult, setLoading, loading }: any) {
         return () => URL.revokeObjectURL(url);
     }, [file]);
 
+    // A gallery pick fills the whole form: image plus the matching profile. The
+    // profile is replaced wholesale rather than merged, so no field is left over
+    // from a previous preset and silently included in the request.
+    useEffect(() => {
+        if (!pending) return;
+        const { preset, file: f } = pending;
+        setFile(f);
+        setError(null);
+        setPresetNote(preset.note);
+        const n = { ...EMPTY_NUMS };
+        const fl = { ...EMPTY_FLAGS };
+        for (const [k, v] of Object.entries(preset.clinical)) {
+            if (typeof v === "boolean") fl[k as keyof Flags] = v;
+            else n[k as keyof Numeric] = String(v);
+        }
+        setNums(n);
+        setFlags(fl);
+        setShowAdvanced(Object.values(fl).some(Boolean));
+        clearPending?.();
+    }, [pending, clearPending]);
+
     const accept = useCallback((f: File | undefined) => {
         if (!f) return;
         if (!f.type.startsWith("image/")) { setError("That file is not an image."); return; }
         if (f.size > 15 * 1024 * 1024) { setError("Image is larger than the 15 MB limit."); return; }
         setError(null);
+        setPresetNote(null);
         setFile(f);
     }, []);
 
@@ -67,9 +99,18 @@ export default function UploadForm({ setResult, setLoading, loading }: any) {
         return null;
     };
 
+    const reset = () => {
+        setFile(null);
+        setNums(EMPTY_NUMS);
+        setFlags(EMPTY_FLAGS);
+        setPresetNote(null);
+        setError(null);
+        setResult(null);
+    };
+
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!file) { setError("Select a plantar image first."); return; }
+        if (!file) { setError("Select an image first, or pick one of the examples below."); return; }
         const bad = validate();
         if (bad) { setError(bad); return; }
 
@@ -95,7 +136,7 @@ export default function UploadForm({ setResult, setLoading, loading }: any) {
             // failure, including 400s that explain exactly what was wrong.
             const detail = err?.response?.data?.detail;
             if (detail) setError(typeof detail === "string" ? detail : JSON.stringify(detail));
-            else if (err?.code === "ECONNABORTED") setError("The analysis timed out. The model may be waking from cold start; try again.");
+            else if (err?.code === "ECONNABORTED") setError("The analysis timed out. The model may be waking from a cold start; try again.");
             else if (err?.response) setError(`Server error ${err.response.status}. Please try again.`);
             else setError(`Cannot reach the analysis service at ${API_URL}.`);
             setResult(null);
@@ -105,9 +146,9 @@ export default function UploadForm({ setResult, setLoading, loading }: any) {
     };
 
     const field = (k: keyof Numeric, label: string, placeholder: string, step = "1") => (
-        <div className="space-y-2">
-            <label htmlFor={k} className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.15em]">
-                {label} <span className="text-slate-600 normal-case tracking-normal font-medium">optional</span>
+        <div className="space-y-1.5">
+            <label htmlFor={k} className="text-[10px] font-black text-brand uppercase tracking-[0.15em]">
+                {label} <span className="text-subtle normal-case tracking-normal font-medium">optional</span>
             </label>
             <input
                 id={k} name={k} type="number" step={step} inputMode="decimal"
@@ -115,89 +156,96 @@ export default function UploadForm({ setResult, setLoading, loading }: any) {
                 value={nums[k]}
                 onChange={(e) => setNums({ ...nums, [k]: e.target.value })}
                 placeholder={placeholder}
-                className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 outline-none transition-all placeholder-slate-600 font-medium"
+                className="field"
             />
         </div>
     );
 
     return (
-        <div className="bg-white/[0.02] backdrop-blur-2xl p-8 rounded-[2rem] border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] relative group">
-            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[2rem] pointer-events-none" />
-
-            <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
-                <div className="p-2 bg-cyan-500/20 rounded-lg border border-cyan-500/30 text-cyan-400">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                </div>
-                Patient Parameters
-            </h2>
-            <p className="text-xs text-slate-500 mb-4">
-                Only the image is required. Any clinical field left blank sits at the population
-                reference and does not move the result.
+        <div className="panel rounded-[2rem] p-6">
+            <div className="flex items-start justify-between gap-3 mb-2">
+                <h2 className="text-xl font-bold flex items-center gap-2.5">
+                    <span className="p-1.5 bg-brand/15 rounded-lg border border-brand/25 text-brand">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    </span>
+                    Patient Parameters
+                </h2>
+                {file && (
+                    <button type="button" onClick={reset}
+                        className="text-[10px] font-black uppercase tracking-[0.15em] text-subtle hover:text-fg transition-colors shrink-0 mt-1">
+                        Clear
+                    </button>
+                )}
+            </div>
+            <p className="text-xs text-muted mb-4 leading-relaxed">
+                Only the image is required. Any clinical field left blank sits at the
+                population reference and does not move the result.
             </p>
 
             {/* Measured in backend/ood_check.py: 100% of whole-foot photographs are
                 classified as ulcer at genuine-ulcer confidence. The model cannot
                 detect that it is out of scope, so the constraint has to be stated
                 to the user before they upload rather than inferred afterwards. */}
-            <div className="mb-7 flex items-start gap-2.5 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
-                <svg className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mb-5 flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-warn/10 border border-warn/25">
+                <svg className="w-4 h-4 text-warn shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-[11px] text-amber-200/90 leading-relaxed">
-                    <strong className="text-amber-300">Upload a close-up crop of the skin, not the whole foot.</strong>{" "}
-                    This model was trained only on tightly-cropped tissue patches. Whole-foot
-                    photographs fall outside its training distribution and are classified as
-                    ulcer almost every time, regardless of what they show.
+                <p className="text-[11px] text-warn/90 leading-relaxed">
+                    <strong>Upload a close-up crop of the skin, not the whole foot.</strong>{" "}
+                    Whole-foot photographs fall outside the training distribution and are
+                    classified as ulcer almost every time, regardless of what they show.
                 </p>
             </div>
 
-            <form onSubmit={onSubmit} className="space-y-6 relative z-10" noValidate>
+            <form onSubmit={onSubmit} className="space-y-5" noValidate>
                 <div
-                    className="relative cursor-pointer"
                     onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
                     onDragLeave={() => setDragging(false)}
                     onDrop={(e) => { e.preventDefault(); setDragging(false); accept(e.dataTransfer.files?.[0]); }}
                 >
-                    <div className={`absolute inset-0 rounded-2xl blur-xl transition-all duration-500 ${dragging ? "bg-cyan-400/40" : "bg-cyan-500/20"}`} />
-                    <div className={`relative border-2 border-dashed rounded-2xl p-6 text-center bg-black/40 hover:bg-black/60 transition-all duration-300 backdrop-blur-sm overflow-hidden ${dragging ? "border-cyan-400" : "border-white/20 hover:border-cyan-400/50"}`}>
+                    <div className={`relative border-2 border-dashed rounded-2xl p-5 text-center transition-colors ${dragging ? "border-brand bg-brand/5" : "border-line/25 hover:border-brand/50 bg-surface2/40"}`}>
                         <input
-                            ref={inputRef} type="file" accept="image/*"
+                            type="file" accept="image/*"
                             onChange={(e) => accept(e.target.files?.[0])}
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                             aria-label="Upload plantar image"
                         />
-                        <div className="relative z-10">
+                        <div className="relative z-10 pointer-events-none">
                             {preview ? (
                                 <img src={preview} alt="Selected scan preview"
-                                    className="mx-auto mb-3 max-h-40 rounded-xl border border-white/20 object-contain" />
+                                    className="mx-auto mb-3 max-h-36 rounded-xl border border-line/20 object-contain" />
                             ) : (
-                                <div className="w-16 h-16 mx-auto bg-white/5 rounded-full flex items-center justify-center mb-4 border border-white/10">
-                                    <svg className="h-8 w-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                <div className="w-14 h-14 mx-auto bg-surface/10 rounded-full flex items-center justify-center mb-3 border border-line/15">
+                                    <svg className="h-7 w-7 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                                 </div>
                             )}
-                            <p className="text-sm font-bold text-white mb-1 break-all px-4">
-                                {file ? file.name : "Drop a plantar image, or click to browse"}
+                            <p className="text-sm font-bold mb-0.5 break-all px-2">
+                                {file ? file.name : "Drop a tissue image, or click to browse"}
                             </p>
-                            <p className="text-xs text-slate-400">
+                            <p className="text-[11px] text-subtle">
                                 {file ? `${(file.size / 1024).toFixed(0)} KB · ready` : "JPEG, PNG or WebP · up to 15 MB"}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-5">
-                    {field("age", "Patient Age", "e.g. 55")}
-                    {field("bmi", "BMI Index", "e.g. 28.5", "0.1")}
-                </div>
-                <div className="grid grid-cols-2 gap-5">
-                    {field("diabetes_years", "Diabetes Duration", "e.g. 10")}
+                {presetNote && (
+                    <p className="text-[11px] text-muted leading-relaxed panel-inset rounded-xl px-3.5 py-2.5">
+                        <strong className="text-brand">Example loaded. </strong>{presetNote}
+                    </p>
+                )}
+
+                <div className="grid grid-cols-2 gap-3">
+                    {field("age", "Patient age", "e.g. 55")}
+                    {field("bmi", "BMI index", "e.g. 28.5", "0.1")}
+                    {field("diabetes_years", "Diabetes duration", "e.g. 10")}
                     {field("hba1c", "HbA1c (%)", "e.g. 8.2", "0.1")}
                 </div>
 
                 <div>
                     <button type="button" onClick={() => setShowAdvanced((s) => !s)}
                         aria-expanded={showAdvanced}
-                        className="flex items-center gap-2 text-[10px] font-black text-cyan-500 uppercase tracking-[0.15em] hover:text-cyan-400 transition-colors">
+                        className="flex items-center gap-2 text-[10px] font-black text-brand uppercase tracking-[0.15em] hover:opacity-80 transition-opacity">
                         <svg className={`w-3.5 h-3.5 transition-transform ${showAdvanced ? "rotate-90" : ""}`}
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
@@ -206,15 +254,15 @@ export default function UploadForm({ setResult, setLoading, loading }: any) {
                     </button>
 
                     {showAdvanced && (
-                        <div className="mt-4 space-y-2 bg-black/30 rounded-2xl p-4 border border-white/5">
+                        <div className="mt-3 space-y-1 panel-inset rounded-2xl p-3 animate-fadeUp">
                             {COMORBIDITIES.map(({ key, label, hint }) => (
-                                <label key={key} className="flex items-start gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
+                                <label key={key} className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-surface/5 cursor-pointer transition-colors">
                                     <input type="checkbox" checked={flags[key]}
                                         onChange={(e) => setFlags({ ...flags, [key]: e.target.checked })}
-                                        className="mt-0.5 w-4 h-4 rounded accent-cyan-500 shrink-0" />
+                                        className="mt-0.5 w-4 h-4 rounded accent-[rgb(var(--brand))] shrink-0" />
                                     <span className="min-w-0">
-                                        <span className="block text-sm font-bold text-white">{label}</span>
-                                        <span className="block text-[11px] text-slate-500 leading-snug">{hint}</span>
+                                        <span className="block text-[13px] font-bold">{label}</span>
+                                        <span className="block text-[10px] text-subtle leading-snug">{hint}</span>
                                     </span>
                                 </label>
                             ))}
@@ -223,25 +271,20 @@ export default function UploadForm({ setResult, setLoading, loading }: any) {
                 </div>
 
                 {error && (
-                    <div role="alert" className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
-                        <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M5.07 19h13.86a2 2 0 001.71-3.03l-6.93-12a2 2 0 00-3.42 0l-6.93 12A2 2 0 005.07 19z" /></svg>
+                    <div role="alert" className="flex items-start gap-2.5 p-3.5 rounded-xl bg-danger/10 border border-danger/30 text-danger text-xs leading-relaxed">
+                        <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M5.07 19h13.86a2 2 0 001.71-3.03l-6.93-12a2 2 0 00-3.42 0l-6.93 12A2 2 0 005.07 19z" /></svg>
                         <span>{error}</span>
                     </div>
                 )}
 
                 <button type="submit" disabled={loading || !file}
-                    className="w-full relative group/btn mt-8 overflow-hidden rounded-xl p-[1px] disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 animate-[spin_3s_linear_infinite] group-hover/btn:opacity-100 opacity-70" />
-                    <div className="relative bg-black/80 backdrop-blur-xl px-8 py-5 rounded-xl transition-all group-hover/btn:bg-transparent">
-                        <span className="text-white font-bold tracking-wider text-sm flex items-center justify-center gap-2">
-                            {loading ? (
-                                <>
-                                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
-                                    ANALYSING…
-                                </>
-                            ) : "ENGAGE AI ANALYSIS"}
-                        </span>
-                    </div>
+                    className="w-full rounded-xl px-6 py-4 bg-brand text-brandFg font-bold text-sm tracking-wider uppercase hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    {loading ? (
+                        <>
+                            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                            Analysing…
+                        </>
+                    ) : "Engage AI analysis"}
                 </button>
             </form>
         </div>

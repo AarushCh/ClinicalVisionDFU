@@ -13,10 +13,11 @@ Changes over the original:
 import logging
 import os
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+import llm
 from utils.predict import model_info, process_prediction
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -55,7 +56,7 @@ def root():
         "status": "online",
         "version": app.version,
         "docs": "/docs",
-        "endpoints": ["/predict", "/health", "/model"],
+        "endpoints": ["/predict", "/health", "/model", "/assistant", "/assistant/ask"],
     }
 
 
@@ -72,6 +73,42 @@ def health():
 @app.get("/model")
 def model_metadata():
     return model_info()
+
+
+@app.get("/assistant")
+def assistant_status():
+    """Whether the LLM assistant is usable, so the UI can hide it if not.
+
+    Never returns the API key -- llm.status() strips it.
+    """
+    return {**llm.status(), "suggested_questions": llm.SUGGESTED}
+
+
+@app.post("/assistant/ask")
+async def assistant_ask(payload: dict = Body(...)):
+    """Ask a question grounded in one prediction result.
+
+    The key lives here, on the server. A static frontend cannot hold one, and
+    putting it in the browser bundle would publish it to every visitor.
+    """
+    question = (payload.get("question") or "").strip()
+    if not question:
+        raise HTTPException(400, "question is required")
+    if len(question) > llm.MAX_QUESTION_CHARS:
+        raise HTTPException(413, f"question exceeds {llm.MAX_QUESTION_CHARS} characters")
+
+    history = payload.get("history")
+    if history is not None and not isinstance(history, list):
+        raise HTTPException(400, "history must be a list of {role, content}")
+
+    try:
+        return await llm.ask(question, payload.get("result"), history)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except RuntimeError as e:
+        # Not configured, upstream down, rate limited: all actionable for the user.
+        log.warning("assistant unavailable: %s", e)
+        raise HTTPException(503, str(e)) from e
 
 
 def _num(name, value, lo, hi):

@@ -19,6 +19,7 @@ MODULES = [
     ("dataset", "splits, transforms, group-aware splitting"),
     ("model_def", "architecture registry, checkpoint round-trip"),
     ("clinical", "log-odds fusion, Shapley, IWGDF"),
+    ("llm", "grounded assistant prompt, redaction, failure modes"),
     ("utils.gradcam", "Grad-CAM / Grad-CAM++ localisation, hook cleanup"),
     ("utils.report", "narrative tracks measurements"),
     ("utils.predict", "end-to-end inference contract"),
@@ -73,6 +74,19 @@ def api_checks():
                   ).status_code == 400
     assert c.post("/predict", files={"image": ("x.exe", img, "application/x-msdownload")}
                   ).status_code == 415
+
+    # assistant: status must never leak the key; bad input must be 4xx not 5xx
+    st = c.get("/assistant")
+    assert st.status_code == 200, st.status_code
+    body = st.json()
+    assert "_key" not in body and "configured" in body and body["suggested_questions"]
+    assert c.post("/assistant/ask", json={"question": ""}).status_code == 400
+    assert c.post("/assistant/ask", json={"question": "x" * 5000}).status_code == 413
+    assert c.post("/assistant/ask", json={"question": "hi", "history": "nope"}
+                  ).status_code == 400
+    # with no key configured the endpoint must say so (503), not 500
+    if not body["configured"]:
+        assert c.post("/assistant/ask", json={"question": "hi"}).status_code == 503
 
 
 def main_():

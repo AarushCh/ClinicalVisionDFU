@@ -142,6 +142,7 @@ collected clinical input do nothing at all.
 | `audit_data.py` | Duplicate detection (SHA-256 + dHash), near-duplicate clustering, cross-split leakage measurement, colour-only trivial baseline. | — |
 | `benchmark.py` | Checkpoint size, inference latency percentiles, process RSS. | — |
 | `ood_check.py` | Out-of-distribution audit: what the model does with whole-foot photos, and whether any post-hoc detector can catch it. | — |
+| `llm.py` | Grounded LLM assistant proxy (Grok / Nemotron, OpenAI-compatible). Holds the API key server-side and constrains the model to the report JSON. | ✅ |
 | `make_samples.py` | Worked sample cases: triptychs, contact sheet, readings tables, per-case JSON. | — |
 | `run_checks.py` | Runs every module's self-check plus API contract tests in one command. | — |
 | `main.py` | FastAPI service with input validation, upload limits, restricted CORS, health/model endpoints. | — |
@@ -159,6 +160,11 @@ collected clinical input do nothing at all.
 | `components/UploadForm.tsx` | Drag-and-drop upload with live preview, clinical intake including a collapsible comorbidity panel, client-side range validation, specific error surfacing. |
 | `components/ResultCard.tsx` | Risk/confidence/probability stat tiles, overlay-heatmap-original view switcher, attention readings, IWGDF card, signed attribution bars, triage protocol. |
 | `components/PrintableReport.tsx` | A4 clinical report with a quantitative findings table, attribution table, IWGDF stratification, stated limitations, and a countersignature block. |
+| `components/ThemeToggle.tsx` | Light/dark switch, applied pre-paint by an inline script so there is no flash of the wrong theme. |
+| `components/AuthGate.tsx` | Demo access gate — explicitly *not* authentication (§13). |
+| `components/SampleGallery.tsx` | Five one-click example cases with matching patient profiles. |
+| `components/Assistant.tsx` | Grounded Q&A over the current result. |
+| `lib/config.ts` | API URL, basePath-aware asset helper, demo presets. |
 
 ---
 
