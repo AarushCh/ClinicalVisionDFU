@@ -1,10 +1,11 @@
 /**
- * Analysis history: localStorage by default, Supabase once signed in.
+ * Analysis history, kept in this browser.
  *
  * Overlays are ~120 KB of base64 each and localStorage caps near 5 MB, so only a
- * 160px thumbnail is kept. Tables and policies live in supabase/schema.sql.
+ * 160px thumbnail is kept. There are no accounts, so nothing here leaves the
+ * device; supabase/schema.sql holds the table and policies if this ever needs
+ * to sync.
  */
-import { getSignedInClient, supabaseConfigured } from "./supabase";
 
 export type HistoryEntry = {
     id: string;
@@ -29,9 +30,6 @@ const KEY = "cv-history";
 const MAX_ENTRIES = 60;
 
 const THUMB_PX = 160;
-
-// Re-exported so callers have one import for "is history syncing?".
-export { supabaseConfigured };
 
 /** Downscale to a small JPEG data URL. Returns "" if the browser blocks canvas. */
 export async function makeThumb(src: string, px = THUMB_PX): Promise<string> {
@@ -108,85 +106,25 @@ function writeLocal(entries: HistoryEntry[]) {
 // --- Supabase backend (lazy) ----------------------------------------------
 
 
-const ROW_TO_ENTRY = (r: any): HistoryEntry => ({
-    id: r.id,
-    at: new Date(r.created_at).getTime(),
-    fileName: r.file_name ?? "",
-    thumb: r.thumb ?? "",
-    risk: r.risk,
-    risk_probability: r.risk_probability,
-    image_probability: r.image_probability,
-    confidence: r.confidence,
-    predicted_class: r.predicted_class,
-    iwgdf_category: r.iwgdf_category,
-    attention_area_pct: r.attention_area_pct,
-    focality: r.focality,
-    clinical_logit_shift: r.clinical_logit_shift ?? 0,
-    factors_supplied: r.factors_supplied ?? [],
-    architecture: r.architecture ?? "",
-    inference_ms: r.inference_ms ?? 0,
-});
-
 // --- public API -----------------------------------------------------------
 
 export async function listHistory(): Promise<HistoryEntry[]> {
-    const sb = await getSignedInClient();
-    if (sb) {
-        const { data, error } = await sb
-            .from("analyses")
-            .select("*")
-            .order("created_at", { ascending: false })
-            .limit(MAX_ENTRIES);
-        if (!error && data) return data.map(ROW_TO_ENTRY);
-        // Fall through to local on any error so history never hard-fails.
-    }
     return readLocal();
 }
 
 export async function addHistory(entry: HistoryEntry): Promise<HistoryEntry[]> {
-    const sb = await getSignedInClient();
-    if (sb) {
-        const { error } = await sb.from("analyses").insert({
-            file_name: entry.fileName,
-            thumb: entry.thumb,
-            risk: entry.risk,
-            risk_probability: entry.risk_probability,
-            image_probability: entry.image_probability,
-            confidence: entry.confidence,
-            predicted_class: entry.predicted_class,
-            iwgdf_category: entry.iwgdf_category,
-            attention_area_pct: entry.attention_area_pct,
-            focality: entry.focality,
-            clinical_logit_shift: entry.clinical_logit_shift,
-            factors_supplied: entry.factors_supplied,
-            architecture: entry.architecture,
-            inference_ms: entry.inference_ms,
-        });
-        if (!error) return listHistory();
-    }
     const next = [entry, ...readLocal()].slice(0, MAX_ENTRIES);
     writeLocal(next);
     return next;
 }
 
 export async function removeHistory(id: string): Promise<HistoryEntry[]> {
-    const sb = await getSignedInClient();
-    if (sb) {
-        const { error } = await sb.from("analyses").delete().eq("id", id);
-        if (!error) return listHistory();
-    }
     const next = readLocal().filter((e) => e.id !== id);
     writeLocal(next);
     return next;
 }
 
 export async function clearHistory(): Promise<HistoryEntry[]> {
-    const sb = await getSignedInClient();
-    if (sb) {
-        // Deletes only this user's rows: RLS scopes the statement to auth.uid().
-        const { error } = await sb.from("analyses").delete().neq("id", "");
-        if (!error) return [];
-    }
     try {
         localStorage.removeItem(KEY);
     } catch { }
@@ -211,7 +149,7 @@ export function summarise(entries: HistoryEntry[]) {
         low: by.LOW ?? 0,
         meanRisk: n ? risk / n : 0,
         meanMs: n ? ms / n : 0,
-        backend: supabaseConfigured ? "Supabase" : "this browser",
+        backend: "this browser",
     };
 }
 

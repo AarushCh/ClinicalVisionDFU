@@ -662,10 +662,104 @@ button:not(:disabled):active {
     to { transform: rotate(-360deg); }
 }
 
+/* Disclosures. Only the opening direction is animated: the moment `open` flips
+   off the content leaves the box tree, and faking a close costs a JS height
+   dance for very little. */
+details > summary {
+    border-radius: inherit;
+    transition: background-color 180ms ease, color 180ms ease;
+}
+
+details > summary:hover {
+    background-color: rgb(var(--brand) / 0.07);
+}
+
+details[open] > summary ~ * {
+    animation: reveal 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes reveal {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+        clip-path: inset(0 0 100% 0);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* The Ask CliniViz strip. It is the one place the report hands off to the
+   assistant, so it gets its own tinted band rather than four grey chips. */
+.ask-strip {
+    background:
+        linear-gradient(120deg, rgb(var(--cyan) / 0.14), rgb(var(--violet) / 0.10) 60%,
+                        rgb(var(--pink) / 0.09));
+}
+
+.ask-chip {
+    background-color: rgb(var(--surface) / 0.55);
+    border: 1px solid rgb(var(--cyan) / 0.35);
+    color: rgb(var(--fg));
+    box-shadow: 0 1px 0 rgb(var(--shadow) / 0.05);
+}
+
+:root:not(.dark) .ask-chip {
+    background-color: rgb(255 255 255 / 0.85);
+}
+
+.ask-chip:hover {
+    background-color: rgb(var(--cyan) / 0.18);
+    border-color: rgb(var(--cyan) / 0.75);
+    color: rgb(var(--cyan));
+}
+
+/* Light mode ran the same ambient field at half strength, which read as a flat
+   cream page. Its own warmer, stronger gradients plus a slow wash. */
+:root:not(.dark) {
+    --blob-opacity: 0.75;
+}
+
+:root:not(.dark) .blob-a {
+    background: radial-gradient(circle, rgb(var(--cyan) / 0.42), transparent 70%);
+}
+
+:root:not(.dark) .blob-b {
+    background: radial-gradient(circle, rgb(var(--violet) / 0.30), transparent 70%);
+}
+
+:root:not(.dark) .blob-c {
+    background: radial-gradient(circle, rgb(var(--pink) / 0.36), transparent 68%);
+}
+
+:root:not(.dark) .beam {
+    background: linear-gradient(90deg, transparent, rgb(var(--pink) / 0.16), transparent);
+}
+
+:root:not(.dark) .ambient-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg,
+            rgb(var(--cyan) / 0.07), transparent 42%, rgb(var(--pink) / 0.08));
+    animation: wash 22s ease-in-out infinite alternate;
+}
+
+@keyframes wash {
+    from { opacity: 0.45; }
+    to   { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .beam,
     .aurora-2,
     .btn-primary { animation: none; }
 
     button:not(:disabled):hover { animation: none; }
+
+    details[open] > summary ~ * { animation: none; }
+
+    :root:not(.dark) .ambient-stage::after { animation: none; }
 }

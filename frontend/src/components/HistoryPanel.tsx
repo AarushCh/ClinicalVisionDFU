@@ -14,10 +14,9 @@ const timeAgo = (t: number) => {
 };
 
 export default function HistoryPanel({
-    version, synced, onOpen,
+    version, onOpen,
 }: {
     version: number;              // bumped by the parent after each new analysis
-    synced: boolean;              // true when signed in and writing to Postgres
     onOpen?: (e: HistoryEntry) => void;
 }) {
     const [entries, setEntries] = useState<HistoryEntry[]>([]);
@@ -29,7 +28,7 @@ export default function HistoryPanel({
             .then((e) => alive && setEntries(e))
             .finally(() => alive && setBusy(false));
         return () => { alive = false; };
-    }, [version, synced]);
+    }, [version]);
 
     const stats = summarise(entries);
 
@@ -49,14 +48,12 @@ export default function HistoryPanel({
                 <div>
                     <h2 className="text-lg font-display">Analysis history</h2>
                     <p className="text-[11px] text-subtle mt-0.5">
-                        {synced
-                            ? "Synced to your account — row-level security means only you can read these."
-                            : "Kept in this browser only. Sign in with an account to sync across devices."}
-                        {" "}Derived numbers and a 160px thumbnail; never the full image.
+                        Kept in this browser — nothing is uploaded and no account is needed.
+                        Derived numbers and a 160px thumbnail; never the full image.
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Chip tone={synced ? "good" : "muted"}>{synced ? "Synced" : "This device"}</Chip>
+                    <Chip tone="muted">This device</Chip>
                     {entries.length > 0 && (
                         <>
                             <button onClick={download}

@@ -6,9 +6,7 @@ import SampleGallery from "@/components/SampleGallery";
 import Assistant from "@/components/Assistant";
 import ThemeToggle from "@/components/ThemeToggle";
 import Ambient from "@/components/Ambient";
-import AuthGate from "@/components/AuthGate";
 import HistoryPanel from "@/components/HistoryPanel";
-import { useSession } from "@/lib/auth";
 import { Preset } from "@/lib/config";
 import { addHistory, makeThumb, toEntry } from "@/lib/history";
 import { modelLabel, useModelInfo } from "@/lib/model";
@@ -34,7 +32,6 @@ export default function Home() {
         setPendingQuestion({ q, n: Date.now() });
         setTab("assistant");
     }, []);
-    const { session, ready, accountsAvailable, signInGuest, signInEmail, signOut } = useSession();
     const model = useModelInfo();
 
     // Fire-and-forget: a storage failure must not break the result on screen.
@@ -59,34 +56,6 @@ export default function Home() {
         setTab("report");
     }, []);
 
-    // Session is client-only, so SSR cannot know it. One placeholder frame.
-    if (!ready) {
-        return (
-            <main className="min-h-screen bg-bg grid place-items-center">
-                <div className="flex items-center gap-3 text-subtle animate-pulse">
-                    <div className="p-2 bg-brand/15 rounded-lg border border-brand/25 text-brand">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </div>
-                    <span className="text-sm font-bold tracking-tight">ClinicalVision DFU</span>
-                </div>
-            </main>
-        );
-    }
-
-    if (!session) {
-        return (
-            <AuthGate
-                accountsAvailable={accountsAvailable}
-                onGuest={signInGuest}
-                onEmail={signInEmail}
-            />
-        );
-    }
-
-    const synced = session.provider === "supabase";
-
     return (
         <main className="min-h-screen bg-bg text-fg selection:bg-brand/30 relative flex flex-col">
             <Ambient />
@@ -106,23 +75,11 @@ export default function Home() {
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                        <div className="hidden sm:flex items-center gap-2 pr-2 mr-1 border-r border-line/15">
-                            <div className="text-right leading-tight">
-                                <p className="text-[11px] font-bold truncate max-w-[150px]">{session.name}</p>
-                                <p className="text-[9px] text-subtle uppercase tracking-[0.1em]">
-                                    {session.role} · {synced ? "synced" : "local"}
-                                </p>
-                            </div>
-                            <div className={`w-7 h-7 rounded-lg grid place-items-center text-[11px] font-black shrink-0 ${synced ? "bg-good/15 text-good border border-good/30" : "bg-surface2 text-subtle border border-line/20"}`}>
-                                {session.name.slice(0, 1).toUpperCase()}
-                            </div>
-                        </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                        <span className="hidden lg:block text-[10px] text-subtle uppercase tracking-[0.12em]">
+                            {modelLabel(model)}
+                        </span>
                         <ThemeToggle />
-                        <button onClick={signOut}
-                            className="px-2.5 py-1.5 rounded-lg border border-line/20 bg-surface/5 hover:bg-surface/10 text-muted hover:text-fg transition-colors text-[10px] font-black uppercase tracking-[0.12em]">
-                            Sign out
-                        </button>
                     </div>
                 </div>
             </header>
@@ -185,13 +142,13 @@ export default function Home() {
 
                         {/* Kept mounted so a tab switch keeps the transcript. */}
                         <div hidden={tab !== "report"}>
-                            <ResultCard result={result} loading={loading} session={session} onAsk={askCliniViz} />
+                            <ResultCard result={result} loading={loading} onAsk={askCliniViz} />
                         </div>
                         <div hidden={tab !== "assistant"}>
                             <Assistant result={result} pending={pendingQuestion} />
                         </div>
                         <div hidden={tab !== "history"}>
-                            <HistoryPanel version={historyVersion} synced={synced} />
+                            <HistoryPanel version={historyVersion} />
                         </div>
                     </div>
                 </div>
