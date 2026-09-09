@@ -1,8 +1,11 @@
-fastapi
-uvicorn
-torch
-torchvision
-opencv-python-headless
-pillow
-numpy
-python-multipart
+# Serving dependencies only -- what the Docker image needs to answer /predict.
+# Training and evaluation extras live in requirements-dev.txt so the deployed
+# image does not ship matplotlib, scikit-learn and pandas it never imports.
+fastapi>=0.110,<1.0
+uvicorn[standard]>=0.29,<1.0
+torch>=2.2,<3.0
+torchvision>=0.17,<1.0
+opencv-python-headless>=4.9,<5.0
+pillow>=10.2
+numpy>=1.26
+python-multipart>=0.0.9

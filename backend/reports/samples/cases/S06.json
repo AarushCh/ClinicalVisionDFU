@@ -1,0 +1,107 @@
+{
+  "risk": "LOW",
+  "risk_probability": 0.05,
+  "confidence": 0.9768,
+  "image_probability": 0.0232,
+  "image_probability_used": 0.05,
+  "image_probability_clamped": true,
+  "predicted_class": "Normal(Healthy skin)",
+  "class_probabilities": {
+    "Abnormal(Ulcer)": 0.0232,
+    "Normal(Healthy skin)": 0.9768
+  },
+  "attention": {
+    "attention_area_pct": 22.25,
+    "attention_regions": 1,
+    "peak_xy": [
+      0.4152,
+      0.7277
+    ],
+    "peak_intensity": 1.0,
+    "mean_intensity": 0.3005,
+    "focality": 0.7775,
+    "bbox_xywh_norm": [
+      0.1562,
+      0.5134,
+      0.6071,
+      0.4866
+    ],
+    "threshold": 0.5
+  },
+  "cam_mode": "gradcam++",
+  "attribution": [
+    {
+      "feature": "CNN Visual Evidence",
+      "key": "image",
+      "logit_contribution": -2.9444,
+      "value": 0.0232,
+      "unit": "P(ulcer)",
+      "odds_ratio": 0.053,
+      "direction": "decreases risk",
+      "influence_pct": 100.0
+    }
+  ],
+  "shap": [
+    {
+      "feature": "CNN Visual Evidence",
+      "value": 100.0
+    }
+  ],
+  "iwgdf": {
+    "category": 0,
+    "label": "Low risk",
+    "screening_interval": "Annually",
+    "basis": "No loss of protective sensation and no PAD"
+  },
+  "clinical_logit_shift": 0,
+  "factors_supplied": [],
+  "report": {
+    "headline": "Routine surveillance",
+    "patient_summary": "No features of active ulceration were detected in this scan. Continue checking your feet every day, moisturise dry skin (avoiding between the toes), and keep up your regular diabetes reviews.",
+    "clinical_assessment": "Automated analysis returns a fused ulceration risk of 5.0% (LOW). The convolutional classifier assigned P(ulcer) = 2.3% to the plantar image (temperature-calibrated, T = 1.00); clinical covariates applied a +0.00 log-odds adjustment. No clinical covariates were supplied, so the reported risk reflects image evidence alone. IWGDF stratification places this patient in category 0 (Low risk) on the basis of: no loss of protective sensation and no pad.",
+    "visual_analysis": "Grad-CAM++ attribution for the ulcer class shows one broad region of activation spanning 22.2% of the field, peaking lower-central. Peak activation 1.00, mean 0.30, spatial focality 0.78 (1.0 = single tight hotspot). The classifier assigned P(ulcer) = 0.023 to this image.",
+    "triage": "1. Continue routine diabetic foot screening at the guideline interval\n2. Reinforce daily self-inspection, including between the toes\n3. Confirm footwear fit and check for pressure points\n4. Re-image promptly if any new lesion, colour change or swelling appears\n5. IWGDF risk category 0 (Low risk) - recommended screening interval: Annually",
+    "triage_steps": [
+      "Continue routine diabetic foot screening at the guideline interval",
+      "Reinforce daily self-inspection, including between the toes",
+      "Confirm footwear fit and check for pressure points",
+      "Re-image promptly if any new lesion, colour change or swelling appears",
+      "IWGDF risk category 0 (Low risk) - recommended screening interval: Annually"
+    ],
+    "limitations": "Single-image analysis of a cropped plantar patch. The model was trained on 224x224 tissue patches and has not been validated on whole-foot photographs, on skin tones outside the training distribution, or against histopathology. Clinical coefficients are literature-informed priors, not fitted to outcomes in this cohort. Wound depth, infection and ischaemia are not assessed."
+  },
+  "model": {
+    "architecture": "resnet18",
+    "input_size": 224,
+    "classes": [
+      "Abnormal(Ulcer)",
+      "Normal(Healthy skin)"
+    ],
+    "temperature": 1.0,
+    "checkpoint_format": 2,
+    "metrics": {
+      "val_macro_f1": 1.0,
+      "best_epoch": 17,
+      "val_ece_before": 0.04649072740620536,
+      "val_ece_after": 0.04649072740620536,
+      "calibration": {
+        "raw_T": 0.4781849980354309,
+        "degenerate": true,
+        "val_acc": 1.0
+      },
+      "params_m": 11.177538,
+      "train_minutes": 7.403120080629985
+    }
+  },
+  "disclaimer": "Research prototype for clinical decision support only. Not a certified medical device. Clinical coefficients are literature-informed priors, not fitted to patient outcomes.",
+  "inference_ms": 87.8,
+  "_case": {
+    "path": "E:\\CV Project Files\\Github Clone\\ClinicalVisionDFU\\USE CASE - 02\\DFU\\Patches\\Normal(Healthy skin)\\248.jpg",
+    "pool": "held-out test patch",
+    "truth": "Normal(Healthy skin)",
+    "truth_idx": 1
+  },
+  "_patient_profile": {
+    "label": "No clinical data supplied"
+  }
+}

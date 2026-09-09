@@ -1,0 +1,207 @@
+{
+  "tag": "dfu_resnet50",
+  "checkpoint": "model/dfu_resnet50.pt",
+  "architecture": "resnet50",
+  "input_size": 224,
+  "params_m": 23.51,
+  "checkpoint_size_mb": 94.36,
+  "temperature": 1.0,
+  "tta": true,
+  "split": "test",
+  "group_aware": false,
+  "dedupe": false,
+  "grayscale": false,
+  "seed": 42,
+  "n_train": 738,
+  "n_val": 158,
+  "n_test": 159,
+  "metrics": {
+    "accuracy": 0.9811320754716981,
+    "balanced_accuracy": 0.9813113715552739,
+    "sensitivity_recall": 0.987012987012987,
+    "specificity": 0.975609756097561,
+    "precision_ppv": 0.9743589743589743,
+    "npv": 0.9876543209876543,
+    "f1": 0.9806451612903225,
+    "mcc": 0.9623179709822474,
+    "auroc": 0.9996832435856826,
+    "auprc": 0.9996712148610882,
+    "tp": 76,
+    "tn": 80,
+    "fp": 2,
+    "fn": 1,
+    "n": 159
+  },
+  "confusion_matrix": [
+    [
+      76,
+      1
+    ],
+    [
+      2,
+      80
+    ]
+  ],
+  "class_names": [
+    "Abnormal(Ulcer)",
+    "Normal(Healthy skin)"
+  ],
+  "calibration": {
+    "ece_uncalibrated": 0.04694990392001171,
+    "mce_uncalibrated": 0.5063551068305969,
+    "ece_calibrated": 0.04694990392001171,
+    "mce_calibrated": 0.5063551068305969,
+    "bins_calibrated": [
+      {
+        "bin_lo": 0.0,
+        "bin_hi": 0.06666666666666667,
+        "n": 0,
+        "confidence": null,
+        "accuracy": null
+      },
+      {
+        "bin_lo": 0.06666666666666667,
+        "bin_hi": 0.13333333333333333,
+        "n": 0,
+        "confidence": null,
+        "accuracy": null
+      },
+      {
+        "bin_lo": 0.13333333333333333,
+        "bin_hi": 0.2,
+        "n": 0,
+        "confidence": null,
+        "accuracy": null
+      },
+      {
+        "bin_lo": 0.2,
+        "bin_hi": 0.26666666666666666,
+        "n": 0,
+        "confidence": null,
+        "accuracy": null
+      },
+      {
+        "bin_lo": 0.26666666666666666,
+        "bin_hi": 0.3333333333333333,
+        "n": 0,
+        "confidence": null,
+        "accuracy": null
+      },
+      {
+        "bin_lo": 0.3333333333333333,
+        "bin_hi": 0.4,
+        "n": 0,
+        "confidence": null,
+        "accuracy": null
+      },
+      {
+        "bin_lo": 0.4,
+        "bin_hi": 0.4666666666666667,
+        "n": 0,
+        "confidence": null,
+        "accuracy": null
+      },
+      {
+        "bin_lo": 0.4666666666666667,
+        "bin_hi": 0.5333333333333333,
+        "n": 1,
+        "confidence": 0.5063551068305969,
+        "accuracy": 0.0
+      },
+      {
+        "bin_lo": 0.5333333333333333,
+        "bin_hi": 0.6,
+        "n": 3,
+        "confidence": 0.5780174136161804,
+        "accuracy": 0.6666666666666666
+      },
+      {
+        "bin_lo": 0.6,
+        "bin_hi": 0.6666666666666666,
+        "n": 2,
+        "confidence": 0.6258196830749512,
+        "accuracy": 0.5
+      },
+      {
+        "bin_lo": 0.6666666666666666,
+        "bin_hi": 0.7333333333333333,
+        "n": 3,
+        "confidence": 0.6948379874229431,
+        "accuracy": 1.0
+      },
+      {
+        "bin_lo": 0.7333333333333333,
+        "bin_hi": 0.8,
+        "n": 3,
+        "confidence": 0.7763350009918213,
+        "accuracy": 1.0
+      },
+      {
+        "bin_lo": 0.8,
+        "bin_hi": 0.8666666666666667,
+        "n": 2,
+        "confidence": 0.8418088555335999,
+        "accuracy": 1.0
+      },
+      {
+        "bin_lo": 0.8666666666666667,
+        "bin_hi": 0.9333333333333333,
+        "n": 18,
+        "confidence": 0.9153287410736084,
+        "accuracy": 1.0
+      },
+      {
+        "bin_lo": 0.9333333333333333,
+        "bin_hi": 1.0,
+        "n": 127,
+        "confidence": 0.9762665629386902,
+        "accuracy": 1.0
+      }
+    ]
+  },
+  "operating_points": {
+    "youden_optimal": {
+      "threshold": 0.8622071146965027,
+      "sensitivity": 0.987012987012987,
+      "specificity": 1.0,
+      "youden_j": 0.9870129870129869,
+      "tp": 76,
+      "fp": 0,
+      "fn": 1,
+      "tn": 82
+    },
+    "high_sensitivity_screening": {
+      "threshold": 0.8622071146965027,
+      "sensitivity": 0.987012987012987,
+      "specificity": 1.0,
+      "youden_j": 0.9870129870129869,
+      "tp": 76,
+      "fp": 0,
+      "fn": 1,
+      "tn": 82
+    },
+    "default_0.5": {
+      "threshold": 0.4936448335647583,
+      "sensitivity": 1.0,
+      "specificity": 0.975609756097561,
+      "youden_j": 0.975609756097561,
+      "tp": 77,
+      "fp": 2,
+      "fn": 0,
+      "tn": 80
+    }
+  },
+  "train_metrics_from_checkpoint": {
+    "val_macro_f1": 0.9936645414812142,
+    "best_epoch": 5,
+    "val_ece_before": 0.04827030113874503,
+    "val_ece_after": 0.04827030113874503,
+    "calibration": {
+      "raw_T": 0.4967575967311859,
+      "degenerate": true,
+      "val_acc": 0.9936708807945251
+    },
+    "params_m": 23.51213,
+    "train_minutes": 10.531804529825846
+  }
+}

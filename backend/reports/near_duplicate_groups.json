@@ -1,0 +1,1098 @@
+{
+  "threshold": 6,
+  "groups": [
+    [
+      "Abnormal(Ulcer)/106.jpg",
+      "Abnormal(Ulcer)/294.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/110.jpg",
+      "Abnormal(Ulcer)/296.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/123.jpg",
+      "Abnormal(Ulcer)/295.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/130.jpg",
+      "Abnormal(Ulcer)/297.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/16.jpg",
+      "Abnormal(Ulcer)/286.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/162.jpg",
+      "Abnormal(Ulcer)/298.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/17.jpg",
+      "Abnormal(Ulcer)/44.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/175.jpg",
+      "Abnormal(Ulcer)/300.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/176.jpg",
+      "Abnormal(Ulcer)/381.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/178.jpg",
+      "Abnormal(Ulcer)/228.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/18.jpg",
+      "Abnormal(Ulcer)/287.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/192.jpg",
+      "Abnormal(Ulcer)/383.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/197.jpg",
+      "Abnormal(Ulcer)/299.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/20.jpg",
+      "Abnormal(Ulcer)/289.jpg",
+      "Abnormal(Ulcer)/393.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/202.jpg",
+      "Abnormal(Ulcer)/382.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/204.jpg",
+      "Abnormal(Ulcer)/385.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/221.jpg",
+      "Abnormal(Ulcer)/384.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/222.jpg",
+      "Abnormal(Ulcer)/388.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/223.jpg",
+      "Abnormal(Ulcer)/285.jpg",
+      "Abnormal(Ulcer)/390.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/245.jpg",
+      "Abnormal(Ulcer)/386.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/247.jpg",
+      "Abnormal(Ulcer)/389.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/266.jpg",
+      "Abnormal(Ulcer)/392.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/275.jpg",
+      "Abnormal(Ulcer)/387.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/276.jpg",
+      "Abnormal(Ulcer)/391.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/281.jpg",
+      "Abnormal(Ulcer)/394.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/288.jpg",
+      "Abnormal(Ulcer)/38.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/290.jpg",
+      "Abnormal(Ulcer)/58.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/291.jpg",
+      "Abnormal(Ulcer)/55.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/292.jpg",
+      "Abnormal(Ulcer)/87.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/293.jpg",
+      "Abnormal(Ulcer)/395.jpg",
+      "Abnormal(Ulcer)/75.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/30.jpg",
+      "Abnormal(Ulcer)/48.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/308.jpg",
+      "Abnormal(Ulcer)/396.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/311.jpg",
+      "Abnormal(Ulcer)/398.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/316.jpg",
+      "Abnormal(Ulcer)/397.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/327.jpg",
+      "Abnormal(Ulcer)/400.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/342.jpg",
+      "Abnormal(Ulcer)/399.jpg"
+    ],
+    [
+      "Abnormal(Ulcer)/36.jpg",
+      "Abnormal(Ulcer)/46.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/10.jpg",
+      "Normal(Healthy skin)/23.jpg",
+      "Normal(Healthy skin)/290.jpg",
+      "Normal(Healthy skin)/303.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/100.jpg",
+      "Normal(Healthy skin)/369.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/102.jpg",
+      "Normal(Healthy skin)/371.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/103.jpg",
+      "Normal(Healthy skin)/372.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/104.jpg",
+      "Normal(Healthy skin)/407.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/105.jpg",
+      "Normal(Healthy skin)/148.jpg",
+      "Normal(Healthy skin)/380.jpg",
+      "Normal(Healthy skin)/404.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/106.jpg",
+      "Normal(Healthy skin)/149.jpg",
+      "Normal(Healthy skin)/367.jpg",
+      "Normal(Healthy skin)/414.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/107.jpg",
+      "Normal(Healthy skin)/351.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/108.jpg",
+      "Normal(Healthy skin)/410.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/109.jpg",
+      "Normal(Healthy skin)/352.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/110.jpg",
+      "Normal(Healthy skin)/391.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/111.jpg",
+      "Normal(Healthy skin)/401.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/112.jpg",
+      "Normal(Healthy skin)/392.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/113.jpg",
+      "Normal(Healthy skin)/150.jpg",
+      "Normal(Healthy skin)/360.jpg",
+      "Normal(Healthy skin)/453.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/114.jpg",
+      "Normal(Healthy skin)/357.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/115.jpg",
+      "Normal(Healthy skin)/385.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/117.jpg",
+      "Normal(Healthy skin)/384.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/118.jpg",
+      "Normal(Healthy skin)/406.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/119.jpg",
+      "Normal(Healthy skin)/381.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/12.jpg",
+      "Normal(Healthy skin)/24.jpg",
+      "Normal(Healthy skin)/291.jpg",
+      "Normal(Healthy skin)/302.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/121.jpg",
+      "Normal(Healthy skin)/2.jpg",
+      "Normal(Healthy skin)/281.jpg",
+      "Normal(Healthy skin)/405.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/122.jpg",
+      "Normal(Healthy skin)/284.jpg",
+      "Normal(Healthy skin)/3.jpg",
+      "Normal(Healthy skin)/382.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/123.jpg",
+      "Normal(Healthy skin)/283.jpg",
+      "Normal(Healthy skin)/398.jpg",
+      "Normal(Healthy skin)/4.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/124.jpg",
+      "Normal(Healthy skin)/285.jpg",
+      "Normal(Healthy skin)/426.jpg",
+      "Normal(Healthy skin)/6.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/125.jpg",
+      "Normal(Healthy skin)/128.jpg",
+      "Normal(Healthy skin)/21.jpg",
+      "Normal(Healthy skin)/287.jpg",
+      "Normal(Healthy skin)/301.jpg",
+      "Normal(Healthy skin)/394.jpg",
+      "Normal(Healthy skin)/396.jpg",
+      "Normal(Healthy skin)/8.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/126.jpg",
+      "Normal(Healthy skin)/16.jpg",
+      "Normal(Healthy skin)/288.jpg",
+      "Normal(Healthy skin)/298.jpg",
+      "Normal(Healthy skin)/390.jpg",
+      "Normal(Healthy skin)/7.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/127.jpg",
+      "Normal(Healthy skin)/133.jpg",
+      "Normal(Healthy skin)/19.jpg",
+      "Normal(Healthy skin)/299.jpg",
+      "Normal(Healthy skin)/312.jpg",
+      "Normal(Healthy skin)/35.jpg",
+      "Normal(Healthy skin)/373.jpg",
+      "Normal(Healthy skin)/379.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/129.jpg",
+      "Normal(Healthy skin)/22.jpg",
+      "Normal(Healthy skin)/289.jpg",
+      "Normal(Healthy skin)/300.jpg",
+      "Normal(Healthy skin)/411.jpg",
+      "Normal(Healthy skin)/9.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/13.jpg",
+      "Normal(Healthy skin)/130.jpg",
+      "Normal(Healthy skin)/25.jpg",
+      "Normal(Healthy skin)/292.jpg",
+      "Normal(Healthy skin)/305.jpg",
+      "Normal(Healthy skin)/375.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/131.jpg",
+      "Normal(Healthy skin)/30.jpg",
+      "Normal(Healthy skin)/308.jpg",
+      "Normal(Healthy skin)/417.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/132.jpg",
+      "Normal(Healthy skin)/26.jpg",
+      "Normal(Healthy skin)/304.jpg",
+      "Normal(Healthy skin)/389.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/134.jpg",
+      "Normal(Healthy skin)/17.jpg",
+      "Normal(Healthy skin)/295.jpg",
+      "Normal(Healthy skin)/314 - Copy.jpg",
+      "Normal(Healthy skin)/314.jpg",
+      "Normal(Healthy skin)/33.jpg",
+      "Normal(Healthy skin)/374.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/135.jpg",
+      "Normal(Healthy skin)/317 - Copy.jpg",
+      "Normal(Healthy skin)/317.jpg",
+      "Normal(Healthy skin)/378.jpg",
+      "Normal(Healthy skin)/39.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/136.jpg",
+      "Normal(Healthy skin)/313.jpg",
+      "Normal(Healthy skin)/36.jpg",
+      "Normal(Healthy skin)/377.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/137.jpg",
+      "Normal(Healthy skin)/328.jpg",
+      "Normal(Healthy skin)/387.jpg",
+      "Normal(Healthy skin)/57.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/138.jpg",
+      "Normal(Healthy skin)/327.jpg",
+      "Normal(Healthy skin)/438.jpg",
+      "Normal(Healthy skin)/54.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/139.jpg",
+      "Normal(Healthy skin)/333.jpg",
+      "Normal(Healthy skin)/386.jpg",
+      "Normal(Healthy skin)/64.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/140.jpg",
+      "Normal(Healthy skin)/334.jpg",
+      "Normal(Healthy skin)/418.jpg",
+      "Normal(Healthy skin)/62.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/141.jpg",
+      "Normal(Healthy skin)/335.jpg",
+      "Normal(Healthy skin)/397.jpg",
+      "Normal(Healthy skin)/66.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/142.jpg",
+      "Normal(Healthy skin)/338.jpg",
+      "Normal(Healthy skin)/402.jpg",
+      "Normal(Healthy skin)/67.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/143.jpg",
+      "Normal(Healthy skin)/340.jpg",
+      "Normal(Healthy skin)/383.jpg",
+      "Normal(Healthy skin)/69.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/144.jpg",
+      "Normal(Healthy skin)/348.jpg",
+      "Normal(Healthy skin)/395.jpg",
+      "Normal(Healthy skin)/82 - Copy.jpg",
+      "Normal(Healthy skin)/82.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/145.jpg",
+      "Normal(Healthy skin)/365.jpg",
+      "Normal(Healthy skin)/393.jpg",
+      "Normal(Healthy skin)/87.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/146.jpg",
+      "Normal(Healthy skin)/364.jpg",
+      "Normal(Healthy skin)/431.jpg",
+      "Normal(Healthy skin)/95.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/147.jpg",
+      "Normal(Healthy skin)/356.jpg",
+      "Normal(Healthy skin)/437.jpg",
+      "Normal(Healthy skin)/99.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/15.jpg",
+      "Normal(Healthy skin)/293.jpg",
+      "Normal(Healthy skin)/31.jpg",
+      "Normal(Healthy skin)/310.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/151.jpg",
+      "Normal(Healthy skin)/412.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/152.jpg",
+      "Normal(Healthy skin)/413.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/153.jpg",
+      "Normal(Healthy skin)/444.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/154.jpg",
+      "Normal(Healthy skin)/439.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/155.jpg",
+      "Normal(Healthy skin)/443.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/156.jpg",
+      "Normal(Healthy skin)/425.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/157.jpg",
+      "Normal(Healthy skin)/409.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/158.jpg",
+      "Normal(Healthy skin)/403.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/159.jpg",
+      "Normal(Healthy skin)/400.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/160.jpg",
+      "Normal(Healthy skin)/459.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/161.jpg",
+      "Normal(Healthy skin)/419.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/162.jpg",
+      "Normal(Healthy skin)/480.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/163.jpg",
+      "Normal(Healthy skin)/421.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/164.jpg",
+      "Normal(Healthy skin)/440.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/165.jpg",
+      "Normal(Healthy skin)/399.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/166.jpg",
+      "Normal(Healthy skin)/416.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/167.jpg",
+      "Normal(Healthy skin)/408.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/168.jpg",
+      "Normal(Healthy skin)/441.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/172.jpg",
+      "Normal(Healthy skin)/442.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/173.jpg",
+      "Normal(Healthy skin)/423.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/174.jpg",
+      "Normal(Healthy skin)/458.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/175.jpg",
+      "Normal(Healthy skin)/465.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/176.jpg",
+      "Normal(Healthy skin)/494.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/177.jpg",
+      "Normal(Healthy skin)/429.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/178.jpg",
+      "Normal(Healthy skin)/432.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/179.jpg",
+      "Normal(Healthy skin)/420.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/18.jpg",
+      "Normal(Healthy skin)/296.jpg",
+      "Normal(Healthy skin)/34.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/180.jpg",
+      "Normal(Healthy skin)/473.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/181.jpg",
+      "Normal(Healthy skin)/478.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/182.jpg",
+      "Normal(Healthy skin)/422.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/183.jpg",
+      "Normal(Healthy skin)/464.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/184.jpg",
+      "Normal(Healthy skin)/474.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/185.jpg",
+      "Normal(Healthy skin)/456.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/186.jpg",
+      "Normal(Healthy skin)/415.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/187.jpg",
+      "Normal(Healthy skin)/463.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/188.jpg",
+      "Normal(Healthy skin)/451.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/190.jpg",
+      "Normal(Healthy skin)/427.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/191.jpg",
+      "Normal(Healthy skin)/457.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/192.jpg",
+      "Normal(Healthy skin)/452.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/193.jpg",
+      "Normal(Healthy skin)/447.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/194.jpg",
+      "Normal(Healthy skin)/430.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/195.jpg",
+      "Normal(Healthy skin)/434.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/196.jpg",
+      "Normal(Healthy skin)/428.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/197.jpg",
+      "Normal(Healthy skin)/468.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/198.jpg",
+      "Normal(Healthy skin)/435.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/199.jpg",
+      "Normal(Healthy skin)/433.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/200.jpg",
+      "Normal(Healthy skin)/462.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/201.jpg",
+      "Normal(Healthy skin)/436.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/202.jpg",
+      "Normal(Healthy skin)/498.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/203.jpg",
+      "Normal(Healthy skin)/475.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/204.jpg",
+      "Normal(Healthy skin)/477.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/205.jpg",
+      "Normal(Healthy skin)/495.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/206.jpg",
+      "Normal(Healthy skin)/476.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/207.jpg",
+      "Normal(Healthy skin)/445.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/208.jpg",
+      "Normal(Healthy skin)/470.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/209.jpg",
+      "Normal(Healthy skin)/446.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/210.jpg",
+      "Normal(Healthy skin)/454.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/211.jpg",
+      "Normal(Healthy skin)/449.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/212.jpg",
+      "Normal(Healthy skin)/497.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/213.jpg",
+      "Normal(Healthy skin)/496.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/214.jpg",
+      "Normal(Healthy skin)/448.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/216.jpg",
+      "Normal(Healthy skin)/500.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/217.jpg",
+      "Normal(Healthy skin)/472.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/218.jpg",
+      "Normal(Healthy skin)/466.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/219.jpg",
+      "Normal(Healthy skin)/499.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/220.jpg",
+      "Normal(Healthy skin)/467.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/221.jpg",
+      "Normal(Healthy skin)/484.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/222.jpg",
+      "Normal(Healthy skin)/460.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/223.jpg",
+      "Normal(Healthy skin)/513.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/224.jpg",
+      "Normal(Healthy skin)/485.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/225.jpg",
+      "Normal(Healthy skin)/450.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/226.jpg",
+      "Normal(Healthy skin)/506.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/227.jpg",
+      "Normal(Healthy skin)/515.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/228.jpg",
+      "Normal(Healthy skin)/461.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/229.jpg",
+      "Normal(Healthy skin)/479.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/230.jpg",
+      "Normal(Healthy skin)/507.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/231.jpg",
+      "Normal(Healthy skin)/503.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/232.jpg",
+      "Normal(Healthy skin)/481.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/233.jpg",
+      "Normal(Healthy skin)/520.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/234.jpg",
+      "Normal(Healthy skin)/482.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/235.jpg",
+      "Normal(Healthy skin)/519.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/236.jpg",
+      "Normal(Healthy skin)/483.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/237.jpg",
+      "Normal(Healthy skin)/508.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/238.jpg",
+      "Normal(Healthy skin)/516.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/239.jpg",
+      "Normal(Healthy skin)/522.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/240.jpg",
+      "Normal(Healthy skin)/525.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/241.jpg",
+      "Normal(Healthy skin)/523.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/242.jpg",
+      "Normal(Healthy skin)/501.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/243.jpg",
+      "Normal(Healthy skin)/294.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/244.jpg",
+      "Normal(Healthy skin)/509.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/245.jpg",
+      "Normal(Healthy skin)/505.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/246.jpg",
+      "Normal(Healthy skin)/524.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/247.jpg",
+      "Normal(Healthy skin)/502.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/248.jpg",
+      "Normal(Healthy skin)/297.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/249.jpg",
+      "Normal(Healthy skin)/527.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/250.jpg",
+      "Normal(Healthy skin)/469.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/251.jpg",
+      "Normal(Healthy skin)/489.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/252.jpg",
+      "Normal(Healthy skin)/504.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/253.jpg",
+      "Normal(Healthy skin)/486.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/254.jpg",
+      "Normal(Healthy skin)/531.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/255.jpg",
+      "Normal(Healthy skin)/487.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/256.jpg",
+      "Normal(Healthy skin)/512.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/257.jpg",
+      "Normal(Healthy skin)/488.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/258.jpg",
+      "Normal(Healthy skin)/511.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/259.jpg",
+      "Normal(Healthy skin)/510.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/260.jpg",
+      "Normal(Healthy skin)/514.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/261.jpg",
+      "Normal(Healthy skin)/470 (2).jpg"
+    ],
+    [
+      "Normal(Healthy skin)/262.jpg",
+      "Normal(Healthy skin)/471.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/263.jpg",
+      "Normal(Healthy skin)/534.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/264.jpg",
+      "Normal(Healthy skin)/533.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/267.jpg",
+      "Normal(Healthy skin)/491.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/268.jpg",
+      "Normal(Healthy skin)/528.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/269.jpg",
+      "Normal(Healthy skin)/492.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/27.jpg",
+      "Normal(Healthy skin)/307.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/270.jpg",
+      "Normal(Healthy skin)/530.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/271.jpg",
+      "Normal(Healthy skin)/493.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/272.jpg",
+      "Normal(Healthy skin)/517.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/273.jpg",
+      "Normal(Healthy skin)/521.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/274.jpg",
+      "Normal(Healthy skin)/518.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/275.jpg",
+      "Normal(Healthy skin)/529.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/276.jpg",
+      "Normal(Healthy skin)/532.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/277.jpg",
+      "Normal(Healthy skin)/537.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/278.jpg",
+      "Normal(Healthy skin)/535.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/279.jpg",
+      "Normal(Healthy skin)/490.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/28.jpg",
+      "Normal(Healthy skin)/306.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/280.jpg",
+      "Normal(Healthy skin)/536.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/286.jpg",
+      "Normal(Healthy skin)/5.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/29.jpg",
+      "Normal(Healthy skin)/309.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/311.jpg",
+      "Normal(Healthy skin)/32.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/315 - Copy.jpg",
+      "Normal(Healthy skin)/315.jpg",
+      "Normal(Healthy skin)/38.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/316 - Copy.jpg",
+      "Normal(Healthy skin)/316.jpg",
+      "Normal(Healthy skin)/37.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/318 - Copy.jpg",
+      "Normal(Healthy skin)/318.jpg",
+      "Normal(Healthy skin)/42.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/319.jpg",
+      "Normal(Healthy skin)/47.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/320.jpg",
+      "Normal(Healthy skin)/49.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/321 - Copy.jpg",
+      "Normal(Healthy skin)/321.jpg",
+      "Normal(Healthy skin)/46.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/322 - Copy.jpg",
+      "Normal(Healthy skin)/322.jpg",
+      "Normal(Healthy skin)/50.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/323 - Copy.jpg",
+      "Normal(Healthy skin)/323.jpg",
+      "Normal(Healthy skin)/48.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/324.jpg",
+      "Normal(Healthy skin)/52.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/325 - Copy.jpg",
+      "Normal(Healthy skin)/325.jpg",
+      "Normal(Healthy skin)/51.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/326.jpg",
+      "Normal(Healthy skin)/53.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/329.jpg",
+      "Normal(Healthy skin)/56.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/330.jpg",
+      "Normal(Healthy skin)/60.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/331 - Copy.jpg",
+      "Normal(Healthy skin)/331.jpg",
+      "Normal(Healthy skin)/58.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/332.jpg",
+      "Normal(Healthy skin)/63.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/336.jpg",
+      "Normal(Healthy skin)/65.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/337.jpg",
+      "Normal(Healthy skin)/68.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/339.jpg",
+      "Normal(Healthy skin)/70.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/341.jpg",
+      "Normal(Healthy skin)/72.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/342.jpg",
+      "Normal(Healthy skin)/74.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/343.jpg",
+      "Normal(Healthy skin)/77.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/344.jpg",
+      "Normal(Healthy skin)/71.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/345.jpg",
+      "Normal(Healthy skin)/75.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/346.jpg",
+      "Normal(Healthy skin)/86.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/347.jpg",
+      "Normal(Healthy skin)/80.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/349.jpg",
+      "Normal(Healthy skin)/84.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/350.jpg",
+      "Normal(Healthy skin)/91.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/353.jpg",
+      "Normal(Healthy skin)/94.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/354.jpg",
+      "Normal(Healthy skin)/76.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/355.jpg",
+      "Normal(Healthy skin)/73.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/358.jpg",
+      "Normal(Healthy skin)/83.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/359.jpg",
+      "Normal(Healthy skin)/81.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/361.jpg",
+      "Normal(Healthy skin)/78.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/362.jpg",
+      "Normal(Healthy skin)/93.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/363.jpg",
+      "Normal(Healthy skin)/96.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/366.jpg",
+      "Normal(Healthy skin)/97.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/368.jpg",
+      "Normal(Healthy skin)/92.jpg"
+    ],
+    [
+      "Normal(Healthy skin)/370.jpg",
+      "Normal(Healthy skin)/98.jpg"
+    ]
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "n_images": 1055,
+  "classes": [
+    "Abnormal(Ulcer)",
+    "Normal(Healthy skin)"
+  ],
+  "class_counts": [
+    512,
+    543
+  ],
+  "exact_duplicate_groups": 249,
+  "exact_redundant_files": 342,
+  "exact_duplicates_cross_class": 0,
+  "near_duplicate_pairs": 523,
+  "near_duplicate_clusters": 250,
+  "images_in_a_near_duplicate_cluster": 593,
+  "near_duplicate_coverage_pct": 56.21,
+  "cross_split_near_duplicate_pairs": 221,
+  "eval_images_with_cross_split_twin": 157,
+  "eval_images_total": 317,
+  "eval_contamination_pct": 49.53,
+  "colour_only_baseline_acc": 0.9289,
+  "colour_only_baseline_std": 0.027,
+  "colour_only_grouped_test": {
+    "accuracy": 0.89937106918239,
+    "auroc": 0.9651567944250872,
+    "n_train": 738,
+    "n_test": 159
+  },
+  "per_class_redundancy": {
+    "Abnormal(Ulcer)": {
+      "files": 512,
+      "exact_duplicate_extras": 39,
+      "in_near_duplicate_cluster": 77,
+      "in_near_duplicate_cluster_pct": 15.0,
+      "effective_distinct_views": 472,
+      "redundancy_factor": 1.08
+    },
+    "Normal(Healthy skin)": {
+      "files": 543,
+      "exact_duplicate_extras": 303,
+      "in_near_duplicate_cluster": 516,
+      "in_near_duplicate_cluster_pct": 95.0,
+      "effective_distinct_views": 240,
+      "redundancy_factor": 2.26
+    }
+  },
+  "effective_distinct_views": 712,
+  "overall_redundancy_factor": 1.48,
+  "effective_class_balance": {
+    "Abnormal(Ulcer)": 0.6629,
+    "Normal(Healthy skin)": 0.3371
+  },
+  "hamming_threshold": 6,
+  "seed": 42
+}

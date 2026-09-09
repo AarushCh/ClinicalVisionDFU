@@ -65,8 +65,24 @@ export default function Home() {
                         Clinical Vision AI
                     </h1>
                     <p className="text-slate-400 text-lg max-w-2xl mx-auto font-light">
-                        Next-generation multi-modal neural fusion. Upload plantar scans for immediate Explainable AI diagnostic triage.
+                        Multi-modal neural fusion with Grad-CAM++ attribution. Upload a plantar
+                        scan for explainable diagnostic triage.
                     </p>
+
+                    {/* A tool that outputs a risk band next to the word "clinical" needs
+                        its status stated on the page, not only in the exported PDF. */}
+                    <div className="mt-6 mx-auto max-w-3xl flex items-start gap-3 px-5 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-left">
+                        <svg className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M5.07 19h13.86a2 2 0 001.71-3.03l-6.93-12a2 2 0 00-3.42 0l-6.93 12A2 2 0 005.07 19z" />
+                        </svg>
+                        <p className="text-amber-200/90 text-xs leading-relaxed">
+                            <strong className="text-amber-300">Research prototype — not a medical device.</strong>{" "}
+                            Not FDA/CE cleared and not validated against clinical outcomes. The
+                            clinical risk coefficients are literature-informed priors, not fitted
+                            to patient data. Never use this in place of assessment by a qualified
+                            clinician.
+                        </p>
+                    </div>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

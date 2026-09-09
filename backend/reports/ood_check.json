@@ -1,0 +1,52 @@
+{
+  "threshold_knn": 0.09177155792713165,
+  "k": 5,
+  "pools": {
+    "healthy patches (IN-DIST)": {
+      "n": 60,
+      "mean_p_ulcer": 0.0338,
+      "median_p_ulcer": 0.0227,
+      "frac_gt_0.5": 0.0,
+      "frac_gt_0.9": 0.0,
+      "median_knn_distance": 0.0472,
+      "frac_flagged_ood": 0.0167
+    },
+    "ulcer patches (IN-DIST)": {
+      "n": 60,
+      "mean_p_ulcer": 0.9715,
+      "median_p_ulcer": 0.9794,
+      "frac_gt_0.5": 1.0,
+      "frac_gt_0.9": 0.9833,
+      "median_knn_distance": 0.075,
+      "frac_flagged_ood": 0.1333
+    },
+    "whole-foot photos (OOD)": {
+      "n": 60,
+      "mean_p_ulcer": 0.9719,
+      "median_p_ulcer": 0.9783,
+      "frac_gt_0.5": 1.0,
+      "frac_gt_0.9": 0.9833,
+      "median_knn_distance": 0.0788,
+      "frac_flagged_ood": 0.35
+    },
+    "full-resolution clinical photos (OOD)": {
+      "n": 60,
+      "mean_p_ulcer": 0.9678,
+      "median_p_ulcer": 0.9765,
+      "frac_gt_0.5": 1.0,
+      "frac_gt_0.9": 0.9667,
+      "median_knn_distance": 0.0957,
+      "frac_flagged_ood": 0.6
+    },
+    "non-foot wound images (OOD)": {
+      "n": 60,
+      "mean_p_ulcer": 0.9629,
+      "median_p_ulcer": 0.974,
+      "frac_gt_0.5": 1.0,
+      "frac_gt_0.9": 0.9333,
+      "median_knn_distance": 0.0835,
+      "frac_flagged_ood": 0.4167
+    }
+  },
+  "conclusion": "Every out-of-distribution pool is classified as ulcer at essentially the same rate and confidence as genuine ulcer patches. A kNN feature-space detector does not separate them reliably enough to be used as a safety guard, so the mitigation is an explicit scope restriction (cropped tissue patches only), not an automated filter."
+}

@@ -1,1 +1,5 @@
 * text=auto
+
+# PyTorch weights go through Git LFS. The deploy workflow already sets this up
+# at push time; declaring it here keeps local clones consistent.
+*.pt filter=lfs diff=lfs merge=lfs -text

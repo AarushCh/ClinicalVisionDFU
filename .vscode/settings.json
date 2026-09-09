@@ -1,3 +1,12 @@
 {
-    "css.lint.unknownAtRules": "ignore"
+    "css.lint.unknownAtRules": "ignore",
+    // The committed .venv/ points at a Python that no longer exists on this
+    // machine, which made every import in backend/ show as unresolved. Point
+    // the IDE at the interpreter that actually has torch installed.
+    "python.defaultInterpreterPath": "C:\Users\aarus\AppData\Local\Programs\Python\Python313\python.exe",
+    "python.analysis.extraPaths": ["backend"],
+    "python.testing.unittestEnabled": false,
+    "files.exclude": {
+        "**/__pycache__": true
+    }
 }

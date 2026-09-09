@@ -1,0 +1,190 @@
+{
+  "risk": "HIGH",
+  "risk_probability": 0.9761,
+  "confidence": 0.8468,
+  "image_probability": 0.8468,
+  "image_probability_used": 0.8468,
+  "image_probability_clamped": false,
+  "predicted_class": "Abnormal(Ulcer)",
+  "class_probabilities": {
+    "Abnormal(Ulcer)": 0.8468,
+    "Normal(Healthy skin)": 0.1532
+  },
+  "attention": {
+    "attention_area_pct": 20.98,
+    "attention_regions": 1,
+    "peak_xy": [
+      0.2902,
+      0.1454
+    ],
+    "peak_intensity": 1.0,
+    "mean_intensity": 0.303,
+    "focality": 0.7902,
+    "bbox_xywh_norm": [
+      0.0595,
+      0.0,
+      0.5089,
+      0.4713
+    ],
+    "threshold": 0.5
+  },
+  "cam_mode": "gradcam++",
+  "attribution": [
+    {
+      "feature": "CNN Visual Evidence",
+      "key": "image",
+      "logit_contribution": 1.7096,
+      "value": 0.8468,
+      "unit": "P(ulcer)",
+      "odds_ratio": 5.527,
+      "direction": "increases risk",
+      "influence_pct": 46.1
+    },
+    {
+      "feature": "Peripheral Neuropathy",
+      "key": "neuropathy",
+      "value": 1,
+      "unit": "",
+      "logit_contribution": 0.858,
+      "odds_ratio": 2.358,
+      "direction": "increases risk",
+      "influence_pct": 23.1
+    },
+    {
+      "feature": "Diabetes Duration",
+      "key": "diabetes_years",
+      "value": 22,
+      "unit": "years",
+      "logit_contribution": 0.4573,
+      "odds_ratio": 1.58,
+      "direction": "increases risk",
+      "influence_pct": 12.3
+    },
+    {
+      "feature": "Patient Age",
+      "key": "age",
+      "value": 81,
+      "unit": "years",
+      "logit_contribution": 0.3248,
+      "odds_ratio": 1.384,
+      "direction": "increases risk",
+      "influence_pct": 8.8
+    },
+    {
+      "feature": "Body Mass Index",
+      "key": "bmi",
+      "value": 17.2,
+      "unit": "kg/m\u00b2",
+      "logit_contribution": 0.2205,
+      "odds_ratio": 1.247,
+      "direction": "increases risk",
+      "influence_pct": 5.9
+    },
+    {
+      "feature": "HbA1c (glycaemic control)",
+      "key": "hba1c",
+      "value": 7.8,
+      "unit": "%",
+      "logit_contribution": 0.1394,
+      "odds_ratio": 1.15,
+      "direction": "increases risk",
+      "influence_pct": 3.8
+    }
+  ],
+  "shap": [
+    {
+      "feature": "CNN Visual Evidence",
+      "value": 46.1
+    },
+    {
+      "feature": "Peripheral Neuropathy",
+      "value": 23.1
+    },
+    {
+      "feature": "Diabetes Duration",
+      "value": 12.3
+    },
+    {
+      "feature": "Patient Age",
+      "value": 8.8
+    },
+    {
+      "feature": "Body Mass Index",
+      "value": 5.9
+    },
+    {
+      "feature": "HbA1c (glycaemic control)",
+      "value": 3.8
+    }
+  ],
+  "iwgdf": {
+    "category": 1,
+    "label": "Moderate risk",
+    "screening_interval": "Every 6-12 months",
+    "basis": "Loss of protective sensation or peripheral arterial disease"
+  },
+  "clinical_logit_shift": 2.0,
+  "factors_supplied": [
+    "age",
+    "bmi",
+    "diabetes_years",
+    "hba1c",
+    "neuropathy"
+  ],
+  "report": {
+    "headline": "Urgent review recommended",
+    "patient_summary": "The scan shows features strongly associated with diabetic foot ulceration. Please contact a podiatrist, diabetes foot clinic or urgent care service today. Keep weight off the foot and do not attempt to treat the area yourself.",
+    "clinical_assessment": "Automated analysis returns a fused ulceration risk of 97.6% (HIGH). The convolutional classifier assigned P(ulcer) = 84.7% to the plantar image (temperature-calibrated, T = 1.00); clinical covariates applied a +2.00 log-odds adjustment. Clinical history contributes a net +2.00 log-odds, raising the image-derived probability of 0.847 to a fused risk of 0.976. Ranked by influence: Peripheral Neuropathy (1, OR 2.36); Diabetes Duration (22 years, OR 1.58); Patient Age (81 years, OR 1.38); Body Mass Index (17.2 kg/m\u00b2, OR 1.25). The aggregate clinical shift was capped at the configured limit so that history cannot override the imaging finding. IWGDF stratification places this patient in category 1 (Moderate risk) on the basis of: loss of protective sensation or peripheral arterial disease.",
+    "visual_analysis": "Grad-CAM++ attribution for the ulcer class shows one broad region of activation spanning 21.0% of the field, peaking upper-left. Peak activation 1.00, mean 0.30, spatial focality 0.79 (1.0 = single tight hotspot). The classifier assigned P(ulcer) = 0.847 to this image.",
+    "triage": "1. Same-day or next-working-day podiatry / foot-clinic review\n2. Vascular assessment: palpate pedal pulses, measure ankle-brachial index\n3. Neurological assessment: 10 g monofilament at ten plantar sites\n4. Probe-to-bone test; image and screen for osteomyelitis if positive\n5. Institute pressure offloading (total contact cast or removable walker)\n6. Wound swab and empirical antibiotics only if clinical infection is present\n7. IWGDF risk category 1 (Moderate risk) - recommended screening interval: Every 6-12 months",
+    "triage_steps": [
+      "Same-day or next-working-day podiatry / foot-clinic review",
+      "Vascular assessment: palpate pedal pulses, measure ankle-brachial index",
+      "Neurological assessment: 10 g monofilament at ten plantar sites",
+      "Probe-to-bone test; image and screen for osteomyelitis if positive",
+      "Institute pressure offloading (total contact cast or removable walker)",
+      "Wound swab and empirical antibiotics only if clinical infection is present",
+      "IWGDF risk category 1 (Moderate risk) - recommended screening interval: Every 6-12 months"
+    ],
+    "limitations": "Single-image analysis of a cropped plantar patch. The model was trained on 224x224 tissue patches and has not been validated on whole-foot photographs, on skin tones outside the training distribution, or against histopathology. Clinical coefficients are literature-informed priors, not fitted to outcomes in this cohort. Wound depth, infection and ischaemia are not assessed."
+  },
+  "model": {
+    "architecture": "resnet18",
+    "input_size": 224,
+    "classes": [
+      "Abnormal(Ulcer)",
+      "Normal(Healthy skin)"
+    ],
+    "temperature": 1.0,
+    "checkpoint_format": 2,
+    "metrics": {
+      "val_macro_f1": 1.0,
+      "best_epoch": 17,
+      "val_ece_before": 0.04649072740620536,
+      "val_ece_after": 0.04649072740620536,
+      "calibration": {
+        "raw_T": 0.4781849980354309,
+        "degenerate": true,
+        "val_acc": 1.0
+      },
+      "params_m": 11.177538,
+      "train_minutes": 7.403120080629985
+    }
+  },
+  "disclaimer": "Research prototype for clinical decision support only. Not a certified medical device. Clinical coefficients are literature-informed priors, not fitted to patient outcomes.",
+  "inference_ms": 170.9,
+  "_case": {
+    "path": "E:\\CV Project Files\\Github Clone\\ClinicalVisionDFU\\USE CASE - 02\\DFU\\Original Images\\51919736_394394284704357_2518685533815701504_n.jpg",
+    "pool": "full-resolution clinical photo",
+    "truth": null,
+    "truth_idx": null
+  },
+  "_patient_profile": {
+    "label": "Underweight, frail elderly",
+    "age": 81,
+    "bmi": 17.2,
+    "diabetes_years": 22,
+    "hba1c": 7.8,
+    "neuropathy": 1
+  }
+}

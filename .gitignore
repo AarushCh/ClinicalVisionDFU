@@ -1,1 +1,17 @@
 USE CASE - 02/
+# Local Python environment (the committed one is stale/broken)
+.venv/
+__pycache__/
+
+# Generated evaluation artefacts. Figures, metrics and sample readings ARE
+# committed -- they are the evidence behind ClinicalVisionDFU_Summary.md and the
+# document is unreadable without them. Reproduce with:
+#   python audit_data.py && python evaluate.py --all && python make_samples.py
+frontend/tsconfig.tsbuildinfo
+
+# Ablation checkpoints are reproducible from train.py and are large. Only the
+# checkpoint that is actually served is tracked; the per-epoch history JSONs
+# (small) are kept since they are the evidence behind the reported curves.
+backend/model/*.pt
+!backend/model/dfu_resnet18_grouped.pt
+!backend/model/dfu_model.pt

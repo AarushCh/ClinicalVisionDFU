@@ -1,0 +1,13 @@
+id,file,pool,truth,predicted,correct,p_ulcer,confidence,fused_risk,risk,clinical_shift,patient_profile,iwgdf_category,screening_interval,attention_area_pct,attention_regions,focality,peak_intensity,peak_x,peak_y,inference_ms
+S01,127.jpg,held-out test patch,Abnormal(Ulcer),Abnormal(Ulcer),True,0.9921,0.9921,0.9109,HIGH,-0.6196,"Low-risk, well controlled",0,Annually,19.63,1,0.8037,1.0,0.433,0.4554,197.2
+S02,103.jpg,held-out test patch,Abnormal(Ulcer),Abnormal(Ulcer),True,0.9152,0.9152,0.9876,HIGH,2.0,"Long-standing diabetes, neuropathy",1,Every 6-12 months,32.45,1,0.6755,1.0,0.3571,0.5491,91.1
+S03,158.jpg,held-out test patch,Abnormal(Ulcer),Abnormal(Ulcer),True,0.9164,0.9164,0.9878,HIGH,2.0,"Neuropathy + PAD, poor control",2,Every 3-6 months,54.11,1,0.4589,1.0,0.7634,0.317,95.5
+S04,152.jpg,held-out test patch,Abnormal(Ulcer),Abnormal(Ulcer),True,0.9814,0.9814,0.9929,HIGH,2.0,"Prior ulcer, highest surveillance tier",3,Every 1-3 months,29.89,2,0.7011,1.0,0.3214,0.2232,89.5
+S05,28.jpg,held-out test patch,Normal(Healthy skin),Normal(Healthy skin),True,0.015,0.985,0.28,LOW,2.0,"Underweight, frail elderly",1,Every 6-12 months,57.26,1,0.4274,1.0,0.4509,0.7054,89.7
+S06,248.jpg,held-out test patch,Normal(Healthy skin),Normal(Healthy skin),True,0.0232,0.9768,0.05,LOW,0,No clinical data supplied,0,Annually,22.25,1,0.7775,1.0,0.4152,0.7277,87.8
+S07,236.jpg,held-out test patch,Normal(Healthy skin),Normal(Healthy skin),True,0.0202,0.9798,0.0275,LOW,-0.6196,"Low-risk, well controlled",0,Annually,19.19,1,0.8081,1.0,0.7188,0.7589,88.3
+S08,59.jpg,held-out test patch,Normal(Healthy skin),Normal(Healthy skin),True,0.0304,0.9696,0.28,LOW,2.0,"Long-standing diabetes, neuropathy",1,Every 6-12 months,28.74,3,0.7126,1.0,0.9241,0.0,89.1
+S09,222748d9f97a36c08da91dc46f6f5200.jpg,unseen whole-foot photo,,Abnormal(Ulcer),,0.9472,0.9472,0.9925,HIGH,2.0,"Neuropathy + PAD, poor control",2,Every 3-6 months,26.43,1,0.7357,1.0,0.6587,0.535,135.5
+S10,images.jpg,unseen whole-foot photo,,Abnormal(Ulcer),,0.9011,0.9011,0.9854,HIGH,2.0,"Prior ulcer, highest surveillance tier",3,Every 1-3 months,22.54,1,0.7746,1.0,0.5017,0.1561,93.6
+S11,51919736_394394284704357_2518685533815701504_n.jpg,full-resolution clinical photo,,Abnormal(Ulcer),,0.8468,0.8468,0.9761,HIGH,2.0,"Underweight, frail elderly",1,Every 6-12 months,20.98,1,0.7902,1.0,0.2902,0.1454,170.9
+S12,2.jpg,full-resolution clinical photo,,Abnormal(Ulcer),,0.9928,0.9928,0.95,HIGH,0,No clinical data supplied,0,Annually,33.88,2,0.6612,1.0,0.1679,0.1813,158.2
