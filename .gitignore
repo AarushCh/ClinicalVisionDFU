@@ -19,3 +19,7 @@ backend/model/*.pt
 # Real secrets never get committed; .env.example documents the shape.
 .env
 backend/.env
+
+# Design reference / scratch space. Its own README states it is gitignored and
+# never ships in milestone commits; we adopt its language, not its files.
+extra_frontend/
