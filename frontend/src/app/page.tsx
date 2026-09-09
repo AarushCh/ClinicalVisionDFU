@@ -9,7 +9,7 @@ import Ambient from "@/components/Ambient";
 import HistoryPanel from "@/components/HistoryPanel";
 import { Preset } from "@/lib/config";
 import { addHistory, makeThumb, toEntry } from "@/lib/history";
-import { modelLabel, useModelInfo } from "@/lib/model";
+import { joinMeta, modelLabel, useModelInfo } from "@/lib/model";
 
 type Tab = "report" | "assistant" | "history";
 
@@ -136,7 +136,7 @@ export default function Home() {
                             <p className="hidden lg:block text-[10px] text-subtle uppercase tracking-[0.12em] truncate">
                                 {result
                                     ? `${modelLabel(result.model)} · ${result.inference_ms?.toFixed(0)} ms · ${result.cam_mode}`
-                                    : `${modelLabel(model)} · Grad-CAM++ · IWGDF 2023`}
+                                    : joinMeta([modelLabel(model), "Grad-CAM++", "IWGDF 2023"])}
                             </p>
                         </div>
 
@@ -155,7 +155,7 @@ export default function Home() {
             </div>
 
             <footer className="mx-auto w-full max-w-[1920px] px-4 lg:px-6 py-4 mt-2 border-t border-line/10 text-[10px] text-subtle flex flex-wrap gap-x-5 gap-y-1.5 justify-between relative z-10">
-                <span>{modelLabel(model)} · Grad-CAM++ · log-odds fusion · IWGDF 2023</span>
+                <span>{joinMeta([modelLabel(model), "Grad-CAM++", "log-odds fusion", "IWGDF 2023"])}</span>
                 <a className="hover:text-fg transition-colors"
                     href="https://github.com/aarushch/ClinicalVisionDFU"
                     target="_blank" rel="noreferrer">

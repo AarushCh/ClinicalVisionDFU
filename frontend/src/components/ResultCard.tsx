@@ -3,7 +3,7 @@ import { useRef, useMemo, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import PrintableReport from "./PrintableReport";
 
-import { modelLabel, useModelInfo } from "@/lib/model";
+import { joinMeta, modelLabel, useModelInfo } from "@/lib/model";
 import {
     Chip, Ring, SectionHead, SignedBar, Stat, Tile, TONE, toneForRisk,
 } from "./Bento";
@@ -80,7 +80,7 @@ export default function ResultCard({ result, loading, onAsk }: {
                     </div>
                     <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
                         {[
-                            ["Classification", `${modelLabel(model)}, temperature-calibrated, flip TTA`],
+                            ["Classification", joinMeta([modelLabel(model), "temperature-calibrated", "flip TTA"], ", ")],
                             ["Explanation", "Grad-CAM++ with area, focality and peak readings"],
                             ["Clinical fusion", "Log-odds combination, exact Shapley attribution"],
                             ["Stratification", "IWGDF 2023 category and screening interval"],

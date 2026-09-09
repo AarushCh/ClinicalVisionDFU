@@ -25,8 +25,14 @@ const PRETTY: Record<string, string> = {
 export const prettyArch = (a?: string) =>
     a ? PRETTY[a] ?? a.replace(/_/g, "-") : "model";
 
+// No label at all beats a permanent "loading…": /model is missing on older
+// backends, so the fetch simply never resolves to anything.
 export const modelLabel = (m?: ModelInfo | null) =>
-    m ? `${prettyArch(m.architecture)} @ ${m.input_size}px` : "loading model…";
+    m ? `${prettyArch(m.architecture)} @ ${m.input_size}px` : "";
+
+/** Joins metadata parts, dropping any that are empty so no separator dangles. */
+export const joinMeta = (parts: (string | false | null | undefined)[], sep = " · ") =>
+    parts.filter(Boolean).join(sep);
 
 let cache: Promise<ModelInfo | null> | null = null;
 
