@@ -38,6 +38,9 @@ export default function Ambient() {
         let seen = false;
 
         const root = document.documentElement;
+        // Hides the OS arrow. Set here, not in CSS, so a browser that never runs
+        // this effect keeps its native cursor instead of having none at all.
+        root.classList.add("has-cursor");
 
         const tick = () => {
             cx += (tx - cx) * 0.17;
@@ -113,7 +116,7 @@ export default function Ambient() {
             document.removeEventListener("pointerleave", onLeave);
             document.removeEventListener("pointerenter", onEnter);
             document.removeEventListener("visibilitychange", onVisibility);
-            root.classList.remove("cursor-hot", "cursor-down");
+            root.classList.remove("cursor-hot", "cursor-down", "has-cursor");
         };
     }, []);
 
@@ -121,9 +124,11 @@ export default function Ambient() {
         <>
             <div className="ambient-stage" aria-hidden="true">
                 <div className="aurora" />
+                <div className="aurora-2" />
                 <div className="blob blob-a" />
                 <div className="blob blob-b" />
                 <div className="blob blob-c" />
+                <div className="beam" />
                 <div ref={spotRef} className="cursor-spot" />
                 <div className="grain" />
             </div>

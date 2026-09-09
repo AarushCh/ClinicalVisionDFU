@@ -24,7 +24,7 @@ const PrintableReport = forwardRef(({ result, reportId }: any, ref: any) => {
 
     return (
         <div ref={ref} className="p-10" style={{
-            fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif', color: '#000', backgroundColor: '#fff',
+            fontFamily: 'var(--font-sans)', color: '#000', backgroundColor: '#fff',
             WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', lineHeight: 1.5, maxWidth: '850px', margin: '0 auto',
         }}>
             <div style={{ borderBottom: '2px solid black', paddingBottom: '10px', marginBottom: '22px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>

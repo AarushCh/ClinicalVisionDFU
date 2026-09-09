@@ -13,12 +13,15 @@ const config: Config = {
     ],
     theme: {
         extend: {
-            // One family everywhere: mono and serif map to it too, so no stray
-            // Times or Consolas can appear via font-mono / font-serif.
+            // Inter everywhere, numbers included. Montserrat is reached only
+            // through .font-display, which pins its weight. font-mono maps to
+            // the interface face so no stray Consolas appears: column alignment
+            // comes from tabular-nums, not from a monospace family.
             fontFamily: {
-                sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
-                mono: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
-                serif: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+                sans: ["var(--font-sans)"],
+                mono: ["var(--font-sans)"],
+                serif: ["var(--font-sans)"],
+                display: ["var(--font-display)"],
             },
             colors: {
                 bg: token("bg"),

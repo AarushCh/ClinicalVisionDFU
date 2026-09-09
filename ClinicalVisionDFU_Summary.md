@@ -485,6 +485,33 @@ ResNet-18 for no measurable gain, which is the expected outcome when the
 bottleneck is data rather than capacity. ResNet-18 is the served default;
 EfficientNet-B0 is the choice if checkpoint size dominates (§15).
 
+#### 7.5.1 The same test on the honest split, and at higher resolution
+
+The comparison above is on the leaky split, so it settles nothing on its own.
+ResNet-50 was therefore retrained on the **group-aware** split at two input
+sizes and scored on the same 159-image held-out test set:
+
+| Model | Input | Test acc | Sensitivity | Specificity | **Missed ulcers** | False alarms | Size |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| **`resnet18_grouped`** *(served)* | 224px | **1.0000** | **1.000** | **1.000** | **0** | **0** | 44.8 MB |
+| `resnet50_grouped_320` | 320px | 0.9937 | 0.987 | 1.000 | 1 | 0 | 94.4 MB |
+| `resnet50_grouped` | 224px | 0.9874 | 0.987 | 0.988 | 1 | 1 | 94.4 MB |
+
+**ResNet-50 does not overtake ResNet-18 at either resolution.** It takes 159/159
+against 157–158/159, at twice the checkpoint size, and — the part that matters
+on a screening task — ResNet-18 is the only one of the three that misses no
+ulcers. On 159 images a one-sample difference is well inside noise, so the
+honest reading is *no measurable advantage*, not *ResNet-18 is better*; but
+"no advantage" at 2× the size and ~5× the latency is a decision either way.
+
+Raising the input to 320px is a **negative result, and a predictable one**:
+1,025 of the 1,055 patches are natively 224×224, so 320 is upsampling. It cost
+87 s/epoch against 44 s and needed 18 epochs to reach the same best validation
+macro-F1 (0.9937) that 224px reached in 9 — **roughly 4× the compute for the
+same number.** There is no detail above 224px in this data for a larger input to
+resolve. That is the answer to "would a bigger input help": measured, not
+assumed.
+
 ### 7.6 The most serious finding: out-of-distribution inputs
 
 Reproduce with `python ood_check.py`. Output: `reports/ood_check.json`.

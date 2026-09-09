@@ -41,6 +41,11 @@
 
     /* Cursor light. Cream reads as warm on both grounds; the ring's ink border
        is what keeps it visible on the light one. */
+    /* Inter for everything, with Helvetica behind it as the system fallback.
+       Montserrat is display only and never heavier than 600 -- see .font-display. */
+    --font-sans: var(--font-inter), "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-display: var(--font-montserrat), var(--font-inter), "Helvetica Neue", Helvetica, sans-serif;
+
     --cream: 246 236 214;
     --ink: 22 20 18;
     --grain-opacity: 0.030;
@@ -92,10 +97,25 @@ body {
     transition: background-color 220ms ease, color 220ms ease;
 }
 
-/* Montserrat is geometric and wide; -0.01em keeps dense UI text from feeling
-   airy, and tabular figures stop metric columns twitching as numbers change. */
+/* Inter is designed for UI at small sizes; a hair of negative tracking only.
+   Tabular figures stop metric columns twitching as the numbers change. */
 body {
-    letter-spacing: -0.011em;
+    letter-spacing: -0.006em;
+}
+
+/* Display face: headings and the wordmark. Weight is pinned here and declared
+   after Tailwind's utilities, so a stray font-black cannot push Montserrat into
+   the heavy weights that read childish. */
+.font-display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.font-display-light {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.01em;
 }
 
 .tabular-nums,
@@ -304,47 +324,84 @@ input[type="number"] {
     will-change: transform;
 }
 
+/* The native arrow is hidden only once the custom cursor is actually running
+   (Ambient adds .has-cursor). If the effect never starts — touch, reduced
+   motion, JS off — the OS cursor stays, rather than leaving no pointer at all. */
+.has-cursor,
+.has-cursor * {
+    cursor: none !important;
+}
+
 .cursor-ring {
-    width: 2.5rem;
-    height: 2.5rem;
-    margin: -1.25rem 0 0 -1.25rem;
-    border: 2px solid rgb(var(--ink) / 0.85);
-    background: rgb(var(--cream) / 0.22);
-    box-shadow: 0 0 24px rgb(var(--cream) / 0.35), inset 0 0 12px rgb(var(--cream) / 0.25);
-    transition: width 220ms cubic-bezier(0.22, 1, 0.36, 1),
-                height 220ms cubic-bezier(0.22, 1, 0.36, 1),
-                margin 220ms cubic-bezier(0.22, 1, 0.36, 1),
-                background-color 220ms ease,
+    width: 2.2rem;
+    height: 2.2rem;
+    margin: -1.1rem 0 0 -1.1rem;
+    border: 1.5px solid rgb(var(--ink) / 0.75);
+    background: rgb(var(--cream) / 0.14);
+    box-shadow: 0 0 18px rgb(var(--cream) / 0.30);
+    transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+                height 260ms cubic-bezier(0.22, 1, 0.36, 1),
+                margin 260ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 260ms ease,
+                background-color 260ms ease,
                 opacity 260ms ease;
 }
 
+/* A dashed halo that only spins up over something interactive. */
+.cursor-ring::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    border: 1px dashed rgb(var(--cyan) / 0.9);
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 220ms ease, transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .dark .cursor-ring {
-    border-color: rgb(var(--ink) / 0.9);
-    background: rgb(var(--cream) / 0.12);
+    border-color: rgb(var(--cream) / 0.8);
+    background: rgb(var(--cream) / 0.08);
 }
 
 .cursor-dot {
-    width: 0.4rem;
-    height: 0.4rem;
-    margin: -0.2rem 0 0 -0.2rem;
+    width: 0.35rem;
+    height: 0.35rem;
+    margin: -0.175rem 0 0 -0.175rem;
     background: rgb(var(--ink));
-    box-shadow: 0 0 0 1.5px rgb(var(--cream) / 0.9);
+    box-shadow: 0 0 0 1.5px rgb(var(--cream) / 0.95);
 }
 
-/* Over anything clickable the ring opens up and fills — the pointer becomes the
-   affordance instead of merely pointing at one. */
+.dark .cursor-dot {
+    background: rgb(var(--cream));
+    box-shadow: 0 0 0 1.5px rgb(var(--ink) / 0.9);
+}
+
+/* Over anything clickable the ring opens and the halo spins: the pointer
+   becomes the affordance instead of merely pointing at one. */
 .cursor-hot .cursor-ring {
-    width: 4rem;
-    height: 4rem;
-    margin: -2rem 0 0 -2rem;
-    background: rgb(var(--cream) / 0.4);
+    width: 3.4rem;
+    height: 3.4rem;
+    margin: -1.7rem 0 0 -1.7rem;
+    border-color: rgb(var(--cyan) / 0.85);
+    background: rgb(var(--cyan) / 0.10);
+}
+
+.cursor-hot .cursor-ring::after {
+    opacity: 0.65;
+    transform: scale(1);
+    animation: cursor-spin 4s linear infinite;
 }
 
 .cursor-down .cursor-ring {
-    width: 2rem;
-    height: 2rem;
-    margin: -1rem 0 0 -1rem;
-    background: rgb(var(--cream) / 0.55);
+    width: 1.7rem;
+    height: 1.7rem;
+    margin: -0.85rem 0 0 -0.85rem;
+    background: rgb(var(--cyan) / 0.28);
+}
+
+@keyframes cursor-spin {
+    to { transform: rotate(360deg); }
 }
 
 @media (hover: none), (pointer: coarse) {
@@ -457,4 +514,158 @@ input[type="number"] {
 
 @media (prefers-reduced-motion: reduce) {
     .ring-value { transition: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Scrollbars, buttons, and the extra background layers.
+   --------------------------------------------------------------------------- */
+
+/* Part of the page rather than an OS bar bolted to the edge: transparent track,
+   brand-tinted thumb inset from the gutter so it reads as a floating pill. */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--cyan) / 0.45) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    background: linear-gradient(180deg, rgb(var(--cyan) / 0.55), rgb(var(--violet) / 0.45));
+    background-clip: content-box;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgb(var(--cyan) / 0.9), rgb(var(--violet) / 0.75));
+    background-clip: content-box;
+}
+
+/* Breathing hover. Buttons only: applying it to summary elements made
+   full-width disclosures pulse, which reads as a glitch rather than a hint. */
+@keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.045); }
+}
+
+button {
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+                color 180ms ease, background-color 180ms ease,
+                border-color 180ms ease, box-shadow 240ms ease, opacity 180ms ease;
+}
+
+button:not(:disabled):hover {
+    animation: breathe 2.4s ease-in-out infinite;
+}
+
+button:not(:disabled):active {
+    animation: none;
+    transform: scale(0.97);
+}
+
+/* Primary action. Gradient body, a sheen that sweeps once per hover, and a lift
+   that reads as pressable without moving anything around it. */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+    color: rgb(var(--brand-fg));
+    background: linear-gradient(120deg,
+            rgb(var(--cyan)), rgb(var(--violet)) 58%, rgb(var(--pink)));
+    background-size: 180% 180%;
+    box-shadow: 0 10px 26px -12px rgb(var(--cyan) / 0.85),
+                inset 0 1px 0 rgb(255 255 255 / 0.28);
+    animation: drift-gradient 12s ease-in-out infinite;
+}
+
+@keyframes drift-gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+}
+
+.btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(100deg,
+            transparent 25%, rgb(255 255 255 / 0.38) 50%, transparent 75%);
+    transform: translateX(-130%);
+}
+
+.btn-primary:not(:disabled):hover::after {
+    animation: sheen 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes sheen {
+    to { transform: translateX(130%); }
+}
+
+.btn-primary:not(:disabled):hover {
+    box-shadow: 0 18px 38px -14px rgb(var(--violet) / 0.9),
+                inset 0 1px 0 rgb(255 255 255 / 0.35);
+}
+
+.btn-primary:disabled {
+    animation: none;
+    filter: grayscale(0.65);
+    opacity: 0.45;
+    box-shadow: none;
+}
+
+/* A slow light beam across the field, and a counter-rotating second sweep, so
+   the background keeps moving between blob keyframes. */
+.beam {
+    position: absolute;
+    top: -30%;
+    left: 10%;
+    width: 34vw;
+    height: 160%;
+    background: linear-gradient(90deg,
+            transparent, rgb(var(--cyan) / 0.12), transparent);
+    filter: blur(50px);
+    animation: beam-slide 30s ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes beam-slide {
+    0%, 100% { transform: rotate(14deg) translateX(-25vw); opacity: 0.45; }
+    50%      { transform: rotate(14deg) translateX(55vw); opacity: 0.95; }
+}
+
+.aurora-2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 140vmax;
+    height: 140vmax;
+    margin: -70vmax 0 0 -70vmax;
+    background: conic-gradient(from 180deg,
+            transparent 0deg,
+            rgb(var(--violet) / 0.10) 70deg,
+            transparent 160deg,
+            rgb(var(--cyan) / 0.07) 260deg,
+            transparent 340deg);
+    filter: blur(90px);
+    animation: sweep-back 140s linear infinite;
+    will-change: transform;
+}
+
+@keyframes sweep-back {
+    to { transform: rotate(-360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .beam,
+    .aurora-2,
+    .btn-primary { animation: none; }
+
+    button:not(:disabled):hover { animation: none; }
 }

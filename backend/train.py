@@ -229,7 +229,10 @@ def train_model(arch="resnet18", epochs=25, batch_size=32, lr=3e-4, weight_decay
                          "params_m": n_params / 1e6,
                          "train_minutes": (time.time() - t_start) / 60})
 
-    tag = f"{arch}{'_grouped' if group_aware else ''}{'_dedup' if dedupe else ''}{'_gray' if grayscale else ''}"
+    # Derived from the checkpoint name, not from the flags: two runs that differ
+    # only by --img-size share a flag set, and the second silently overwrote the
+    # first run's learning curve.
+    tag = os.path.splitext(out_name)[0].removeprefix("dfu_")
     hist_path = os.path.join(MODEL_DIR, f"history_{tag}.json")
     with open(hist_path, "w") as f:
         json.dump({"arch": arch, "tag": tag, "group_aware": group_aware, "dedupe": dedupe,

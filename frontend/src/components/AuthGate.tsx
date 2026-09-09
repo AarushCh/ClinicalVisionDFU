@@ -56,12 +56,12 @@ export default function AuthGate({
                         </svg>
                     </div>
                     <div>
-                        <h1 className="text-lg font-black tracking-tight">ClinicalVision DFU</h1>
+                        <h1 className="text-lg font-display">ClinicalVision DFU</h1>
                         <p className="text-[11px] text-subtle">Explainable AI triage</p>
                     </div>
                 </div>
 
-                <h2 className="text-4xl xl:text-5xl font-black tracking-tight leading-[1.05] mb-5">
+                <h2 className="text-4xl xl:text-5xl font-display leading-[1.05] mb-5">
                     Every number on the<br />report is <span className="text-gradient">traceable</span>.
                 </h2>
                 <p className="text-sm text-muted leading-relaxed max-w-md mb-10">
@@ -99,7 +99,7 @@ export default function AuthGate({
                             </svg>
                         </div>
                         <div>
-                            <h1 className="font-black tracking-tight leading-none">ClinicalVision DFU</h1>
+                            <h1 className="font-display leading-none">ClinicalVision DFU</h1>
                             <p className="text-[10px] text-subtle">Explainable AI triage</p>
                         </div>
                     </div>
@@ -135,7 +135,7 @@ export default function AuthGate({
                     ) : mode === "account" ? (
                         <form className="space-y-4" onSubmit={submitEmail}>
                             <div>
-                                <h2 className="font-black tracking-tight mb-1">Sign in</h2>
+                                <h2 className="font-display mb-1">Sign in</h2>
                                 <p className="text-xs text-muted leading-relaxed">
                                     No password. We email a one-time link; your analysis history
                                     then syncs across devices and is readable only by you.
@@ -187,7 +187,7 @@ export default function AuthGate({
                     ) : (
                         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); onGuest(name, role); }}>
                             <div>
-                                <h2 className="font-black tracking-tight mb-1">Continue as guest</h2>
+                                <h2 className="font-display mb-1">Continue as guest</h2>
                                 <p className="text-xs text-muted leading-relaxed">
                                     Nothing to sign up for. Your history stays in this browser.
                                 </p>

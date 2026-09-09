@@ -41,10 +41,18 @@ export function Ring({
                         strokeDasharray={circ} strokeDashoffset={circ * (1 - v)}
                     />
                 </svg>
+                {/* Numeral sized from the ring so it scales with it, and the
+                    percent mark set small and baseline-aligned rather than
+                    superscripted, which left it floating above the digits. */}
                 <div className="absolute inset-0 grid place-items-center">
-                    <span className={`text-lg font-black tabular-nums ${t.text}`}>
-                        {(v * 100).toFixed(0)}<span className="text-[10px] align-super">%</span>
-                    </span>
+                    <div className={`flex items-baseline ${t.text}`}>
+                        <span className="font-display tabular-nums leading-none"
+                            style={{ fontSize: Math.round(size * 0.30) }}>
+                            {(v * 100).toFixed(0)}
+                        </span>
+                        <span className="font-display leading-none opacity-55 ml-[1px]"
+                            style={{ fontSize: Math.round(size * 0.125) }}>%</span>
+                    </div>
                 </div>
             </div>
             <p className="text-[9px] font-black uppercase tracking-[0.15em] text-subtle text-center leading-tight">

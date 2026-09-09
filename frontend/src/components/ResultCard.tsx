@@ -72,7 +72,7 @@ export default function ResultCard({ result, loading, session, onAsk }: {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                             </svg>
                         </div>
-                        <h3 className="text-2xl font-black text-gradient mb-2 tracking-tight">Upload a scan to begin</h3>
+                        <h3 className="text-2xl font-display text-gradient mb-2">Upload a scan to begin</h3>
                         <p className="text-sm text-muted leading-relaxed">
                             Or pick one of the examples on the left — no image of your own
                             needed. Every stage below runs on whatever you give it.
@@ -117,7 +117,7 @@ export default function ResultCard({ result, loading, session, onAsk }: {
         <div className={`panel neon rounded-3xl p-5 sm:p-6 ${t.glow}`}>
             <div className="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-line/10">
                 <div className="min-w-0">
-                    <h2 className="text-xl font-black tracking-tight text-gradient">Automated Clinical Report</h2>
+                    <h2 className="text-xl font-display text-gradient">Automated Clinical Report</h2>
                     <p className="text-[10px] font-bold tracking-widest uppercase mt-1 text-subtle">
                         <span className="text-brand">{reportId}</span> · {modelLabel(result.model)} · {result.inference_ms?.toFixed(0)} ms
                         {session ? ` · ${session.name}` : ""}
@@ -198,7 +198,7 @@ export default function ResultCard({ result, loading, session, onAsk }: {
                         <h4 className="text-[10px] font-black text-brand uppercase tracking-[0.2em] mb-1.5">
                             Patient summary — {result.report?.headline}
                         </h4>
-                        <p className="font-medium text-sm leading-relaxed">{result.report?.patient_summary}</p>
+                        <p className="text-sm leading-relaxed">{result.report?.patient_summary}</p>
                     </div>
 
                     {iwgdf && (
@@ -251,7 +251,7 @@ export default function ResultCard({ result, loading, session, onAsk }: {
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             Recommended triage protocol
                         </h4>
-                        <ul className="font-medium text-[13px] space-y-1.5 text-fg">
+                        <ul className="text-[13px] space-y-1.5 text-fg">
                             {(result.report?.triage_steps || result.report?.triage?.split("\n") || []).map((step: string, i: number) => (
                                 <li key={i} className="flex items-start gap-2">
                                     <span className="opacity-50 mt-0.5">•</span>
@@ -328,7 +328,7 @@ export default function ResultCard({ result, loading, session, onAsk }: {
                                 </svg>
                                 Scope &amp; limitations
                             </summary>
-                            <p className="text-[10px] text-subtle leading-relaxed mt-2">{result.report.limitations}</p>
+                            <p className="text-[11px] text-subtle leading-relaxed mt-2">{result.report.limitations}</p>
                         </details>
                     )}
                 </div>

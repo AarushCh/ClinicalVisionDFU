@@ -1,12 +1,22 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 
-// Self-hosted by next/font: no request to Google, no layout shift.
-const montserrat = Montserrat({
+// Inter runs the interface and every number; Helvetica sits behind it in the
+// stack as the system fallback. Montserrat is display only — headings and the
+// wordmark — and is capped at 600 in globals.css, because its heavy weights
+// read childish at this size. Both self-hosted by next/font.
+const inter = Inter({
     subsets: ["latin"],
     display: "swap",
-    variable: "--font-sans",
+    variable: "--font-inter",
+});
+
+const montserrat = Montserrat({
+    subsets: ["latin"],
+    weight: ["400", "500", "600"],
+    display: "swap",
+    variable: "--font-montserrat",
 });
 
 export const metadata: Metadata = {
@@ -24,7 +34,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={montserrat.variable} suppressHydrationWarning>
+        <html lang="en" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning>
             <head>
                 <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
             </head>

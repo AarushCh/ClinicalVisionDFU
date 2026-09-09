@@ -21,10 +21,14 @@ ARCHS = {
 
 _MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model")
 
-# Served-checkpoint preference. Legacy dfu_model.pt stays last so a fresh clone
-# without the new weights still runs.
+# Served-checkpoint preference, ordered by measured test performance on the
+# group-aware split (reports/comparison.md): ResNet-18 takes 159/159 with no
+# missed ulcer, while ResNet-50 misses one at both 224px and 320px for twice the
+# size. Legacy dfu_model.pt stays last so a fresh clone still runs.
 _CKPT_PREFERENCE = [
     "dfu_resnet18_grouped.pt",
+    "dfu_resnet50_grouped_320.pt",
+    "dfu_resnet50_grouped.pt",
     "dfu_resnet18.pt",
     "dfu_efficientnet_b0.pt",
     "dfu_model.pt",

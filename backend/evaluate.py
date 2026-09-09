@@ -11,6 +11,7 @@ costs. Everything here goes to reports/ as both JSON and figures.
 import argparse
 import glob
 import json
+import math
 import os
 
 import matplotlib
@@ -31,17 +32,29 @@ FIG_DIR = os.path.join(REPORT_DIR, "figures")
 MODEL_DIR = os.path.join(HERE, "model")
 
 # One consistent look for every figure, so the report reads as one document.
-PALETTE = {"primary": "#0891b2", "accent": "#f59e0b", "danger": "#dc2626",
-           "good": "#059669", "muted": "#94a3b8", "ink": "#0f172a"}
+PALETTE = {"primary": "#0d9488", "accent": "#c7583e", "danger": "#be2d20",
+           "good": "#158059", "muted": "#857d70", "ink": "#1a1816"}
 
 
 def use_style():
     plt.rcParams.update({
-        "figure.dpi": 130, "savefig.dpi": 190, "savefig.bbox": "tight",
+        # Same family as the UI, so figures dropped into the report do not
+        # arrive in a different typeface.
+        "font.family": "sans-serif",
+        "font.sans-serif": ["Helvetica Neue", "Helvetica", "Arial", "Segoe UI",
+                            "DejaVu Sans"],
+        "figure.dpi": 130, "savefig.dpi": 220, "savefig.bbox": "tight",
         "font.size": 10, "axes.titlesize": 12, "axes.titleweight": "bold",
-        "axes.labelsize": 10, "axes.spines.top": False, "axes.spines.right": False,
-        "axes.grid": True, "grid.alpha": 0.25, "grid.linestyle": "--",
-        "legend.frameon": False, "figure.facecolor": "white",
+        "axes.labelsize": 10, "axes.labelcolor": PALETTE["ink"],
+        "text.color": PALETTE["ink"], "figure.titleweight": "bold",
+        "xtick.color": PALETTE["muted"], "ytick.color": PALETTE["muted"],
+        "xtick.labelsize": 9, "ytick.labelsize": 9,
+        "axes.edgecolor": "#d8cdbc", "axes.linewidth": 1.0,
+        "axes.spines.top": False, "axes.spines.right": False,
+        "axes.grid": True, "grid.alpha": 0.30, "grid.linestyle": ":",
+        "grid.color": PALETTE["muted"],
+        "legend.frameon": False, "legend.fontsize": 9,
+        "figure.facecolor": "white", "savefig.facecolor": "white",
         "axes.prop_cycle": plt.cycler(color=[PALETTE["primary"], PALETTE["accent"],
                                              PALETTE["good"], PALETTE["danger"],
                                              PALETTE["muted"]]),
@@ -194,10 +207,18 @@ def fig_curves(y_true, p_ulcer, path, title):
 
 
 def fig_calibration(rows_raw, rows_cal, ece_raw, ece_cal, conf_raw, conf_cal, path, title):
+    # At T = 1.0 the two curves are the same line, and drawing both hides the
+    # red one under the green while the legend still advertises it. Say they
+    # coincide instead of quietly plotting one on top of the other.
+    same = np.allclose(conf_raw, conf_cal) and abs(ece_raw - ece_cal) < 1e-9
+
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 4.4))
     a1.plot([0, 1], [0, 1], "--", color=PALETTE["muted"], lw=1.3, label="Perfect calibration")
-    for rows, ece, color, label in ((rows_raw, ece_raw, PALETTE["danger"], "Uncalibrated"),
-                                    (rows_cal, ece_cal, PALETTE["good"], "Temperature-scaled")):
+    series = ([(rows_cal, ece_cal, PALETTE["good"], "Uncalibrated = scaled (T = 1.00)")]
+              if same else
+              [(rows_raw, ece_raw, PALETTE["danger"], "Uncalibrated"),
+               (rows_cal, ece_cal, PALETTE["good"], "Temperature-scaled")])
+    for rows, ece, color, label in series:
         pts = [(r["confidence"], r["accuracy"]) for r in rows if r["n"] > 0]
         if pts:
             xs, ys = zip(*pts)
@@ -207,8 +228,12 @@ def fig_calibration(rows_raw, rows_cal, ece_raw, ece_cal, conf_raw, conf_cal, pa
     a1.legend(loc="upper left", fontsize=9)
 
     bins = np.linspace(0.5, 1.0, 22)
-    a2.hist([conf_raw, conf_cal], bins=bins, label=["Uncalibrated", "Temperature-scaled"],
-            color=[PALETTE["danger"], PALETTE["good"]], alpha=0.85)
+    if same:
+        a2.hist(conf_cal, bins=bins, color=PALETTE["good"], alpha=0.85,
+                label="Uncalibrated = scaled (T = 1.00)")
+    else:
+        a2.hist([conf_raw, conf_cal], bins=bins, label=["Uncalibrated", "Temperature-scaled"],
+                color=[PALETTE["danger"], PALETTE["good"]], alpha=0.85)
     a2.set(xlabel="Predicted confidence", ylabel="Test images",
            title="Confidence distribution")
     a2.legend(fontsize=9)
@@ -245,23 +270,32 @@ def fig_history(history_paths, path):
             runs.append(json.load(f))
     if not runs:
         return None
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.3))
-    for run in runs:
+    # One colour per run, taken from a continuous map rather than the 5-colour
+    # cycle, which repeated once there were more than five runs and made two
+    # different curves the same colour. Train is solid, val dashed, both in the
+    # run's colour, and the legend sits under the figure instead of on the data.
+    cmap = plt.get_cmap("turbo")
+    colours = [cmap(0.08 + 0.84 * i / max(1, len(runs) - 1)) for i in range(len(runs))]
+
+    fig, axes = plt.subplots(1, 3, figsize=(15, 4.6))
+    for run, c in zip(runs, colours):
         h = run["history"]
         ep = [e["epoch"] for e in h]
         tag = run.get("tag", run["arch"])
-        axes[0].plot(ep, [e["train_loss"] for e in h], lw=1.8, label=f"{tag} train")
-        axes[0].plot(ep, [e["val_loss"] for e in h], lw=1.8, ls="--", label=f"{tag} val")
-        axes[1].plot(ep, [e["val_acc"] for e in h], lw=2, marker="o", ms=3, label=tag)
-        axes[2].plot(ep, [e["val_macro_f1"] for e in h], lw=2, marker="o", ms=3, label=tag)
-    axes[0].set(xlabel="Epoch", ylabel="Loss", title="Loss")
+        axes[0].plot(ep, [e["train_loss"] for e in h], lw=1.7, color=c, label=tag)
+        axes[0].plot(ep, [e["val_loss"] for e in h], lw=1.7, color=c, ls="--")
+        axes[1].plot(ep, [e["val_acc"] for e in h], lw=1.9, color=c, marker="o", ms=3)
+        axes[2].plot(ep, [e["val_macro_f1"] for e in h], lw=1.9, color=c, marker="o", ms=3)
+    axes[0].set(xlabel="Epoch", ylabel="Loss", title="Loss  (solid = train, dashed = val)")
     axes[1].set(xlabel="Epoch", ylabel="Accuracy", title="Validation accuracy")
     axes[2].set(xlabel="Epoch", ylabel="Macro-F1", title="Validation macro-F1")
-    for a in axes:
-        a.legend(fontsize=7.5)
+
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=min(5, len(runs)),
+               fontsize=8.5, bbox_to_anchor=(0.5, -0.02))
     fig.suptitle("Training dynamics", fontweight="bold", fontsize=14)
     # rect leaves room for the suptitle, which otherwise lands on a subplot title.
-    fig.tight_layout(rect=[0, 0, 1, 0.93])
+    fig.tight_layout(rect=[0, 0.04, 1, 0.93])
     fig.savefig(path); plt.close(fig)
     return path
 
@@ -406,16 +440,52 @@ def build_comparison():
         f.write(table + "\n")
     print("\n" + table)
 
-    # grouped bar chart of the headline metrics
-    keys = ["accuracy", "balanced_accuracy", "sensitivity", "specificity", "auroc", "mcc"]
-    fig, ax = plt.subplots(figsize=(max(8, 1.7 * len(rows) * 1.4), 4.6))
-    w = 0.8 / len(keys)
-    x = np.arange(len(rows))
-    for i, k in enumerate(keys):
-        ax.bar(x + i * w - 0.4 + w / 2, [r[k] for r in rows], w, label=k.replace("_", " "))
-    ax.set_xticks(x, [f"{r['tag']}\n({r['split']})" for r in rows], fontsize=8)
-    ax.set(ylabel="Score", title="Model comparison on held-out test split", ylim=(0, 1.05))
-    ax.legend(fontsize=8, ncol=3)
+    # Horizontal bars: model names are long, and on a vertical chart they either
+    # overlap or turn the figure into a letterbox. The score axis is clipped to
+    # the data because every model scores above 0.93 -- on a 0-1 axis the whole
+    # comparison collapses into one flat wall. The clipping is stated on the
+    # axis label rather than left for the reader to notice.
+    keys = ["accuracy", "sensitivity", "specificity", "auroc", "mcc"]
+    colours = [PALETTE["primary"], PALETTE["danger"], PALETTE["good"],
+               PALETTE["accent"], PALETTE["muted"]]
+    lo = min(min(r[k] for k in keys) for r in rows)
+    lo = max(0.0, math.floor((lo - 0.01) * 100) / 100)
+
+    fig, (ax, ax2) = plt.subplots(
+        1, 2, figsize=(13, 0.72 * len(rows) + 2.4),
+        gridspec_kw={"width_ratios": [3.1, 1], "wspace": 0.05})
+
+    h = 0.82 / len(keys)
+    y = np.arange(len(rows))[::-1]          # best model at the top
+    for i, (k, c) in enumerate(zip(keys, colours)):
+        ax.barh(y + i * h - 0.41 + h / 2, [r[k] for r in rows], h,
+                label=k.replace("_", " "), color=c, edgecolor="none")
+
+    ax.set_yticks(y, [f"{r['tag']}\n{r['split']}" for r in rows], fontsize=8.5)
+    ax.set_xlim(lo, 1.0)
+    ax.set_xlabel(f"score (axis starts at {lo:.2f}, not 0)")
+    ax.set_title("Model comparison on the held-out test split", loc="left", pad=34)
+    ax.legend(fontsize=8, ncol=5, loc="lower right", bbox_to_anchor=(1.0, 1.01))
+    ax.grid(axis="y", visible=False)
+
+    # The clinically meaningful panel: a missed ulcer is not the same cost as an
+    # unnecessary referral, so the error counts get their own axis.
+    ax2.barh(y - 0.19, [r["fn"] for r in rows], 0.36,
+             color=PALETTE["danger"], label="missed ulcers (FN)")
+    ax2.barh(y + 0.19, [r["fp"] for r in rows], 0.36,
+             color=PALETTE["muted"], label="false alarms (FP)")
+    for i, r in enumerate(rows):
+        ax2.text(r["fn"] + 0.08, y[i] - 0.19, str(r["fn"]), va="center", fontsize=8,
+                 color=PALETTE["danger"], fontweight="bold")
+        ax2.text(r["fp"] + 0.08, y[i] + 0.19, str(r["fp"]), va="center", fontsize=8,
+                 color=PALETTE["muted"])
+    ax2.set_yticks(y, [""] * len(rows))
+    ax2.set_xlim(0, max(2, max(max(r["fn"], r["fp"]) for r in rows) + 1))
+    ax2.set_xlabel(f"errors out of n={rows[0]['n']}")
+    ax2.set_title("Where the errors fall", loc="left", pad=34)
+    ax2.legend(fontsize=8, loc="lower right", bbox_to_anchor=(1.0, 1.01))
+    ax2.grid(axis="y", visible=False)
+
     fig.savefig(os.path.join(FIG_DIR, "comparison.png")); plt.close(fig)
 
     hist = glob.glob(os.path.join(MODEL_DIR, "history_*.json"))

@@ -271,7 +271,7 @@ export default function UploadForm({
             )}
 
             <button type="submit" disabled={loading || !file}
-                className="w-full rounded-xl px-5 py-3.5 bg-brand text-brandFg font-black text-xs tracking-[0.15em] uppercase hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                className="btn-primary group w-full rounded-xl px-5 py-3.5 font-black text-xs tracking-[0.18em] uppercase disabled:cursor-not-allowed flex items-center justify-center gap-2.5">
                 {loading ? (
                     <>
                         <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -280,7 +280,19 @@ export default function UploadForm({
                         </svg>
                         Analysing…
                     </>
-                ) : "Run analysis"}
+                ) : (
+                    <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Run analysis
+                        <svg className="w-3.5 h-3.5 -ml-0.5 transition-transform duration-300 group-hover:translate-x-1"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </>
+                )}
             </button>
         </form>
     );

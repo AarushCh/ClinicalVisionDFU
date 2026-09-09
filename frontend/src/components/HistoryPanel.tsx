@@ -47,7 +47,7 @@ export default function HistoryPanel({
         <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h2 className="text-lg font-black tracking-tight">Analysis history</h2>
+                    <h2 className="text-lg font-display">Analysis history</h2>
                     <p className="text-[11px] text-subtle mt-0.5">
                         {synced
                             ? "Synced to your account — row-level security means only you can read these."
