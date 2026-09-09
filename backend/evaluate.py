@@ -1,16 +1,12 @@
 """Held-out evaluation, calibration analysis and figure generation.
 
     python evaluate.py --ckpt model/dfu_resnet18.pt
-    python evaluate.py --ckpt model/dfu_resnet18_grouped.pt --group-aware
+    python evaluate.py --ckpt model/dfu_resnet50_grouped.pt --group-aware
     python evaluate.py --compare            # rebuild the cross-model table
 
-The original project reported a single number -- "highest validation accuracy" --
-printed to a terminal and never persisted. For a binary clinical screening task
-that is the least informative summary available: it hides which class the errors
-fall on, and on a screening task a false negative (missed ulcer) and a false
-positive (unnecessary referral) are not remotely equivalent costs.
-
-Everything written here goes to reports/ as both JSON and figures.
+"Highest validation accuracy" hides which class the errors fall on, and on a
+screening task a missed ulcer and an unnecessary referral are not equivalent
+costs. Everything here goes to reports/ as both JSON and figures.
 """
 import argparse
 import glob
@@ -52,9 +48,7 @@ def use_style():
     })
 
 
-# --------------------------------------------------------------------------
-# metrics
-# --------------------------------------------------------------------------
+# --- metrics ---
 def binary_metrics(y_true, y_pred, p_ulcer, positive=ULCER_IDX):
     """Ulcer is the positive class: sensitivity is the ability to catch ulcers."""
     yt = (y_true == positive).astype(int)
@@ -122,8 +116,7 @@ def operating_points(y_true, p_ulcer, positive=ULCER_IDX):
                      "youden_j": sens + spec - 1, "tp": tp, "fp": fp, "fn": fn, "tn": tn})
 
     best_j = max(rows, key=lambda r: r["youden_j"])
-    # Screening priority: catch ulcers. Take the most specific threshold that
-    # still keeps sensitivity >= 95%, since a missed ulcer can end in amputation.
+    # Screening: most specific threshold that still holds sensitivity >= 95%.
     hi_sens = [r for r in rows if r["sensitivity"] >= 0.95]
     screen = max(hi_sens, key=lambda r: r["specificity"]) if hi_sens else best_j
     default = min(rows, key=lambda r: abs(r["threshold"] - 0.5))
@@ -131,9 +124,7 @@ def operating_points(y_true, p_ulcer, positive=ULCER_IDX):
             "default_0.5": default}
 
 
-# --------------------------------------------------------------------------
-# inference
-# --------------------------------------------------------------------------
+# --- inference ---
 @torch.no_grad()
 def infer(model, loader, temperature=1.0, tta=True):
     logits = []
@@ -151,9 +142,7 @@ def infer(model, loader, temperature=1.0, tta=True):
     return probs, raw, targets
 
 
-# --------------------------------------------------------------------------
-# figures
-# --------------------------------------------------------------------------
+# --- figures ---
 def fig_confusion(cm, path, title, class_names=CLASS_NAMES):
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.4))
     short = [c.replace(" skin", "").replace("(", "\n(") for c in class_names]
@@ -271,8 +260,7 @@ def fig_history(history_paths, path):
     for a in axes:
         a.legend(fontsize=7.5)
     fig.suptitle("Training dynamics", fontweight="bold", fontsize=14)
-    # tight_layout before savefig, leaving room for the suptitle -- without the
-    # rect the suptitle lands on top of the middle subplot's own title
+    # rect leaves room for the suptitle, which otherwise lands on a subplot title.
     fig.tight_layout(rect=[0, 0, 1, 0.93])
     fig.savefig(path); plt.close(fig)
     return path
@@ -301,9 +289,7 @@ def evaluate(ckpt, group_aware=False, dedupe=False, split="test", seed=SEED,
     temperature = float(meta.get("temperature", 1.0))
     tag = tag or os.path.splitext(os.path.basename(ckpt))[0]
 
-    # A model trained on luminance-only images must be evaluated the same way,
-    # or it is scored on a distribution it never saw and the ablation is
-    # meaningless.
+    # A grayscale-trained model must be scored grayscale or the ablation is void.
     tr, va, te, base = build_splits(size=size, seed=seed, group_aware=group_aware,
                                     dedupe=dedupe, grayscale=grayscale)
     ds = {"train": tr, "val": va, "test": te}[split]
@@ -461,8 +447,7 @@ def main():
             if "optimized" in ck:
                 continue
             name = os.path.basename(ck)
-            # a checkpoint trained group-aware must be evaluated group-aware,
-            # or it is scored against a split it partly trained on
+            # A group-aware checkpoint must be evaluated group-aware.
             evaluate(ck, group_aware="_grouped" in name, dedupe="_dedup" in name,
                      grayscale="_gray" in name,
                      split=a.split, seed=a.seed, tta=not a.no_tta)

@@ -1,19 +1,10 @@
 """Grad-CAM / Grad-CAM++ visual explanations.
 
-Fixes over the original implementation:
-  * hooks are removed after use. The old code registered a fresh pair of hooks
-    on the same module on every request and never detached them, so a
-    long-running server accumulated hundreds of hooks (unbounded memory growth
-    and redundant work on every forward pass).
-  * the CAM is taken from the layer4 *block* output -- after the residual
-    addition and ReLU -- not from ``layer4.2.conv3``, which is a partial signal
-    from one branch.
-  * no sqrt() contrast stretch and no image-sized Gaussian blur. A 7x7 CAM
-    bilinearly upsampled to 224px is already smooth; the old
-    ``heatmap ** 0.5`` plus a ~38px blur inflated every weak activation into a
-    large warm blob, which is what made healthy skin look diffusely "hot".
-  * Grad-CAM++ is available, which localises multiple lesions better than
-    vanilla Grad-CAM when several ulcer regions are present.
+Hooks are removed after use -- the original registered a fresh pair per request
+and never detached them. The CAM is taken from the layer4 block output, after the
+residual add and ReLU, not from one branch. No sqrt contrast stretch and no
+image-sized blur: those inflated every weak activation into a warm blob, which is
+what made healthy skin look diffusely hot.
 """
 import base64
 
@@ -62,9 +53,8 @@ class GradCAM:
             raise RuntimeError("use GradCAM inside a 'with' block so hooks are cleaned up")
         self.model.eval()
 
-        # Hugging Face Spaces runs inference under torch.inference_mode by
-        # default, which permanently disables autograd on tensors created inside
-        # it. Grad-CAM needs a backward pass, so we explicitly opt out.
+        # Spaces runs inference under torch.inference_mode, which kills autograd;
+        # Grad-CAM needs a backward pass, so opt out explicitly.
         with torch.inference_mode(mode=False), torch.enable_grad():
             x = input_tensor.clone().requires_grad_(True)
             logits = self.model(x)
@@ -90,8 +80,7 @@ class GradCAM:
         g2, g3 = grads.pow(2), grads.pow(3)
         denom = 2 * g2 + (acts.sum(dim=(1, 2))[:, None, None] * g3)
         alpha = g2 / torch.where(denom != 0, denom, torch.ones_like(denom))
-        # exp(score) is a positive constant across channels; it cancels in the
-        # normalisation below, so relu(grads) alone carries the sign.
+        # exp(score) is constant across channels and cancels in the normalisation.
         return (alpha * torch.relu(grads)).sum(dim=(1, 2))
 
     @staticmethod
@@ -236,8 +225,7 @@ def _self_check():
             g.generate(x, 0)
     assert len(model.layer4._forward_hooks) == before, "hooks leaked across calls"
 
-    # generate() outside a with-block must fail loudly rather than silently
-    # reusing whatever activations were left over from a previous request
+    # generate() outside a with-block must fail loudly, not reuse stale state.
     try:
         GradCAM(model, model.layer4).generate(x, 0)
         raise AssertionError("expected RuntimeError outside context manager")

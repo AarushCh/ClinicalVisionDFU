@@ -1,23 +1,15 @@
-"""Grounded LLM assistant for explaining a prediction in plain language.
+"""Grounded LLM assistant.
 
-The frontend is a static export with no server of its own, so it cannot hold an
-API key. Every call is proxied through this backend instead: the key lives in an
-environment variable on the server and is never sent to a browser.
+The frontend is a static export and cannot hold an API key, so every call is
+proxied here. Groq (gsk_), Grok/x.ai (xai-) and NVIDIA Nemotron (nvapi-) are all
+OpenAI-compatible, and the provider is inferred from the key prefix, so a key
+pasted under the wrong LLM_PROVIDER still works.
 
-Groq (groq.com), Grok (x.ai) and NVIDIA's Nemotron endpoints are all
-OpenAI-compatible, so a single chat-completions client covers all three. Pick one
-with LLM_PROVIDER, or point LLM_BASE_URL anywhere else that speaks the same
-protocol. The provider is also inferred from the key prefix, so a key pasted
-under the wrong LLM_PROVIDER still works.
+    export LLM_PROVIDER=groq
+    export LLM_API_KEY=gsk_...   # optional: LLM_MODEL, LLM_BASE_URL, LLM_TIMEOUT
 
-    export LLM_PROVIDER=groq         # or: grok, nemotron
-    export LLM_API_KEY=gsk_...       # or xai-..., nvapi-...
-    # optional: LLM_MODEL, LLM_BASE_URL, LLM_TIMEOUT
-
-The assistant is deliberately constrained. It is given the prediction as JSON and
-told to answer only from it, because an unconstrained model attached to a medical
-readout will happily invent a diagnosis. Refusals are part of the contract, not a
-failure mode.
+The model is handed the prediction as JSON and told to answer only from it:
+unconstrained, it will invent a diagnosis. Refusals are the contract.
 """
 import json
 import os
@@ -26,13 +18,11 @@ import httpx
 
 import envfile
 
-# Populate os.environ from .env before any config is resolved. Without this a
-# key sitting in .env is invisible unless the shell already exported it.
+# Populate os.environ from .env first, or a key sitting there stays invisible.
 envfile.load()
 
-# Note the two similarly-named services: "groq" is groq.com (fast inference of
-# open models, keys start gsk_), "grok" is x.ai's own model (keys start xai-).
-# Mixing them up produces a 400 "Incorrect API key", so both are presets here.
+# "groq" is groq.com (keys gsk_), "grok" is x.ai (keys xai-). Both are presets
+# because transposing them returns a confusing 400.
 PROVIDERS = {
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
@@ -58,7 +48,7 @@ DEFAULT_PROVIDER = os.environ.get("LLM_PROVIDER", "grok").strip().lower()
 TIMEOUT = float(os.environ.get("LLM_TIMEOUT", "45"))
 MAX_QUESTION_CHARS = 1000
 
-SYSTEM_PROMPT = """You are a clinical-informatics assistant embedded in ClinicalVision DFU, \
+SYSTEM_PROMPT = """You are CliniViz, the clinical-informatics assistant built into ClinicalVision DFU, \
 a diabetic-foot-ulcer triage research prototype. You explain one specific automated \
 result to the person looking at it.
 
@@ -88,9 +78,7 @@ diabetic-foot screening guideline.
 - You are talking about a model output, so prefer "the model estimated" over "you have".
 """
 
-# Only these keys are forwarded. The image itself, the base64 overlays and any
-# other bulk payload never leave the server: they cost tokens and tell the model
-# nothing it can read.
+# Only these keys are forwarded: overlays cost tokens and say nothing.
 CONTEXT_KEYS = (
     "risk", "risk_probability", "image_probability", "image_probability_used",
     "image_probability_clamped", "confidence", "predicted_class",
@@ -108,9 +96,7 @@ def config():
            or os.environ.get(preset["key_env"])
            or "").strip()
 
-    # A key's prefix identifies its provider unambiguously. If it does not match
-    # the configured preset, trust the key: the alternative is a confusing 400
-    # from the wrong vendor. groq/grok in particular are trivial to transpose.
+    # Trust the key prefix over the preset -- groq/grok are trivial to transpose.
     by_prefix = {"gsk_": "groq", "xai-": "grok", "nvapi-": "nemotron"}
     actual = next((v for p, v in by_prefix.items() if key.startswith(p)), None)
     if actual and actual != name and not os.environ.get("LLM_BASE_URL"):
@@ -215,8 +201,7 @@ async def ask(question, result=None, history=None, temperature=0.2, max_tokens=6
     if r.status_code == 429:
         raise RuntimeError(f"{cfg['provider']} rate limit reached (429); try again shortly")
     if r.status_code == 404 and "model" in r.text.lower():
-        # Model catalogues change and differ per account tier, so name what this
-        # key can actually use instead of leaving the caller to guess.
+        # Catalogues differ per account tier, so name what this key can use.
         raise RuntimeError(
             f"Model {cfg['model']!r} is not available on this {cfg['provider']} key. "
             f"Available: {', '.join(await list_models()) or 'unknown'}. "

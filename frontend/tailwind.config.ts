@@ -13,6 +13,13 @@ const config: Config = {
     ],
     theme: {
         extend: {
+            // One family everywhere: mono and serif map to it too, so no stray
+            // Times or Consolas can appear via font-mono / font-serif.
+            fontFamily: {
+                sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+                mono: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+                serif: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+            },
             colors: {
                 bg: token("bg"),
                 bgAccent: token("bg-accent"),

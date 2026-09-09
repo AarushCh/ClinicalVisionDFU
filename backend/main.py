@@ -1,15 +1,4 @@
-"""ClinicalVision DFU API.
-
-Changes over the original:
-  * upload size and content-type are validated before the bytes reach PIL
-  * a corrupt or oversized image returns 400 with a readable message instead of
-    a 500 from inside torch
-  * the optional clinical fields (HbA1c, neuropathy, PAD, prior ulcer, smoking,
-    deformity) are accepted, so the fusion model has something to fuse
-  * numeric inputs are range-checked -- the old endpoint accepted age=-40
-  * CORS is restricted to the known frontends by default rather than "*"
-  * /health reports what model is actually loaded
-"""
+"""ClinicalVision DFU API: validated upload -> predict -> explain -> fuse."""
 import logging
 import os
 
@@ -31,8 +20,8 @@ log = logging.getLogger("clinicalvision")
 MAX_UPLOAD_BYTES = int(os.environ.get("MAX_UPLOAD_BYTES", 15 * 1024 * 1024))
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff"}
 
-# Wide-open CORS on a medical endpoint lets any page on the internet drive this
-# API from a visitor's browser. Override with a comma-separated ALLOWED_ORIGINS.
+# Wide-open CORS would let any page drive this API from a visitor's browser.
+# Override with a comma-separated ALLOWED_ORIGINS.
 DEFAULT_ORIGINS = [
     "https://aarushch.github.io",
     "http://localhost:3000",
@@ -143,9 +132,8 @@ def _flag(name, value):
 @app.post("/predict")
 async def predict_risk(
     image: UploadFile = File(...),
-    # Clinical fields are all optional: a missing field sits at the population
-    # reference and contributes exactly zero, rather than defaulting to a value
-    # that would silently move the result.
+    # Optional: a missing field sits at the population reference and contributes
+    # zero, rather than defaulting to a value that would move the result.
     age: str = Form(None),
     bmi: str = Form(None),
     diabetes_years: str = Form(None),
@@ -169,9 +157,8 @@ async def predict_risk(
     if cam_mode not in ("gradcam", "gradcam++"):
         raise HTTPException(400, "cam_mode must be 'gradcam' or 'gradcam++'")
 
-    # Validated OUTSIDE the try below. HTTPException is itself an Exception, so
-    # raising these inside would let the broad handler re-wrap a deliberate 400
-    # as an opaque 500.
+    # Outside the try: HTTPException is an Exception, so a deliberate 400 raised
+    # inside would be re-wrapped as an opaque 500.
     fields = dict(
         age=_num("age", age, 0, 120),
         bmi=_num("bmi", bmi, 8, 90),
@@ -197,8 +184,7 @@ async def predict_risk(
 
 
 if __name__ == "__main__":
-    # Imported here, not at module scope: uvicorn is needed to *run* the server,
-    # not to import the app (tests and ASGI hosts import `app` directly).
+    # Imported here so `app` can be imported without uvicorn installed.
     import uvicorn
 
     uvicorn.run("main:app", host="0.0.0.0",

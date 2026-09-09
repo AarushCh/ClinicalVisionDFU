@@ -3,8 +3,7 @@
 export const API_URL =
     process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:10000";
 
-// basePath from next.config.mjs. Static assets under public/ are served from
-// there, so a hard-coded "/samples/x.jpg" 404s on GitHub Pages.
+// basePath from next.config.mjs: a hard-coded "/samples/x.jpg" 404s on Pages.
 export const BASE_PATH =
     process.env.NEXT_PUBLIC_BASE_PATH ?? "/ClinicalVisionDFU";
 
@@ -21,10 +20,8 @@ export type Preset = {
     note: string;
 };
 
-// Demo cases. All four patches are drawn from the group-aware TEST split, so
-// none of them was seen during training. The whole-foot case is included on
-// purpose: it demonstrates the out-of-distribution failure measured in
-// backend/ood_check.py, which is the most important caveat in the project.
+// Demo cases from the group-aware TEST split. The whole-foot one is deliberate:
+// it demonstrates the OOD failure measured in backend/ood_check.py.
 export const PRESETS: Preset[] = [
     {
         id: "ulcer-1",

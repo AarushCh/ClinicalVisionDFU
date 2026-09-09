@@ -1,21 +1,10 @@
 /**
- * Analysis history.
+ * Analysis history: localStorage by default, Supabase once signed in.
  *
- * Two backends behind one interface:
- *
- *   localStorage (default)  per-device, zero setup, cleared with site data.
- *   Supabase (opt-in)       real accounts, cross-device, image storage.
- *
- * Supabase activates automatically when NEXT_PUBLIC_SUPABASE_URL and
- * NEXT_PUBLIC_SUPABASE_ANON_KEY are present at build time; otherwise everything
- * falls back to the browser. The anon key is public *by design* — Postgres
- * row-level security is what protects the data, not key secrecy — so it belongs
- * in the frontend bundle. See supabase/schema.sql for the tables and policies.
- *
- * Full-resolution overlays are never stored. They are ~120 KB of base64 each and
- * localStorage caps out around 5 MB, so a 160px JPEG thumbnail is kept instead:
- * enough to recognise a case in a list, ~4 KB on disk.
+ * Overlays are ~120 KB of base64 each and localStorage caps near 5 MB, so only a
+ * 160px thumbnail is kept. Tables and policies live in supabase/schema.sql.
  */
+import { getSignedInClient, supabaseConfigured } from "./supabase";
 
 export type HistoryEntry = {
     id: string;
@@ -38,11 +27,11 @@ export type HistoryEntry = {
 
 const KEY = "cv-history";
 const MAX_ENTRIES = 60;
+
 const THUMB_PX = 160;
 
-export const supabaseConfigured = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+// Re-exported so callers have one import for "is history syncing?".
+export { supabaseConfigured };
 
 /** Downscale to a small JPEG data URL. Returns "" if the browser blocks canvas. */
 export async function makeThumb(src: string, px = THUMB_PX): Promise<string> {
@@ -106,8 +95,7 @@ function writeLocal(entries: HistoryEntry[]) {
         localStorage.setItem(KEY, JSON.stringify(entries));
         return true;
     } catch {
-        // Quota exceeded: drop the oldest half and retry once rather than
-        // silently losing the newest analysis the user just ran.
+        // Quota exceeded: drop the oldest half rather than lose the newest.
         try {
             localStorage.setItem(KEY, JSON.stringify(entries.slice(0, Math.floor(entries.length / 2))));
             return true;
@@ -119,22 +107,6 @@ function writeLocal(entries: HistoryEntry[]) {
 
 // --- Supabase backend (lazy) ----------------------------------------------
 
-let clientPromise: Promise<any> | null = null;
-
-async function getClient() {
-    if (!supabaseConfigured) return null;
-    if (!clientPromise) {
-        // Dynamic import keeps ~40 KB of client out of the bundle for anyone who
-        // has not configured Supabase.
-        clientPromise = import("@supabase/supabase-js").then((m) =>
-            m.createClient(
-                process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-            )
-        );
-    }
-    return clientPromise;
-}
 
 const ROW_TO_ENTRY = (r: any): HistoryEntry => ({
     id: r.id,
@@ -158,7 +130,7 @@ const ROW_TO_ENTRY = (r: any): HistoryEntry => ({
 // --- public API -----------------------------------------------------------
 
 export async function listHistory(): Promise<HistoryEntry[]> {
-    const sb = await getClient();
+    const sb = await getSignedInClient();
     if (sb) {
         const { data, error } = await sb
             .from("analyses")
@@ -172,7 +144,7 @@ export async function listHistory(): Promise<HistoryEntry[]> {
 }
 
 export async function addHistory(entry: HistoryEntry): Promise<HistoryEntry[]> {
-    const sb = await getClient();
+    const sb = await getSignedInClient();
     if (sb) {
         const { error } = await sb.from("analyses").insert({
             file_name: entry.fileName,
@@ -198,7 +170,7 @@ export async function addHistory(entry: HistoryEntry): Promise<HistoryEntry[]> {
 }
 
 export async function removeHistory(id: string): Promise<HistoryEntry[]> {
-    const sb = await getClient();
+    const sb = await getSignedInClient();
     if (sb) {
         const { error } = await sb.from("analyses").delete().eq("id", id);
         if (!error) return listHistory();
@@ -209,7 +181,7 @@ export async function removeHistory(id: string): Promise<HistoryEntry[]> {
 }
 
 export async function clearHistory(): Promise<HistoryEntry[]> {
-    const sb = await getClient();
+    const sb = await getSignedInClient();
     if (sb) {
         // Deletes only this user's rows: RLS scopes the statement to auth.uid().
         const { error } = await sb.from("analyses").delete().neq("id", "");

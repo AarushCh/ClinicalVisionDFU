@@ -1,9 +1,6 @@
 import React, { forwardRef } from 'react';
 
-// A4 clinical report. Everything printed here comes from the API response --
-// the previous version hard-coded "ResNet-18" in the narrative while the backend
-// was serving ResNet-50, and described the scan as a "radiograph" when it is an
-// optical photograph.
+// A4 report. Every value comes from the API response, never hard-coded.
 const S = {
     h3: { fontSize: '14px', fontWeight: 'bold', borderBottom: '1px solid black', marginBottom: '12px', paddingBottom: '3px' } as React.CSSProperties,
     p: { fontSize: '12.5px', marginBottom: '12px', textAlign: 'justify' } as React.CSSProperties,
@@ -27,7 +24,7 @@ const PrintableReport = forwardRef(({ result, reportId }: any, ref: any) => {
 
     return (
         <div ref={ref} className="p-10" style={{
-            fontFamily: '"Times New Roman", Times, serif', color: '#000', backgroundColor: '#fff',
+            fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif', color: '#000', backgroundColor: '#fff',
             WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', lineHeight: 1.5, maxWidth: '850px', margin: '0 auto',
         }}>
             <div style={{ borderBottom: '2px solid black', paddingBottom: '10px', marginBottom: '22px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>

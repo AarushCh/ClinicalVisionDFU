@@ -2,21 +2,11 @@
 
     python make_samples.py --n 12
 
-Produces, under reports/samples/:
-  * <id>_triptych.png  -- original | Grad-CAM++ overlay | bare heatmap
-  * contact_sheet.png  -- every case on one page, colour-coded by outcome
-  * readings.csv / readings.json / readings.md -- the numeric readings table
-  * cases/<id>.json    -- the complete API response for that case
-
-Cases are drawn from three pools so the table shows the system's behaviour on
-material it was scored on *and* on material it has never seen:
-  * held-out test patches (ulcer + healthy) with known ground truth
-  * TestSet/ -- whole-foot photographs, a different distribution entirely
-  * Original Images/ -- full-resolution clinical photographs
-
-Each case is paired with a synthetic patient profile so the clinical fusion and
-the IWGDF stratification are exercised too. Those profiles are invented inputs
-for demonstration; they are not attached to the real images in any way.
+Writes triptychs, a contact sheet, the readings table and per-case API responses
+to reports/samples/. Cases are drawn from held-out test patches, whole-foot
+photographs and full-resolution clinical images, so the table covers material the
+model was scored on and material it has never seen. Patient profiles are invented
+for demonstration and are not attached to the real images.
 """
 import argparse
 import csv
@@ -38,8 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SAMPLE_DIR = os.path.join(HERE, "reports", "samples")
 DFU_ROOT = os.path.normpath(os.path.join(HERE, "..", "USE CASE - 02", "DFU"))
 
-# Synthetic patient profiles spanning the clinical risk spectrum, cycled across
-# the sampled images so every IWGDF category appears in the table.
+# Profiles cycled across the sampled images so every IWGDF category appears.
 PROFILES = [
     {"label": "Low-risk, well controlled",
      "age": 48, "bmi": 23.4, "diabetes_years": 4, "hba1c": 6.6},
@@ -94,9 +83,8 @@ def triptych(case, result, out_path):
     import io as _io
 
     orig = Image.open(case["path"]).convert("RGB")
-    # cv2.imencode takes a BGR array and writes a correctly-coloured PNG, so the
-    # decoded image is already RGB. Reversing channels here would paint the
-    # Grad-CAM hotspots blue instead of red.
+    # cv2.imencode takes BGR and writes correct colour, so the decoded image is
+    # already RGB. Reversing channels here would paint the hotspots blue.
     overlay = Image.open(_io.BytesIO(base64.b64decode(result["overlay"]))).convert("RGB")
     heat = Image.open(_io.BytesIO(base64.b64decode(result["heatmap_only"]))).convert("RGB")
 

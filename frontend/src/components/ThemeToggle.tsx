@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 type Theme = "light" | "dark";
 
 export default function ThemeToggle() {
-    // Starts undefined so the first render matches what the inline script in
-    // layout.tsx already put on <html>; reading localStorage during render would
-    // mismatch the server-rendered markup and trigger a hydration warning.
+    // Undefined first render matches what the inline script put on <html>.
     const [theme, setTheme] = useState<Theme | null>(null);
 
     useEffect(() => {
@@ -19,8 +17,7 @@ export default function ThemeToggle() {
         try {
             localStorage.setItem("cv-theme", next);
         } catch {
-            // Private mode / storage disabled: the toggle still works for this
-            // session, it just will not be remembered.
+            // Storage disabled: the toggle works, it just is not remembered.
         }
         setTheme(next);
     };

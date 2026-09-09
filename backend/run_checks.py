@@ -1,10 +1,6 @@
 """Run every module's self-check plus the API contract tests.
 
     python run_checks.py
-
-Each module owns its own checks and can be run directly; this just runs all of
-them in one pass and reports a summary, so "does the project still work" is a
-single command before a demo or a commit.
 """
 import importlib
 import os
@@ -95,8 +91,7 @@ def main_():
     for name, desc in MODULES:
         print(f"\n--- {name}: {desc}")
         try:
-            # each module is run as a subprocess so a torch/global-state change
-            # in one cannot mask a failure in the next
+            # Subprocess each, so global state in one cannot mask a later failure.
             r = subprocess.run([sys.executable, "-c",
                                 f"import sys; sys.path.insert(0, r'{HERE}'); "
                                 f"import importlib; m = importlib.import_module('{name}'); "

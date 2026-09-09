@@ -2,19 +2,10 @@
 
     python benchmark.py
 
-Replaces the previous optimize_model.py, whose headline claim was wrong.
-That script called::
-
-    quantize_dynamic(model, {nn.Linear}, dtype=torch.qint8)
-
-on a ResNet-50 and reported a "4x memory reduction". ResNet-50 has exactly one
-nn.Linear -- the 2048->2 head, 4,098 of 25.6M parameters (0.016%). Everything
-that matters is Conv2d, which dynamic quantisation does not touch. TorchScript
-tracing then *added* serialisation overhead, so the "optimized" checkpoint came
-out at 94.58 MB against the original's 94.37 MB: measurably larger, and no
-code path ever loaded it.
-
-The real saving was architectural, and this script measures it honestly.
+Replaces optimize_model.py, whose headline was wrong: it quantised only nn.Linear
+on a ResNet-50, which is 4,098 of 25.6M parameters, then TorchScript tracing made
+the "optimized" checkpoint larger than the original. The real saving was
+architectural, and this measures it.
 """
 import argparse
 import glob
@@ -46,9 +37,8 @@ def bench_one(path, runs=25, warmup=5, batch=1):
     size = int(meta.get("img_size", IMG_SIZE))
     x = torch.randn(batch, 3, size, size)
 
-    # Process RSS around the run. tracemalloc is NOT usable here: it only sees
-    # Python-level allocations, and every activation tensor is allocated by
-    # torch's C++ allocator, so it reported a flat 0.0 MB for every model.
+    # RSS around the run. tracemalloc sees only Python allocations and reported a
+    # flat 0.0 MB per model -- torch allocates activations in C++.
     rss = _rss_mb()
     with torch.no_grad():
         for _ in range(warmup):

@@ -1,15 +1,9 @@
 """Load key=value pairs from a .env file into os.environ.
 
-The backend read os.environ directly, so a key sitting in .env was never picked
-up unless the shell had already exported it -- which is exactly the trap that
-made the assistant report "not configured" while the key was on disk.
-
-Deliberately not python-dotenv: this is ~30 lines of parsing for a file format
-that is `KEY=VALUE` plus comments, and a serving image should not grow a
-dependency for that.
-
-Precedence: a variable already present in the real environment always wins, so
-`LLM_API_KEY=... python main.py` still overrides the file.
+The backend reads os.environ directly, so a key sitting in .env was invisible
+unless the shell had already exported it. Not python-dotenv: KEY=VALUE plus
+comments is ~30 lines, and a serving image should not grow a dependency for it.
+A variable already in the real environment always wins.
 """
 import os
 
@@ -32,8 +26,7 @@ def parse(text):
         if not key or not (key[0].isalpha() or key[0] == "_"):
             continue
         value = value.strip()
-        # Strip one layer of matching quotes. Unquoted values may carry a
-        # trailing ` # comment`, quoted ones must not be cut at a '#'.
+        # Unquoted values may carry a trailing comment; quoted ones must not be cut.
         if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
             value = value[1:-1]
         elif "#" in value:

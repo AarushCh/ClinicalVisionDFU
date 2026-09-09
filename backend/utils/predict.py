@@ -1,19 +1,10 @@
 """Inference pipeline: preprocess -> CNN -> calibrate -> explain -> fuse -> report.
 
-Fixes over the original:
-  * architecture, input size, class order and calibration temperature are read
-    from the checkpoint instead of hard-coded, so retraining cannot silently
-    desynchronise training from serving.
-  * the softmax probability is temperature-scaled before it is shown to anyone.
-  * ``age`` is actually used (see clinical.py).
-  * "confidence" and "risk" are no longer the same number. The old code returned
-    the fused risk score in a field the UI printed as "Confidence: X%", so a
-    LOW-risk result displayed as low confidence, which reads as "the model is
-    unsure" when it means the opposite.
-  * preprocessing matches eval-time training preprocessing exactly (the old code
-    built an unused ``transform`` at import and then inlined a different one).
-  * test-time augmentation averages the original with its mirror, which is free
-    accuracy on a symmetric problem (left/right feet).
+Architecture, input size, class order and temperature are read from the
+checkpoint, so retraining cannot desynchronise training from serving. Confidence
+and risk are no longer the same number -- the old code printed fused risk under a
+"Confidence" label, so a LOW-risk result read as an unsure model. Preprocessing
+matches eval-time training exactly, and TTA averages the image with its mirror.
 """
 import io
 import os
@@ -45,14 +36,11 @@ _TRANSFORM = None
 
 
 def get_model():
-    """Load once, lazily. Import-time loading made the module unimportable
-    (and the whole app un-startable) whenever the checkpoint was missing."""
+    """Load once, lazily: import-time loading broke startup without a checkpoint."""
     global _MODEL, _META, _LAYER, _TRANSFORM
     if _MODEL is None:
         model, meta = load_bundle(MODEL_PATH, map_location="cpu")
-        # Grad-CAM needs a graph through the activations, which the input tensor
-        # provides. Parameters do not need gradients, and leaving them on makes
-        # every backward pass allocate a full set of parameter gradients.
+        # Grad-CAM needs a graph through the activations; parameter grads are waste.
         for p in model.parameters():
             p.requires_grad_(False)
         model.eval()
@@ -89,8 +77,7 @@ def load_image(image_bytes):
         if img.width * img.height > MAX_PIXELS:
             raise ValueError(
                 f"Image too large: {img.width}x{img.height} exceeds {MAX_PIXELS:,} pixels")
-        # EXIF orientation: phone photos are routinely stored rotated, and a
-        # sideways foot is out of distribution for the model.
+        # EXIF orientation: phone photos are routinely stored rotated.
         return ImageOps.exif_transpose(img).convert("RGB")
     except ValueError:
         raise
@@ -122,8 +109,7 @@ def process_prediction(image_bytes, age=None, bmi=None, diabetes_years=None,
     probs = _tta_probs(model, tensor, temperature)
     p_ulcer = float(probs[ULCER_IDX])
 
-    # Grad-CAM explains the ulcer class specifically, not argmax: a heatmap for
-    # "healthy" is not what a clinician is looking at the picture to find.
+    # Grad-CAM explains the ulcer class, not argmax.
     xai = explain(model, layer, img, tensor, class_idx=ULCER_IDX,
                   mode=cam_mode, threshold=cam_threshold)
 
@@ -136,8 +122,8 @@ def process_prediction(image_bytes, age=None, bmi=None, diabetes_years=None,
     return {
         "risk": fusion["risk"],
         "risk_probability": fusion["risk_probability"],
-        # Confidence = how decisive the classifier is, distinct from risk level.
-        # A confidently-healthy foot is high confidence AND low risk.
+        # Confidence is decisiveness, not risk: a confidently-healthy foot is high
+        # confidence and low risk.
         "confidence": round(float(max(probs)), 4),
         "image_probability": fusion["image_probability"],
         "image_probability_used": fusion["image_probability_used"],
@@ -169,8 +155,7 @@ def process_prediction(image_bytes, age=None, bmi=None, diabetes_years=None,
 
 
 def _legacy_shap(attribution):
-    """The old UI reads ``shap: [{feature, value}]``. Keep that contract so an
-    un-updated frontend build does not break against a new backend."""
+    """Old UI contract: shap: [{feature, value}]. Kept so stale builds still work."""
     return [{"feature": a["feature"], "value": a["influence_pct"]} for a in attribution]
 
 

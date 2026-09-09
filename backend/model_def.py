@@ -1,10 +1,9 @@
 """Architecture registry + self-describing checkpoints.
 
-The original checkpoint was a bare ``state_dict``: predict.py hard-coded
-``resnet50`` to load it, so swapping architectures broke inference with an
-opaque shape-mismatch traceback. Checkpoints here carry their own architecture
-name, class ordering, input size and calibration temperature, so ``load_bundle``
-can always rebuild the exact model that was trained.
+The original checkpoint was a bare state_dict with resnet50 hard-coded in the
+loader, so swapping architectures broke inference. Checkpoints here carry their
+own arch, class order, input size and temperature, so load_bundle can rebuild
+exactly what was trained.
 """
 import os
 import torch
@@ -22,10 +21,8 @@ ARCHS = {
 
 _MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model")
 
-# Preference order for the served checkpoint. The group-aware ResNet-18 is the
-# one the project actually ships (§7 of the summary): same accuracy as the
-# original ResNet-50, half the size, ~5x faster end to end. The legacy
-# dfu_model.pt is kept last so a fresh clone without the new weights still runs.
+# Served-checkpoint preference. Legacy dfu_model.pt stays last so a fresh clone
+# without the new weights still runs.
 _CKPT_PREFERENCE = [
     "dfu_resnet18_grouped.pt",
     "dfu_resnet18.pt",
@@ -102,8 +99,7 @@ def load_bundle(path=DEFAULT_CKPT, map_location="cpu", default_arch="resnet50"):
         state = obj
         arch = _infer_arch(state, default_arch)
         model = build_model(arch, 2, pretrained=False)
-        # legacy heads are a bare Linear; ours is Sequential(Dropout, Linear).
-        # Dropout has no parameters, so remapping is a pure key rename.
+        # Legacy heads are a bare Linear; Dropout has no params, so this is a rename.
         state = {_remap_legacy_key(k): v for k, v in state.items()}
         model.load_state_dict(state)
         meta = {"arch": arch, "class_names": CLASS_NAMES, "img_size": 384,
@@ -119,8 +115,7 @@ def _infer_arch(state, default):
         return "efficientnet_b0"
     w = state.get("layer1.0.conv1.weight")
     if w is not None:
-        # bottleneck blocks (resnet50) project 64->64 with 1x1; basic blocks
-        # (resnet18) use 64->64 3x3. The kernel size separates them.
+        # resnet50 bottlenecks use 1x1 for 64->64, resnet18 basic blocks use 3x3.
         return "resnet18" if w.shape[-1] == 3 else "resnet50"
     return default
 

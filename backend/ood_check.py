@@ -2,29 +2,17 @@
 
     python ood_check.py
 
-WHY THIS EXISTS
----------------
-The deployed UI accepts any image. The model was trained only on 224x224 crops
-of tissue. This script measures what happens when it is given the thing a real
-user would most naturally upload -- a photograph of a whole foot -- and the
-answer is the most serious practical finding in the project:
+The UI accepts any image; the model saw only 224x224 tissue crops. This measures
+what happens on what a user would most naturally upload -- a whole-foot photo --
+and the answer is the most serious finding in the project: essentially every
+out-of-distribution image is called an ulcer, at the same confidence as a real
+one. It then tests whether a standard post-hoc OOD detector could catch that,
+and finds none of them works well enough here. The negative result is reported
+rather than buried.
 
-    the model calls essentially EVERY out-of-distribution image an ulcer,
-    with the same confidence it assigns to genuine ulcers.
-
-It then tests whether a standard post-hoc OOD detector could be bolted on to
-catch this, and finds that neither of the usual ones works well enough here.
-That negative result is reported rather than buried, because shipping a safety
-guard that silently fails half the time is worse than shipping none and saying
-so plainly.
-
-ROOT CAUSE
-----------
-audit_data.py shows the healthy class collapses to ~240 distinct views (95% of
-its files are near-duplicates) of smooth, evenly-lit, close-cropped skin. That
-is an extremely narrow definition of "normal". Anything outside it -- including
-a perfectly healthy foot photographed at arm's length -- is not near the healthy
-cluster, so it falls to the ulcer side by default.
+Root cause: audit_data.py shows the healthy class collapses to ~240 distinct
+views of smooth, evenly-lit, close-cropped skin. Anything outside that narrow
+definition of normal falls to the ulcer side by default.
 """
 import argparse
 import json

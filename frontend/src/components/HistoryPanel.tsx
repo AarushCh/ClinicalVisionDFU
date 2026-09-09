@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react";
 import {
     HistoryEntry, clearHistory, listHistory, removeHistory, summarise, toCSV,
-    supabaseConfigured,
 } from "@/lib/history";
-import { Chip, MiniBars, SectionHead, Tile, toneForRisk } from "./Bento";
+import { Chip, MiniBars, Tile, toneForRisk } from "./Bento";
 
 const timeAgo = (t: number) => {
     const s = Math.max(0, (Date.now() - t) / 1000);
@@ -15,9 +14,10 @@ const timeAgo = (t: number) => {
 };
 
 export default function HistoryPanel({
-    version, onOpen,
+    version, synced, onOpen,
 }: {
     version: number;              // bumped by the parent after each new analysis
+    synced: boolean;              // true when signed in and writing to Postgres
     onOpen?: (e: HistoryEntry) => void;
 }) {
     const [entries, setEntries] = useState<HistoryEntry[]>([]);
@@ -29,7 +29,7 @@ export default function HistoryPanel({
             .then((e) => alive && setEntries(e))
             .finally(() => alive && setBusy(false));
         return () => { alive = false; };
-    }, [version]);
+    }, [version, synced]);
 
     const stats = summarise(entries);
 
@@ -44,88 +44,93 @@ export default function HistoryPanel({
     };
 
     return (
-        <div className="panel rounded-[2rem] p-6">
-            <SectionHead
-                n="04"
-                title="Analysis history"
-                right={
-                    <div className="flex items-center gap-2">
-                        <Chip tone={supabaseConfigured ? "good" : "muted"}>
-                            {supabaseConfigured ? "Synced" : "This device"}
-                        </Chip>
-                        {entries.length > 0 && (
-                            <>
-                                <button onClick={download}
-                                    className="text-[10px] font-black uppercase tracking-[0.12em] text-subtle hover:text-fg transition-colors">
-                                    CSV
-                                </button>
-                                <button
-                                    onClick={async () => {
-                                        if (confirm(`Delete all ${entries.length} saved analyses? This cannot be undone.`)) {
-                                            setEntries(await clearHistory());
-                                        }
-                                    }}
-                                    className="text-[10px] font-black uppercase tracking-[0.12em] text-subtle hover:text-danger transition-colors">
-                                    Clear
-                                </button>
-                            </>
-                        )}
-                    </div>
-                }
-            />
+        <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 className="text-lg font-black tracking-tight">Analysis history</h2>
+                    <p className="text-[11px] text-subtle mt-0.5">
+                        {synced
+                            ? "Synced to your account — row-level security means only you can read these."
+                            : "Kept in this browser only. Sign in with an account to sync across devices."}
+                        {" "}Derived numbers and a 160px thumbnail; never the full image.
+                    </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Chip tone={synced ? "good" : "muted"}>{synced ? "Synced" : "This device"}</Chip>
+                    {entries.length > 0 && (
+                        <>
+                            <button onClick={download}
+                                className="px-3 py-1.5 rounded-lg panel-inset text-[10px] font-black uppercase tracking-[0.12em] text-subtle hover:text-fg transition-colors">
+                                Export CSV
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    if (confirm(`Delete all ${entries.length} saved analyses? This cannot be undone.`)) {
+                                        setEntries(await clearHistory());
+                                    }
+                                }}
+                                className="px-3 py-1.5 rounded-lg panel-inset text-[10px] font-black uppercase tracking-[0.12em] text-subtle hover:text-danger transition-colors">
+                                Clear
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
 
             {busy ? (
-                <p className="text-xs text-subtle py-6 text-center">Loading…</p>
+                <p className="text-xs text-subtle py-12 text-center">Loading…</p>
             ) : entries.length === 0 ? (
-                <div className="text-center py-8">
-                    <p className="text-sm text-muted">No analyses yet.</p>
+                <div className="panel-inset rounded-2xl py-16 text-center">
+                    <p className="text-sm font-bold">No analyses yet</p>
                     <p className="text-xs text-subtle mt-1.5 max-w-sm mx-auto leading-relaxed">
-                        Every scan you run is saved here automatically — risk, probabilities
-                        and readings, with a thumbnail. Export the lot as CSV at any time.
+                        Every scan is saved here automatically — risk, probabilities and
+                        readings, with a thumbnail. Export the lot as CSV whenever you like.
                     </p>
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
-                        <Tile>
+                    {/* Same shape in every tile, so the four line up. */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                        <Tile className="flex flex-col justify-between gap-1">
                             <p className="text-[9px] font-black text-subtle uppercase tracking-[0.15em]">Scans</p>
-                            <p className="text-xl font-black mt-1 tabular-nums">{stats.n}</p>
+                            <p className="text-2xl font-black leading-none tabular-nums">{stats.n}</p>
+                            <p className="text-[10px] text-subtle leading-tight">saved</p>
                         </Tile>
-                        <Tile>
-                            <p className="text-[9px] font-black text-subtle uppercase tracking-[0.15em]">Mean risk</p>
-                            <p className="text-xl font-black mt-1 tabular-nums">{(stats.meanRisk * 100).toFixed(0)}%</p>
+                        <Tile className="flex flex-col justify-between gap-1">
+                            <p className="text-[9px] font-black text-subtle uppercase tracking-[0.15em]">Mean fused risk</p>
+                            <p className="text-2xl font-black leading-none tabular-nums">{(stats.meanRisk * 100).toFixed(0)}%</p>
+                            <p className="text-[10px] text-subtle leading-tight">across all scans</p>
                         </Tile>
-                        <Tile>
+                        <Tile className="flex flex-col justify-between gap-1">
                             <p className="text-[9px] font-black text-subtle uppercase tracking-[0.15em]">Breakdown</p>
-                            <p className="text-sm font-black mt-1.5 tabular-nums flex gap-2">
+                            <p className="text-2xl font-black leading-none tabular-nums flex gap-3">
                                 <span className="text-danger">{stats.high}</span>
                                 <span className="text-warn">{stats.medium}</span>
                                 <span className="text-good">{stats.low}</span>
                             </p>
-                            <p className="text-[9px] text-subtle mt-0.5">high / med / low</p>
+                            <p className="text-[10px] text-subtle leading-tight">high / medium / low</p>
                         </Tile>
-                        <Tile>
+                        <Tile className="flex flex-col justify-between gap-1">
                             <p className="text-[9px] font-black text-subtle uppercase tracking-[0.15em]">Risk trend</p>
-                            <div className="mt-1.5">
-                                <MiniBars
-                                    values={entries.slice(0, 16).reverse().map((e) => e.risk_probability)}
-                                    tones={entries.slice(0, 16).reverse().map((e) => toneForRisk(e.risk))}
-                                />
-                            </div>
+                            <MiniBars
+                                values={entries.slice(0, 24).reverse().map((e) => e.risk_probability)}
+                                tones={entries.slice(0, 24).reverse().map((e) => toneForRisk(e.risk))}
+                            />
+                            <p className="text-[10px] text-subtle leading-tight">oldest → newest</p>
                         </Tile>
                     </div>
 
-                    <div className="space-y-2 max-h-[26rem] overflow-y-auto pr-1">
+                    <div className="grid sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
                         {entries.map((e) => {
                             const tone = toneForRisk(e.risk);
                             return (
                                 <div key={e.id}
-                                    className="flex items-center gap-3 p-2.5 rounded-xl panel-inset hover:border-brand/30 transition-colors group">
+                                    className="panel-inset rounded-xl p-3 flex gap-3 hover:border-brand/30 transition-colors group">
                                     {e.thumb ? (
                                         <img src={e.thumb} alt=""
-                                            className="w-12 h-12 rounded-lg object-cover border border-line/20 shrink-0" />
+                                            className="w-14 h-14 rounded-lg object-cover border border-line/20 shrink-0" />
                                     ) : (
-                                        <div className="w-12 h-12 rounded-lg bg-surface2 border border-line/20 shrink-0" />
+                                        <div className="w-14 h-14 rounded-lg bg-surface2 border border-line/20 shrink-0" />
                                     )}
 
                                     <div className="min-w-0 flex-1">
@@ -133,14 +138,15 @@ export default function HistoryPanel({
                                             <Chip tone={tone}>{e.risk}</Chip>
                                             <span className="text-[11px] font-bold truncate">{e.fileName}</span>
                                         </div>
-                                        <p className="text-[10px] text-subtle mt-1 tabular-nums">
+                                        <p className="text-[10px] text-subtle mt-1.5 tabular-nums leading-relaxed">
                                             risk {(e.risk_probability * 100).toFixed(0)}% · P(ulcer) {(e.image_probability * 100).toFixed(0)}%
                                             {e.iwgdf_category != null && ` · IWGDF ${e.iwgdf_category}`}
-                                            {" · "}{timeAgo(e.at)}
+                                            <br />{timeAgo(e.at)}
+                                            {e.factors_supplied.length > 0 && ` · ${e.factors_supplied.length} factors`}
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center gap-1 shrink-0">
+                                    <div className="flex flex-col gap-1 shrink-0">
                                         {onOpen && (
                                             <button onClick={() => onOpen(e)} title="Load these clinical inputs"
                                                 className="p-1.5 rounded-lg text-subtle hover:text-brand transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
@@ -164,13 +170,6 @@ export default function HistoryPanel({
                     </div>
                 </>
             )}
-
-            <p className="text-[10px] text-subtle mt-4 leading-relaxed border-t border-line/10 pt-3">
-                {supabaseConfigured
-                    ? "Stored in Supabase against your account, readable only by you (row-level security)."
-                    : "Stored in this browser only — not shared between devices, and cleared with site data. Add Supabase credentials to sync (see supabase/schema.sql)."}
-                {" "}Only derived numbers and a 160px thumbnail are kept; never upload identifiable patient data.
-            </p>
         </div>
     );
 }

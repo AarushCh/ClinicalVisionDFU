@@ -13,16 +13,14 @@ from PIL import Image
 from torch.utils.data import Subset
 from torchvision import datasets, transforms
 
-# Patches are natively 224x224. Training at 384 upsamples them: ~2.9x the compute
-# for zero extra information. 224 is the native resolution -- keep it.
+# Patches are natively 224x224; 384 upsamples them for ~2.9x the compute.
 IMG_SIZE = 224
 MEAN = [0.485, 0.456, 0.406]   # ImageNet statistics (backbone is ImageNet-pretrained)
 STD = [0.229, 0.224, 0.225]
 SEED = 42
 
-# ImageFolder sorts classes alphabetically, so this ordering is fixed:
-#   0 = Abnormal(Ulcer), 1 = Normal(Healthy skin)
-# The ulcer class is index 0, which is what predict.py reads for P(ulcer).
+# ImageFolder sorts alphabetically: 0 = Abnormal(Ulcer), 1 = Normal.
+# predict.py reads index 0 for P(ulcer).
 CLASS_NAMES = ["Abnormal(Ulcer)", "Normal(Healthy skin)"]
 ULCER_IDX = 0
 

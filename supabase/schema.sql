@@ -11,6 +11,12 @@
 -- can only ever read or write their own rows. Never put the SERVICE ROLE key in
 -- the frontend — that one does bypass RLS.
 --
+-- Sign-in is an email magic link (auth.signInWithOtp). For the link to come
+-- back into the app, add every origin you serve it from to
+-- Authentication -> URL Configuration -> Redirect URLs, e.g.
+--   http://localhost:3000/ClinicalVisionDFU
+--   https://<user>.github.io/ClinicalVisionDFU
+--
 -- Nothing here stores identifiable patient data, and the app tells users not to
 -- upload any. Only derived numbers and a 160px thumbnail are persisted.
 

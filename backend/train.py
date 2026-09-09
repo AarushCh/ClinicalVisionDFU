@@ -1,16 +1,11 @@
 """Train a DFU patch classifier.
 
-    python train.py --arch resnet18 --epochs 25
+    python train.py --arch resnet50 --group-aware --epochs 25
 
-Fixes over the original script:
-  * augmentation actually runs (see dataset.build_splits for the shared-transform bug)
-  * seeded, stratified, three-way split -- val is used for model selection and
-    calibration, test is untouched until evaluate.py
-  * native 224px input instead of upsampled 384 (~3x faster, same information)
-  * class-weighted loss + label smoothing
-  * checkpoints on macro-F1, not accuracy (accuracy hides minority-class collapse)
-  * post-hoc temperature scaling so the confidence the UI prints means something
-  * every epoch is written to model/history_<arch>.json for the learning curves
+Augmentation actually runs (see dataset.build_splits), the split is seeded and
+stratified with test untouched until evaluate.py, checkpoints are selected on
+macro-F1 rather than accuracy, and temperature scaling is fitted post-hoc so the
+confidence the UI prints means something.
 """
 import argparse
 import json
@@ -139,14 +134,10 @@ def train_model(arch="resnet18", epochs=25, batch_size=32, lr=3e-4, weight_decay
     n_params = sum(p.numel() for p in model.parameters())
     print(f"parameters: {n_params/1e6:.1f}M")
 
-    # Inverse-frequency weights: 512 ulcer vs 543 healthy is mild, but the loss
-    # should not quietly prefer the majority class.
-    #
-    # KNOWN LIMITATION: these counts are raw file counts. audit_data.py shows the
-    # healthy class is 95% near-duplicates (543 files -> ~240 distinct views),
-    # so the *effective* balance is 66% ulcer / 34% healthy, not 48/52. These
-    # weights therefore describe a distribution that does not exist. Run with
-    # --dedupe to weight the deduplicated distribution instead.
+    # Inverse-frequency weights. KNOWN LIMITATION: these are raw file counts, and
+    # audit_data.py shows healthy is 95% near-duplicates, so the effective balance
+    # is 66/34 rather than 48/52 -- a distribution that does not exist. Use
+    # --dedupe to weight the deduplicated one instead.
     counts = torch.tensor(class_counts(train_ds), dtype=torch.float)
     weights = (counts.sum() / (len(counts) * counts)).to(device)
     criterion = nn.CrossEntropyLoss(weight=weights, label_smoothing=0.05)
@@ -220,8 +211,7 @@ def train_model(arch="resnet18", epochs=25, batch_size=32, lr=3e-4, weight_decay
             print(f"early stop: no val F1 improvement for {patience} epochs")
             break
 
-    # Reload the best checkpoint before calibrating -- calibrating the last
-    # epoch's weights would fit a temperature for a model we are not shipping.
+    # Calibrate the best checkpoint, not the last epoch we are not shipping.
     from model_def import load_bundle
     model, _ = load_bundle(ckpt_path, map_location=device)
     model.to(device)

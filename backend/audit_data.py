@@ -1,21 +1,16 @@
 """Dataset integrity audit: duplicates, near-duplicates and split leakage.
 
-Motivation: the retrained classifier reaches 100% validation macro-F1 by epoch 2
-on 738 training images. On a genuinely hard clinical task that does not happen,
-so before reporting that number anywhere it has to be explained. The two
-candidate explanations are (a) the classes really are trivially separable at the
-patch level, and (b) the benchmark leaks -- near-identical crops appearing on
-both sides of the split, so the model is being tested on images it has seen.
-
-This script measures both:
-
-  * exact duplicates via SHA-256 of the decoded pixels
-  * near-duplicates via a 16x16 grayscale dHash + Hamming distance
-  * how many near-duplicate pairs straddle the train/val/test boundary
-  * a colour-only baseline: if mean RGB alone separates the classes, the CNN is
-    not doing anything a histogram could not
-
     python audit_data.py
+
+The classifier reaches 100% validation macro-F1 by epoch 2 on 738 images, which
+does not happen on a genuinely hard task. This measures the two explanations:
+the classes really are trivially separable, or the benchmark leaks.
+
+  * exact duplicates via SHA-256 of decoded pixels
+  * near-duplicates via 16x16 grayscale dHash + Hamming distance
+  * how many near-duplicate pairs straddle a split boundary
+  * a colour-only baseline: if mean RGB separates the classes, the CNN is not
+    doing anything a histogram could not
 """
 import hashlib
 import json
@@ -66,8 +61,7 @@ def load_all(data_dir):
 
 
 def find_near_duplicates(records, max_hamming=HAMMING_NEAR):
-    """All pairs within max_hamming bits. 1055^2/2 pairs of 256-bit vectors is
-    small enough to do exactly with one packed matrix multiply per chunk."""
+    """All pairs within max_hamming bits, exactly, via packed matrix multiply."""
     bits = np.stack([r["bits"] for r in records]).astype(np.uint8)
     n = len(records)
     pairs = []
@@ -340,9 +334,8 @@ def main(data_dir=DEFAULT_DATA_DIR):
           f"{len(leaked_test)}/{n_eval} ({len(leaked_test)/max(n_eval,1):.1%})")
 
     # --- per-class redundancy and EFFECTIVE dataset size -------------------
-    # Redundancy is wildly asymmetric here, which matters more than the global
-    # rate: it means the nominal class balance is not the real one, and the
-    # inverse-frequency class weights computed from raw file counts are wrong.
+    # Asymmetric redundancy matters more than the global rate: the nominal class
+    # balance is not the real one, so inverse-frequency weights are wrong.
     in_cluster = {i for g in groups for i in g}
     per_class = {}
     for ci, cls in enumerate(classes):
@@ -382,9 +375,8 @@ def main(data_dir=DEFAULT_DATA_DIR):
     print(f"\ncolour-statistics-only baseline (6 features, logistic regression, 5-fold): "
           f"{acc:.4f} +/- {std:.4f}")
 
-    # The 5-fold number above is inflated by the same duplicates as everything
-    # else. Re-fit on the group-aware TRAIN split and score the group-aware TEST
-    # split, so the baseline and the CNN are measured on identical data.
+    # Re-fit on group-aware TRAIN and score group-aware TEST, so the baseline and
+    # the CNN are measured on identical data.
     honest = colour_baseline_grouped(records, groups)
     if honest:
         print(f"colour-only baseline on the GROUP-AWARE test split: "
@@ -430,8 +422,7 @@ def main(data_dir=DEFAULT_DATA_DIR):
     with open(out, "w") as f:
         json.dump(summary, f, indent=2)
 
-    # group-aware split: keep every near-duplicate cluster wholly inside one
-    # split, so the honest generalisation number can be measured.
+    # Keep every near-duplicate cluster wholly inside one split.
     cluster_of = {}
     for gi, g in enumerate(groups):
         for i in g:

@@ -107,7 +107,7 @@ export function Tile({
     children: ReactNode; className?: string; neon?: boolean; grid?: boolean;
 }) {
     return (
-        <div className={`panel-inset rounded-2xl p-4 ${neon ? "neon neon-soft" : ""} ${grid ? "bento-grid-bg" : ""} ${className}`}>
+        <div className={`panel-inset rounded-2xl p-4 h-full ${neon ? "neon neon-soft" : ""} ${grid ? "bento-grid-bg" : ""} ${className}`}>
             {children}
         </div>
     );
@@ -117,10 +117,11 @@ export function Stat({ label, value, hint, tone = "muted" }: {
     label: string; value: ReactNode; hint?: string; tone?: Tone;
 }) {
     return (
-        <Tile>
+        // Label pins to the top, hint to the bottom, so siblings line up.
+        <Tile className="flex flex-col justify-between gap-1">
             <p className="text-[9px] font-black text-subtle uppercase tracking-[0.15em] leading-tight">{label}</p>
-            <p className={`text-xl font-black mt-1 leading-none tabular-nums ${TONE[tone].text}`}>{value}</p>
-            {hint && <p className="text-[10px] text-subtle leading-tight mt-1.5">{hint}</p>}
+            <p className={`text-xl font-black leading-none tabular-nums ${TONE[tone].text}`}>{value}</p>
+            <p className="text-[10px] text-subtle leading-tight min-h-[1em]">{hint ?? ""}</p>
         </Tile>
     );
 }
