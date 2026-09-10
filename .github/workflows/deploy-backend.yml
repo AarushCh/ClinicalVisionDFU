@@ -21,31 +21,24 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # 1. Move to the directory with the backend code
+          # An unset secret otherwise reaches git as an empty password and comes
+          # back as an opaque 403, which reads like a broken token.
+          if [ -z "$HF_TOKEN" ]; then
+            echo "::error::HF_TOKEN is not set. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
           cd backend/
-          
-          # 2. Configure git to use HF_TOKEN
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          
-          # 3. Add Hugging Face remote
+
+          # backend/ is the Space repo root and GitHub is the source of truth,
+          # so the tree is rebuilt and force-pushed rather than merged.
           git init -b main
-          git remote add space https://huggingface.co/spaces/auc6/ClinicalVision-API
-          git remote set-url space https://auc6:$HF_TOKEN@huggingface.co/spaces/auc6/ClinicalVision-API
-          
-          # 4. We don't need to pull HF state because GitHub is the source of truth.
-          # We will force push our state to HF.
-          
-          # 5. Handle Large Files (LFS)
+          git remote add space "https://auc6:$HF_TOKEN@huggingface.co/spaces/auc6/ClinicalVision-API"
           git lfs install
           git lfs track "*.pt"
-          
-          # Add all files in backend/ and commit
-          git add .gitattributes
-          git add .
+          git add .gitattributes .
           git commit -m "Automated sync from GitHub Actions" || echo "No changes to commit"
-          
-          # 6. Push to Hugging Face space
-          # Force push LFS objects first
           git lfs push --all space main
           git push -f space HEAD:main
