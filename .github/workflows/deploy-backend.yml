@@ -54,12 +54,16 @@ jobs:
           git add .gitattributes .
           git commit -m "Automated sync from GitHub Actions" || echo "No changes to commit"
 
-          # Surface git's own refusal text; exit code 1 alone says nothing.
+          # The hook explains itself over many coloured lines, so strip the
+          # escapes and keep the whole tail: the last four were the closing rule.
+          say() {
+            sed 's/\x1b\[[0-9;]*m//g' "$1" | grep -v '^[[:space:]]*$' | tail -30 | tr '\n' '|'
+          }
           if ! git lfs push --all space main 2>&1 | tee /tmp/lfs.log; then
-            echo "::error::LFS upload refused: $(tail -4 /tmp/lfs.log | tr '\n' ' ')"
+            echo "::error::LFS upload refused: $(say /tmp/lfs.log)"
             exit 1
           fi
           if ! git push -f space HEAD:main 2>&1 | tee /tmp/push.log; then
-            echo "::error::Push refused: $(tail -4 /tmp/push.log | tr '\n' ' ')"
+            echo "::error::Push refused: $(say /tmp/push.log)"
             exit 1
           fi
