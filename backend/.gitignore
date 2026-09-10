@@ -2,8 +2,8 @@ __pycache__/
 venv
 
 # This directory is the ROOT of the Hugging Face Space repo, so the repository
-# .gitignore above it never applies to a push made from here. Anything secret
-# or bulky has to be repeated, or a deploy ships it.
+# .gitignore above it never applies to a push made from here. Anything secret,
+# bulky, or unservable has to be repeated, or a deploy ships it.
 
 # envfile.py looks for backend/.env before ../.env.
 .env
@@ -12,3 +12,10 @@ venv
 # train.py and would put ~400 MB of dead weight in the Space.
 model/*.pt
 !model/dfu_resnet18_grouped.pt
+
+# Evaluation evidence for ClinicalVisionDFU_Summary.md, written by evaluate.py
+# and make_samples.py. Nothing on the serving path reads it, and its 62 loose
+# PNGs are what the Space's pre-receive hook rejects: Hugging Face wants binary
+# files in LFS, and there is no reason to store these there at all. Still
+# tracked on GitHub -- ignoring a path does not untrack it.
+reports/
