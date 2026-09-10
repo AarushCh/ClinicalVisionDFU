@@ -12,7 +12,7 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
@@ -21,6 +21,9 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          # Without pipefail a failing git in a pipe is masked by tee's success.
+          set -o pipefail
+
           # An unset secret otherwise reaches git as an empty password and comes
           # back as an opaque 403, indistinguishable from a revoked one.
           if [ -z "$HF_TOKEN" ]; then
@@ -28,14 +31,15 @@ jobs:
             exit 1
           fi
 
-          # Ask Hugging Face directly, so an expired or read-only token reports
-          # itself here rather than as that same 403 from git.
+          # Ask Hugging Face directly, so an expired token reports itself here
+          # rather than as that same 403 from git.
           code=$(curl -sS -o /tmp/who.json -w '%{http_code}' -H "Authorization: Bearer $HF_TOKEN" https://huggingface.co/api/whoami-v2)
           if [ "$code" != "200" ]; then
             echo "::error::Hugging Face rejected HF_TOKEN (HTTP $code). Issue a new token with the Write role."
             exit 1
           fi
-          echo "Authenticated as $(jq -r '.name' /tmp/who.json), token role: $(jq -r '.auth.accessToken.role // "unknown"' /tmp/who.json)"
+          # A notice, not a log line: the run summary is where this gets read.
+          echo "::notice::Authenticated as $(jq -r '.name' /tmp/who.json), token role: $(jq -r '.auth.accessToken.role // "unknown"' /tmp/who.json)"
 
           cd backend/
           git config --global user.email "github-actions@github.com"
@@ -49,5 +53,13 @@ jobs:
           git lfs track "*.pt"
           git add .gitattributes .
           git commit -m "Automated sync from GitHub Actions" || echo "No changes to commit"
-          git lfs push --all space main
-          git push -f space HEAD:main
+
+          # Surface git's own refusal text; exit code 1 alone says nothing.
+          if ! git lfs push --all space main 2>&1 | tee /tmp/lfs.log; then
+            echo "::error::LFS upload refused: $(tail -4 /tmp/lfs.log | tr '\n' ' ')"
+            exit 1
+          fi
+          if ! git push -f space HEAD:main 2>&1 | tee /tmp/push.log; then
+            echo "::error::Push refused: $(tail -4 /tmp/push.log | tr '\n' ' ')"
+            exit 1
+          fi
