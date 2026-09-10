@@ -142,6 +142,9 @@ def process_prediction(image_bytes, age=None, bmi=None, diabetes_years=None,
         "shap": _legacy_shap(fusion["attribution"]),
         "iwgdf": fusion["iwgdf"],
         "clinical_logit_shift": fusion["clinical_logit_shift"],
+        # Forwarded for the same reason image_probability_clamped is: a shift
+        # sitting exactly on the cap looks computed rather than capped.
+        "clinical_shift_clamped": fusion["clinical_shift_clamped"],
         "factors_supplied": fusion["factors_supplied"],
         "report": report,
         "model": model_info(),

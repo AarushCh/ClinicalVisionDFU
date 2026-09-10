@@ -308,7 +308,7 @@ export default function ResultCard({ result, loading, onAsk }: {
                             ))}
                             <Row k="Calibration temperature" v={result.model?.temperature?.toFixed(3)} />
                             <Row k="P(ulcer) clamped" v={result.image_probability_clamped ? `yes → ${result.image_probability_used}` : "no"} />
-                            <Row k="Clinical log-odds shift" v={result.clinical_logit_shift?.toFixed(4)} />
+                            <Row k="Clinical log-odds shift" v={`${result.clinical_logit_shift?.toFixed(4)}${result.clinical_shift_clamped ? " (capped at ±2)" : ""}`} />
                             <Row k="Factors supplied" v={(result.factors_supplied || []).length ? result.factors_supplied.join(", ") : "none"} />
                             <Row k="CAM mode" v={result.cam_mode} />
                             <Row k="Peak location (x, y)" v={att.peak_xy ? `${att.peak_xy[0]}, ${att.peak_xy[1]}` : "—"} />
