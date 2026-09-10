@@ -22,11 +22,20 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           # An unset secret otherwise reaches git as an empty password and comes
-          # back as an opaque 403, which reads like a broken token.
+          # back as an opaque 403, indistinguishable from a revoked one.
           if [ -z "$HF_TOKEN" ]; then
             echo "::error::HF_TOKEN is not set. Add it under Settings > Secrets and variables > Actions."
             exit 1
           fi
+
+          # Ask Hugging Face directly, so an expired or read-only token reports
+          # itself here rather than as that same 403 from git.
+          code=$(curl -sS -o /tmp/who.json -w '%{http_code}' -H "Authorization: Bearer $HF_TOKEN" https://huggingface.co/api/whoami-v2)
+          if [ "$code" != "200" ]; then
+            echo "::error::Hugging Face rejected HF_TOKEN (HTTP $code). Issue a new token with the Write role."
+            exit 1
+          fi
+          echo "Authenticated as $(jq -r '.name' /tmp/who.json), token role: $(jq -r '.auth.accessToken.role // "unknown"' /tmp/who.json)"
 
           cd backend/
           git config --global user.email "github-actions@github.com"
@@ -35,7 +44,7 @@ jobs:
           # backend/ is the Space repo root and GitHub is the source of truth,
           # so the tree is rebuilt and force-pushed rather than merged.
           git init -b main
-          git remote add space "https://auc6:$HF_TOKEN@huggingface.co/spaces/auc6/ClinicalVision-API"
+          git remote add space "https://AUC6:$HF_TOKEN@huggingface.co/spaces/AUC6/ClinicalVision-API"
           git lfs install
           git lfs track "*.pt"
           git add .gitattributes .
