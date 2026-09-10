@@ -117,10 +117,22 @@ def build_report(fusion, stats, p_ulcer, temperature=1.0):
     iwgdf = fusion["iwgdf"]
 
     triage = list(copy["triage"])
-    triage.append(
-        f"IWGDF risk category {iwgdf['category']} ({iwgdf['label']}) - "
-        f"recommended screening interval: {iwgdf['screening_interval']}"
-    )
+    # The IWGDF interval is a *preventive* surveillance schedule for a foot that
+    # has no ulcer. Printing "screen annually" under "seek care today" read as a
+    # contradiction, and printing it from questions nobody answered invented an
+    # examination that never happened.
+    if iwgdf["category"] is None:
+        triage.append("Record neuropathy and PAD status to establish an IWGDF risk category")
+    elif p_ulcer >= 0.5:
+        triage.append(
+            f"IWGDF category {iwgdf['category']} ({iwgdf['label']}) sets preventive "
+            f"screening only, and does not apply while a lesion is suspected"
+        )
+    else:
+        triage.append(
+            f"IWGDF risk category {iwgdf['category']} ({iwgdf['label']}) - "
+            f"recommended screening interval: {iwgdf['screening_interval']}"
+        )
 
     assessment = (
         f"Automated analysis returns a fused ulceration risk of "
@@ -128,9 +140,12 @@ def build_report(fusion, stats, p_ulcer, temperature=1.0):
         f"assigned P(ulcer) = {p_ulcer:.1%} to the plantar image "
         f"(temperature-calibrated, T = {temperature:.2f}); clinical covariates applied a "
         f"{fusion['clinical_logit_shift']:+.2f} log-odds adjustment. "
-        f"{_describe_clinical(fusion)} IWGDF stratification places this patient in "
-        f"category {iwgdf['category']} ({iwgdf['label']}) on the basis of: "
-        f"{iwgdf['basis'].lower()}."
+        f"{_describe_clinical(fusion)} "
+        + (f"IWGDF stratification was not attempted: {iwgdf['basis'].lower()}."
+           if iwgdf["category"] is None else
+           f"IWGDF stratification places this patient in category "
+           f"{iwgdf['category']} ({iwgdf['label']}) on the basis of: "
+           f"{iwgdf['basis'].lower()}.")
     )
 
     return {
@@ -180,7 +195,9 @@ def _self_check():
     assert f_hi["risk"] == "HIGH", f_hi["risk"]
     assert "single compact focus" in r["visual_analysis"]
     assert "lower-right" in r["visual_analysis"]
-    assert "IWGDF risk category 2" in r["triage"]
+    # p_ulcer 0.93: the category is stated, the screening interval withheld
+    assert "IWGDF category 2 (High risk)" in r["triage"]
+    assert "Every 3-6 months" not in r["triage"]
     assert "Peripheral Neuropathy" in r["clinical_assessment"]
 
     # the bug this module fixes: identical band + different heatmap must not
@@ -192,7 +209,17 @@ def _self_check():
     r_lo = build_report(f_lo, diffuse, 0.03)
     assert f_lo["risk"] == "LOW"
     assert "diffuse" in r_lo["visual_analysis"]
-    assert "IWGDF risk category 0" in r_lo["triage"]
+    # f_lo supplies no neuropathy or PAD, so there is no category to quote
+    assert "not assessable" in r_lo["triage"].lower() or "Record neuropathy" in r_lo["triage"]
+    assert "IWGDF risk category 0" not in r_lo["triage"]
+
+    # examined and clear: the interval is earned, so it prints
+    r_clear = build_report(fuse(0.03, neuropathy=0, pad=0), diffuse, 0.03)
+    assert "IWGDF risk category 0" in r_clear["triage"], r_clear["triage"]
+    assert "Annually" in r_clear["triage"]
+
+    # a suspected lesion must not be handed a preventive screening interval
+    assert "does not apply" in build_report(f_hi, tight, 0.93)["triage"]
 
     # no clinical data supplied -> say so, do not invent history
     r_none = build_report(fuse(0.5), diffuse, 0.5)

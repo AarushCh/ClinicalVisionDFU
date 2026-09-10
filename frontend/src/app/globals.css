@@ -15,21 +15,29 @@
    Dark is deep blue-black with cream type rather than white — the same warmth
    inverted, with teal + amber accents carrying the contrast.
    --------------------------------------------------------------------------- */
+/* Light mode sat at 98% luminance -- a lit page rather than a printed one. The
+   ground drops to an unbleached-paper cream and surfaces still sit above it, so
+   panels read as raised without any of them being white. Ratios against --bg:
+   fg 14.5:1, fg-muted 6.1:1, fg-subtle 4.8:1. */
 :root {
-    --bg: 250 246 238;
-    --bg-accent: 244 237 224;
-    --surface: 255 253 249;
-    --surface-2: 243 238 228;
+    --bg: 240 233 220;
+    --bg-accent: 233 224 208;
+    --surface: 250 245 236;
+    --surface-2: 232 224 209;
     --fg: 26 24 22;
     --fg-muted: 92 85 76;
-    --fg-subtle: 134 125 112;
-    --line: 216 205 188;
-    --line-strong: 168 156 138;
-    --brand: 13 148 136;
+    --fg-subtle: 110 100 87;
+    --line: 205 192 173;
+    --line-strong: 140 127 108;
+    /* Deepened to clear 4.5:1 on the cream ground. The old teal, amber and
+       green were tuned against near-white and only reached 3.1-4.1:1 there,
+       so this is the accessibility bug the softer ground exposed rather than
+       one it caused. .dark redefines all four, so it is unaffected. */
+    --brand: 15 118 110;
     --brand-fg: 255 255 255;
     --danger: 190 45 32;
-    --warn: 176 106 15;
-    --good: 21 128 89;
+    --warn: 146 86 10;
+    --good: 19 118 82;
     --shadow: 66 52 34;
     --shadow-strength: 0.10;
     --grid: 26 24 22;
@@ -59,7 +67,7 @@
     --surface-2: 17 21 28;
     --fg: 240 233 220;
     --fg-muted: 168 160 147;
-    --fg-subtle: 124 118 108;
+    --fg-subtle: 130 124 114;    /* 4.30:1 on the dark ground was under AA */
     --line: 255 255 255;         /* also alpha-composited */
     --line-strong: 148 143 133;
     --brand: 94 234 212;
@@ -199,13 +207,23 @@ input[type="number"] {
     will-change: transform;
 }
 
+/* Breathing is a second animation rather than more keyframes on drift: they
+   touch different properties, so the field can swell and drift independently.
+   The three periods are deliberately coprime -- in lockstep it reads as a
+   flashing page rather than something alive. */
+@keyframes blob-breathe {
+    0%, 100% { opacity: calc(var(--blob-opacity) * 0.66); }
+    50%      { opacity: var(--blob-opacity); }
+}
+
 .blob-a {
     top: -18%;
     left: -12%;
     width: 46vw;
     height: 46vw;
     background: radial-gradient(circle, rgb(var(--cyan) / 0.55), transparent 68%);
-    animation: drift-a 34s ease-in-out infinite;
+    animation: drift-a 34s ease-in-out infinite,
+               blob-breathe 11s ease-in-out infinite;
 }
 
 .blob-b {
@@ -214,7 +232,8 @@ input[type="number"] {
     width: 52vw;
     height: 52vw;
     background: radial-gradient(circle, rgb(var(--violet) / 0.42), transparent 68%);
-    animation: drift-b 46s ease-in-out infinite;
+    animation: drift-b 46s ease-in-out infinite,
+               blob-breathe 15s ease-in-out infinite -4s;
 }
 
 .blob-c {
@@ -223,7 +242,8 @@ input[type="number"] {
     width: 34vw;
     height: 34vw;
     background: radial-gradient(circle, rgb(var(--pink) / 0.38), transparent 66%);
-    animation: drift-c 28s ease-in-out infinite;
+    animation: drift-c 28s ease-in-out infinite,
+               blob-breathe 19s ease-in-out infinite -9s;
 }
 
 @keyframes drift-a {
@@ -744,12 +764,23 @@ details[open] > summary ~ * {
     inset: 0;
     background: linear-gradient(115deg,
             rgb(var(--cyan) / 0.07), transparent 42%, rgb(var(--pink) / 0.08));
-    animation: wash 22s ease-in-out infinite alternate;
+    animation: wash 30s ease-in-out infinite alternate;
 }
 
+/* A uniformly lit page is what made this tiring to read: the eye has no rest.
+   Static, because a pulsing vignette reads as a screen flicker. */
+:root:not(.dark) .ambient-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 90% at 50% 8%,
+            transparent 52%, rgb(var(--shadow) / 0.13));
+}
+
+/* Narrower than it was: 0.45 to full is a swing you watch rather than feel. */
 @keyframes wash {
-    from { opacity: 0.45; }
-    to   { opacity: 1; }
+    from { opacity: 0.55; }
+    to   { opacity: 0.92; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -762,4 +793,7 @@ details[open] > summary ~ * {
     details[open] > summary ~ * { animation: none; }
 
     :root:not(.dark) .ambient-stage::after { animation: none; }
+
+    /* Drift is the calm one; breathing is the part that pulses, so it goes. */
+    .blob-a, .blob-b, .blob-c { animation: none; opacity: var(--blob-opacity); }
 }

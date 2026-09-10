@@ -124,8 +124,17 @@ const PrintableReport = forwardRef(({ result, reportId }: any, ref: any) => {
                 <h3 style={S.h3}>IV. Risk Stratification &amp; Action Plan</h3>
                 {iwgdf && (
                     <p style={{ ...S.p, border: '1px solid #999', padding: '9px', background: '#f7f7f7' }}>
-                        <strong>IWGDF 2023 risk category {iwgdf.category} — {iwgdf.label}.</strong>{' '}
-                        Basis: {iwgdf.basis}. Recommended screening interval: <strong>{iwgdf.screening_interval}</strong>.
+                        {iwgdf.category == null ? (
+                            <>
+                                <strong>IWGDF 2023 risk category: not assessable.</strong>{' '}
+                                {iwgdf.basis}. No screening interval is established without a foot examination.
+                            </>
+                        ) : (
+                            <>
+                                <strong>IWGDF 2023 risk category {iwgdf.category} — {iwgdf.label}.</strong>{' '}
+                                Basis: {iwgdf.basis}. Recommended screening interval: <strong>{iwgdf.screening_interval}</strong>.
+                            </>
+                        )}
                     </p>
                 )}
                 <p style={{ fontSize: '12.5px', marginBottom: '8px' }}>

@@ -203,10 +203,14 @@ export default function ResultCard({ result, loading, onAsk }: {
 
                     {iwgdf && (
                         <div className={`rounded-2xl border p-4 flex items-center gap-4 ${TONE[iwgdfTone].chip}`}>
-                            <div className="text-3xl font-black w-10 text-center shrink-0">{iwgdf.category}</div>
+                            <div className="text-3xl font-display w-10 text-center shrink-0">{cat ?? "—"}</div>
                             <div className="min-w-0">
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">IWGDF 2023 risk category</p>
-                                <p className="font-bold text-sm">{iwgdf.label} · screen {iwgdf.screening_interval?.toLowerCase()}</p>
+                                {/* No category means the questions were never asked, so there
+                                    is no interval to quote and nothing reassuring to say. */}
+                                <p className="font-bold text-sm">
+                                    {cat == null ? "Not assessable" : `${iwgdf.label} · screen ${iwgdf.screening_interval?.toLowerCase()}`}
+                                </p>
                                 <p className="text-xs mt-0.5 opacity-80">{iwgdf.basis}</p>
                             </div>
                         </div>

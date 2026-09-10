@@ -68,11 +68,16 @@ def risk_band(p):
     return "LOW"
 
 
-def iwgdf_category(neuropathy=0, pad=0, prior_ulcer=0, deformity=0):
+def iwgdf_category(neuropathy=None, pad=None, prior_ulcer=None, deformity=None):
     """IWGDF 2023 risk stratification -- verbatim from the published guideline.
 
     Unlike the fusion coefficients this is not a heuristic: it is the actual
     screening-interval rule clinicians use, so it is reproduced exactly.
+
+    A positive finding settles a category on its own, so an unanswered question
+    cannot change it. Category 0 is different: it asserts two negative
+    examination findings, and nobody examined this patient. Unanswered
+    neuropathy or PAD therefore returns None rather than the reassuring floor.
     """
     if prior_ulcer:
         return {"category": 3, "label": "Very high risk",
@@ -86,6 +91,10 @@ def iwgdf_category(neuropathy=0, pad=0, prior_ulcer=0, deformity=0):
         return {"category": 1, "label": "Moderate risk",
                 "screening_interval": "Every 6-12 months",
                 "basis": "Loss of protective sensation or peripheral arterial disease"}
+    if neuropathy is None or pad is None:
+        return {"category": None, "label": "Not assessable",
+                "screening_interval": "Not established without a foot examination",
+                "basis": "Neuropathy and PAD status were not supplied"}
     return {"category": 0, "label": "Low risk",
             "screening_interval": "Annually",
             "basis": "No loss of protective sensation and no PAD"}
@@ -158,11 +167,14 @@ def fuse(p_image, **clinical):
         "fused_logit": round(z, 4),
         "attribution": attribution,
         "factors_supplied": sorted(present),
+        # Passed through as-is: "or 0" here turned every unanswered question
+        # into a negative finding, which is how a patient with no history at
+        # all was being reported as category 0, "no neuropathy and no PAD".
         "iwgdf": iwgdf_category(
-            neuropathy=clinical.get("neuropathy") or 0,
-            pad=clinical.get("pad") or 0,
-            prior_ulcer=clinical.get("prior_ulcer") or 0,
-            deformity=clinical.get("deformity") or 0,
+            neuropathy=clinical.get("neuropathy"),
+            pad=clinical.get("pad"),
+            prior_ulcer=clinical.get("prior_ulcer"),
+            deformity=clinical.get("deformity"),
         ),
         "coefficients_fitted": False,
         "coefficient_source": "Literature-informed priors; NOT fitted on this dataset",
@@ -225,13 +237,21 @@ def _self_check():
     assert seq == sorted(seq), seq
 
     # 10. IWGDF ladder matches the published rule
-    assert iwgdf_category()["category"] == 0
+    assert iwgdf_category(neuropathy=0, pad=0)["category"] == 0
     assert iwgdf_category(neuropathy=1)["category"] == 1
     assert iwgdf_category(pad=1)["category"] == 1
     assert iwgdf_category(neuropathy=1, pad=1)["category"] == 2
     assert iwgdf_category(neuropathy=1, deformity=1)["category"] == 2
     assert iwgdf_category(prior_ulcer=1)["category"] == 3
     assert iwgdf_category(neuropathy=1, pad=1, prior_ulcer=1)["category"] == 3
+
+    # 11. an unanswered screening question is not a negative finding
+    assert iwgdf_category()["category"] is None
+    assert iwgdf_category(neuropathy=0)["category"] is None, "PAD still unknown"
+    assert fuse(0.9)["iwgdf"]["category"] is None, "no history cannot mean low risk"
+    # but a positive finding decides the category whatever else is missing
+    assert fuse(0.9, prior_ulcer=1)["iwgdf"]["category"] == 3
+    assert fuse(0.9, neuropathy=1)["iwgdf"]["category"] == 1
 
     print("clinical.py self-check passed")
 
