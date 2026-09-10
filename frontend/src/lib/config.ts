@@ -69,3 +69,36 @@ export const PRESETS: Preset[] = [
         note: "Deliberately out of scope. The model was trained only on close crops and classifies ~100% of whole-foot photos as ulcer. This result carries no information — it is here to show the limitation, not to hide it.",
     },
 ];
+
+// A stale backend shows up two ways: a 404 on an endpoint it never had, or a
+// 422 demanding fields this build sends as optional. Same diagnosis, so say it.
+const STALE =
+    "The deployed backend is out of date and does not match this app.";
+
+/**
+ * One readable line from an axios failure.
+ *
+ * FastAPI's `detail` is a string for a raised HTTPException but an array of
+ * {loc, msg} for a 422 — which used to reach the screen as a raw JSON blob.
+ */
+export function apiError(err: any, what = "the service"): string {
+    if (err?.code === "ECONNABORTED")
+        return `${what} timed out — it may be waking from a cold start. Try again.`;
+
+    const res = err?.response;
+    if (!res) return `Cannot reach ${what} at ${API_URL}.`;
+
+    const detail = res.data?.detail;
+    if (Array.isArray(detail)) {
+        const fields = Array.from(
+            new Set(detail.map((d: any) => d?.loc?.[1]).filter(Boolean))
+        );
+        return fields.length
+            ? `${STALE} It is asking for ${fields.join(", ")}, which this version sends as optional.`
+            : STALE;
+    }
+    // Before the string branch: FastAPI answers a missing route with "Not Found".
+    if (res.status === 404) return STALE;
+    if (typeof detail === "string" && detail) return detail;
+    return `${what} returned error ${res.status}.`;
+}

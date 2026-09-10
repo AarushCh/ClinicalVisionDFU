@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { API_URL } from "@/lib/config";
+import { API_URL, apiError } from "@/lib/config";
 import { Chip, toneForRisk } from "./Bento";
 
 type Turn = { role: "user" | "assistant"; content: string };
@@ -64,14 +64,7 @@ export default function Assistant({ result, pending }: {
             );
             setTurns((t) => [...t, { role: "assistant", content: r.data.answer }]);
         } catch (err: any) {
-            const detail = err?.response?.data?.detail;
-            setError(
-                typeof detail === "string"
-                    ? detail
-                    : err?.code === "ECONNABORTED"
-                        ? "The model took too long to respond."
-                        : `Could not reach CliniViz at ${API_URL}.`
-            );
+            setError(apiError(err, "CliniViz"));
         } finally {
             setBusy(false);
         }

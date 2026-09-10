@@ -1,7 +1,7 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
-import { API_URL, Preset } from "@/lib/config";
+import { API_URL, Preset, apiError } from "@/lib/config";
 
 type Numeric = { age: string; bmi: string; diabetes_years: string; hba1c: string };
 type Flags = {
@@ -133,12 +133,7 @@ export default function UploadForm({
             const res = await axios.post(`${API_URL}/predict`, data, { timeout: 120000 });
             setResult({ ...res.data, _previewUrl: preview, _fileName: file.name });
         } catch (err: any) {
-            // 400s explain exactly what was wrong; do not flatten them.
-            const detail = err?.response?.data?.detail;
-            if (detail) setError(typeof detail === "string" ? detail : JSON.stringify(detail));
-            else if (err?.code === "ECONNABORTED") setError("The analysis timed out. The model may be waking from a cold start; try again.");
-            else if (err?.response) setError(`Server error ${err.response.status}. Please try again.`);
-            else setError(`Cannot reach the analysis service at ${API_URL}.`);
+            setError(apiError(err, "The analysis service"));
             setResult(null);
         } finally {
             setLoading(false);
