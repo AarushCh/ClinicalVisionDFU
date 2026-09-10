@@ -1,13 +1,14 @@
 """ClinicalVision DFU API: validated upload -> predict -> explain -> fuse."""
 import logging
 import os
+import time
 
 import envfile
 
 # Must run before importing anything that reads configuration at import time.
 envfile.load()
 
-from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Body, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -19,6 +20,40 @@ log = logging.getLogger("clinicalvision")
 
 MAX_UPLOAD_BYTES = int(os.environ.get("MAX_UPLOAD_BYTES", 15 * 1024 * 1024))
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff"}
+
+# /assistant/ask spends someone's LLM quota on every call and needs no
+# credentials, so an unthrottled public URL is a standing invitation to drain
+# it. /predict only costs local CPU and is left alone.
+ASK_LIMIT = int(os.environ.get("ASK_RATE_LIMIT", "20"))
+ASK_WINDOW = float(os.environ.get("ASK_RATE_WINDOW", "3600"))
+# ponytail: in-process dict, so the budget is per replica. Fine for a single
+# container; move to Redis if the Space is ever scaled out.
+_ask_hits: dict[str, list[float]] = {}
+
+
+def _client_ip(request):
+    # Behind the Hugging Face proxy request.client.host is the proxy itself, so
+    # every visitor would share one budget. XFF is spoofable, which caps this at
+    # deterring casual abuse rather than a determined attacker.
+    fwd = request.headers.get("x-forwarded-for", "")
+    if fwd:
+        return fwd.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+def _rate_limit(request):
+    now = time.time()
+    if len(_ask_hits) > 4096:                      # bound the dict, not the clients
+        for k, v in list(_ask_hits.items()):
+            if not [t for t in v if now - t < ASK_WINDOW]:
+                del _ask_hits[k]
+    ip = _client_ip(request)
+    hits = [t for t in _ask_hits.get(ip, []) if now - t < ASK_WINDOW]
+    if len(hits) >= ASK_LIMIT:
+        raise HTTPException(429, f"Rate limit: {ASK_LIMIT} questions per "
+                                 f"{int(ASK_WINDOW // 60)} minutes. Try again later.")
+    hits.append(now)
+    _ask_hits[ip] = hits
 
 # Wide-open CORS would let any page drive this API from a visitor's browser.
 # Override with a comma-separated ALLOWED_ORIGINS.
@@ -79,12 +114,14 @@ def assistant_status():
 
 
 @app.post("/assistant/ask")
-async def assistant_ask(payload: dict = Body(...)):
+async def assistant_ask(request: Request, payload: dict = Body(...)):
     """Ask a question grounded in one prediction result.
 
     The key lives here, on the server. A static frontend cannot hold one, and
-    putting it in the browser bundle would publish it to every visitor.
+    putting it in the browser bundle would publish it to every visitor. Keeping
+    it server-side hides the key but not its use, so the endpoint is throttled.
     """
+    _rate_limit(request)
     question = (payload.get("question") or "").strip()
     if not question:
         raise HTTPException(400, "question is required")
