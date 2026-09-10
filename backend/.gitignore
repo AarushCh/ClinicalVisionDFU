@@ -1,2 +1,14 @@
 __pycache__/
 venv
+
+# This directory is the ROOT of the Hugging Face Space repo, so the repository
+# .gitignore above it never applies to a push made from here. Anything secret
+# or bulky has to be repeated, or a deploy ships it.
+
+# envfile.py looks for backend/.env before ../.env.
+.env
+
+# Only the served checkpoint ships. The ablations are reproducible from
+# train.py and would put ~400 MB of dead weight in the Space.
+model/*.pt
+!model/dfu_resnet18_grouped.pt
